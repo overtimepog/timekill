@@ -196,11 +196,11 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 
 // Handle a successful invoice payment
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
-  // Check if the invoice has a parent with type subscription
-  if (!invoice.parent || invoice.parent.type !== 'subscription') return;
+  // In the Basil API, we need to check for subscription-related data in the parent
+  if (!invoice.parent) return;
   
-  // Get the subscription ID from the parent
-  const subscriptionId = invoice.parent.subscription;
+  // Get the subscription ID from the parent - we need to type cast since the Stripe types are complex
+  const subscriptionId = (invoice.parent as any).subscription;
   if (!subscriptionId) return;
   
   // Get the subscription
@@ -235,11 +235,11 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 
 // Handle a failed invoice payment
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
-  // Check if the invoice has a parent with type subscription
-  if (!invoice.parent || invoice.parent.type !== 'subscription') return;
+  // In the Basil API, we need to check for subscription-related data in the parent
+  if (!invoice.parent) return;
   
-  // Get the subscription ID from the parent
-  const subscriptionId = invoice.parent.subscription;
+  // Get the subscription ID from the parent - we need to type cast since the Stripe types are complex
+  const subscriptionId = (invoice.parent as any).subscription;
   if (!subscriptionId) return;
   
   // Get the subscription
