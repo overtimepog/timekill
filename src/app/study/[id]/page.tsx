@@ -59,8 +59,10 @@ export default async function StudyPage({
     mastered: 0,
   };
   
-  stats.forEach((stat) => {
-    statsSummary[stat.status as keyof typeof statsSummary] = stat._count.status;
+  stats.forEach((stat: any) => {
+    if (stat._count && stat._count.status !== undefined) {
+      statsSummary[stat.status as keyof typeof statsSummary] = stat._count.status;
+    }
   });
   
   return (

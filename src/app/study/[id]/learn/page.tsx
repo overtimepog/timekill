@@ -45,7 +45,7 @@ export default async function LearnPage({
   }
   
   // Format the pairs with their stats
-  const pairsWithStats = submission.pairs.map((pair) => {
+  const pairsWithStats = submission.pairs.map((pair: any) => {
     const stats = pair.studyStats[0];
     return {
       ...pair,

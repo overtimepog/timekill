@@ -1,7 +1,20 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '../../../../../../packages/core/lib/prisma';
 import { requireLogin } from '../../../../../../packages/core/lib/auth';
-import { type Pair } from '../../../../../../packages/core/lib/gemini';
+
+// Define the Pair type based on the Prisma schema
+type Pair = {
+  id: string;
+  userId: string;
+  submissionId: string;
+  term: string;
+  definition: string;
+  question: string;
+  answer: string;
+  order: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
 
 // Follow Next.js route handler parameter pattern exactly
 export async function PUT(
@@ -41,29 +54,32 @@ export async function PUT(
       );
     }
     
-    // Start a transaction to update all pairs
-    await prisma.$transaction(async (tx) => {
+    try {
       // Delete existing pairs for this submission
-      await tx.pair.deleteMany({
+      await prisma.pair.deleteMany({
         where: {
           submissionId,
           userId: user.id,
         },
       });
       
-      // Create the updated pairs
-      await tx.pair.createMany({
-        data: pairs.map((pair: Pair, index: number) => ({
-          userId: user.id,
-          submissionId,
-          term: pair.term,
-          definition: pair.definition,
-          question: pair.question,
-          answer: pair.answer,
-          order: index,
-        })),
-      });
-    });
+      // Create new pairs
+      for (const pair of pairs) {
+        await prisma.pair.create({
+          data: {
+            ...pair,
+            userId: user.id,
+            submissionId,
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Error updating pairs:', error);
+      return NextResponse.json(
+        { error: 'Failed to update pairs' },
+        { status: 500 }
+      );
+    }
     
     return NextResponse.json({
       success: true,

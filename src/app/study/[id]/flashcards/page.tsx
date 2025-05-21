@@ -42,14 +42,14 @@ export default async function FlashcardsPage({
     where: {
       userId: user.id,
       pairId: {
-        in: submission.pairs.map((pair) => pair.id),
+        in: submission.pairs.map((pair: any) => pair.id),
       },
     },
   });
   
   // Map the stats to the pairs
-  const pairsWithStats = submission.pairs.map((pair) => {
-    const stats = studyStats.find((stat) => stat.pairId === pair.id);
+  const pairsWithStats = submission.pairs.map((pair: any) => {
+    const stats = studyStats.find((stat: any) => stat.pairId === pair.id);
     return {
       ...pair,
       stats: stats || {
