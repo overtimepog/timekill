@@ -74,9 +74,17 @@ export async function POST(request: NextRequest) {
       maxPairs,
     });
     
+    // Define the type for term-definition pairs
+    interface TermDefinitionPair {
+      term: string;
+      definition: string;
+      question: string;
+      answer: string;
+    }
+    
     // Store the pairs in the database
     await prisma.pair.createMany({
-      data: pairs.map((pair, index) => ({
+      data: pairs.map((pair: TermDefinitionPair, index: number) => ({
         userId: user.id,
         submissionId: submission.id,
         term: pair.term,
