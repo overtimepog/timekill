@@ -2,17 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../../packages/core/lib/prisma';
 import { requireLogin } from '../../../../../packages/core/lib/auth';
 
-// Follow Next.js route handler parameter pattern exactly
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { pairId: string } }
-) {
+/**
+ * Route handler for POST /api/study-stats/[pairId]
+ */
+export async function POST(request: NextRequest, { params }: { params: { pairId: string } }) {
   try {
+    // Get the pair ID from the route params
+    const { pairId } = params;
+    
+    if (!pairId) {
+      return NextResponse.json(
+        { error: 'Pair ID is required' },
+        { status: 400 }
+      );
+    }
+
     // Authenticate the user
     const user = await requireLogin();
-    
-    // Get the pair ID from the route
-    const pairId = params.pairId;
     
     // Parse the request body
     const body = await request.json();
