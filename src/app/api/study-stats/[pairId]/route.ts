@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '../../../../../packages/core/lib/prisma';
 import { requireLogin } from '../../../../../packages/core/lib/auth';
 
@@ -6,13 +6,12 @@ import { requireLogin } from '../../../../../packages/core/lib/auth';
  * Route handler for POST /api/study-stats/[pairId]
  */
 export async function POST(
-  request: NextRequest,
-  { params }: { params: { pairId: string } }
+  request: Request,                                     // use the Web Request type
+  { params }: { params: Promise<{ pairId: string }> }   // params is now a Promise
 ) {
   try {
-    // Get the pair ID from the route params
-    const { pairId } = params;
-    
+    const { pairId } = await params;                      // await it
+
     if (!pairId) {
       return NextResponse.json(
         { error: 'Pair ID is required' },
@@ -58,7 +57,7 @@ export async function POST(
           increment: correct ? 0 : 1,
         },
         lastReviewed: new Date(),
-        confidence: confidence || undefined,
+        confidence: confidence ?? undefined,
         status: getStatus(confidence),
       },
       create: {
@@ -67,7 +66,7 @@ export async function POST(
         correctCount: correct ? 1 : 0,
         incorrectCount: correct ? 0 : 1,
         lastReviewed: new Date(),
-        confidence: confidence || null,
+        confidence: confidence ?? null,
         status: getStatus(confidence),
       },
     });
@@ -86,8 +85,8 @@ export async function POST(
 }
 
 // Helper function to determine the status based on confidence
-function getStatus(confidence: number | undefined): string {
-  if (!confidence) {
+function getStatus(confidence?: number): string {
+  if (confidence == null) {
     return 'unseen';
   }
   

@@ -1,19 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '../../../../../../packages/core/lib/prisma';
 import { requireLogin } from '../../../../../../packages/core/lib/auth';
 import { type Pair } from '../../../../../../packages/core/lib/gemini';
 
 // Follow Next.js route handler parameter pattern exactly
 export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Authenticate the user
     const user = await requireLogin();
     
     // Get the submission ID from the route
-    const submissionId = params.id;
+    const { id: submissionId } = await params;
     
     // Verify the submission exists and belongs to the user
     const submission = await prisma.noteSubmission.findUnique({
