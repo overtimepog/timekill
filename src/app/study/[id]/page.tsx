@@ -59,16 +59,16 @@ export default async function StudyPage({
     mastered: 0,
   };
   
-  interface StatCount {
-    status: string;
-    _count: {
-      status: number;
-    };
-  }
+  // Type for the result of prisma.studyStat.groupBy
+  type StatGroupResult = Awaited<ReturnType<typeof prisma.studyStat.groupBy>>[number];
   
-  stats.forEach((stat: StatCount) => {
-    if (stat._count && stat._count.status !== undefined) {
-      statsSummary[stat.status as keyof typeof statsSummary] = stat._count.status;
+  stats.forEach((stat) => {
+    // The _count property is an object with the status count
+    const statusCount = typeof stat._count === 'object' ? stat._count.status : 0;
+    
+    // Safely cast the status to a key of statsSummary
+    if (stat.status in statsSummary) {
+      statsSummary[stat.status as keyof typeof statsSummary] = statusCount as number;
     }
   });
   

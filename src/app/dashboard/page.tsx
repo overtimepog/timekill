@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { prisma } from '../../../packages/core/lib/prisma';
 import { syncUserWithClerk } from '../../../packages/core/lib/auth';
 
-// Define the type for submissions with _count
-interface SubmissionWithMetadata {
+// TypeScript interface for the submission with _count
+interface SubmissionWithCount {
   id: string;
   userId: string;
   rawText: string;
   language: string | null;
-  metadata: Record<string, unknown>;
+  metadata: any; // Using any for simplicity, ideally should be properly typed
   createdAt: Date;
   updatedAt: Date;
   _count: {
@@ -30,7 +30,7 @@ export default async function DashboardPage() {
   await syncUserWithClerk(user);
   
   // Get the user's note submissions
-  const submissions = await prisma.noteSubmission.findMany({
+  const rawSubmissions = await prisma.noteSubmission.findMany({
     where: {
       userId: user.id,
     },
@@ -46,6 +46,9 @@ export default async function DashboardPage() {
     },
     take: 5,
   });
+  
+  // Cast the submissions to the correct type
+  const submissions = rawSubmissions as unknown as SubmissionWithCount[];
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -148,7 +151,7 @@ export default async function DashboardPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-secondary divide-y divide-border">
-                    {submissions.map((submission: SubmissionWithMetadata) => (
+                    {submissions.map((submission) => (
                       <tr key={submission.id}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground/70">
                           {new Date(submission.createdAt).toLocaleDateString()}
