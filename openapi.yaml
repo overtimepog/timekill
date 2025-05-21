@@ -1,0 +1,584 @@
+openapi: 3.0.3
+info:
+  title: TimeKill API
+  description: API for the TimeKill application - a modern Quizlet-style study platform.
+  version: 1.0.0
+  contact:
+    name: TimeKill Support
+    url: https://timekill.app/support
+    email: support@timekill.app
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://timekill.app/api
+    description: Production server
+  - url: http://localhost:3000/api
+    description: Local development server
+
+tags:
+  - name: notes
+    description: Operations for parsing notes and managing term-definition pairs
+  - name: study
+    description: Operations for studying and tracking progress
+  - name: humanizer
+    description: Operations for humanizing AI-generated text
+  - name: billing
+    description: Operations for managing subscriptions and payments
+  - name: health
+    description: Operations for checking system health
+
+paths:
+  /parse-notes:
+    post:
+      tags:
+        - notes
+      summary: Extract term-definition pairs from raw notes
+      description: |
+        Parses raw notes to extract term-definition pairs that can be used as flashcards
+        or quiz questions. The extracted pairs include terms, definitions, questions,
+        and answers.
+      security:
+        - clerkAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - notes
+              properties:
+                notes:
+                  type: string
+                  description: The raw notes to parse
+                  example: "Cell membrane: Controls what goes in and out of the cell\nNucleus: Contains DNA and controls cell activities"
+                language:
+                  type: string
+                  description: The language of the notes (default is English)
+                  default: English
+                  example: English
+                maxPairs:
+                  type: integer
+                  description: Maximum number of pairs to extract (default is 20)
+                  default: 20
+                  minimum: 1
+                  maximum: 50
+                  example: 20
+      responses:
+        '200':
+          description: Successfully parsed notes and extracted pairs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  submission:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        description: The ID of the notes submission
+                      createdAt:
+                        type: string
+                        format: date-time
+                        description: The timestamp when the submission was created
+                  pairs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Pair'
+        '400':
+          description: Invalid request (e.g., missing notes)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized (not authenticated)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden (e.g., exceeded free tier limits)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /submissions/{id}/pairs:
+    put:
+      tags:
+        - notes
+      summary: Update pairs for a submission
+      description: Updates the term-definition pairs for a given submission.
+      security:
+        - clerkAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the submission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pairs
+              properties:
+                pairs:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Pair'
+      responses:
+        '200':
+          description: Successfully updated pairs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Pairs updated successfully
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Submission not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /study-stats/{pairId}:
+    post:
+      tags:
+        - study
+      summary: Update study statistics for a pair
+      description: Records a study session result for a specific term-definition pair.
+      security:
+        - clerkAuth: []
+      parameters:
+        - name: pairId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the pair
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - correct
+              properties:
+                correct:
+                  type: boolean
+                  description: Whether the user got the answer correct
+                confidence:
+                  type: integer
+                  description: User's confidence level (1-5)
+                  minimum: 1
+                  maximum: 5
+      responses:
+        '200':
+          description: Successfully updated study statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  stat:
+                    $ref: '#/components/schemas/StudyStat'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Pair not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /humanize:
+    post:
+      tags:
+        - humanizer
+      summary: Humanize AI-generated text
+      description: |
+        Transforms AI-generated text to sound more natural and human-like.
+        Uses the Sapling API to detect AI probability and adjusts the text accordingly.
+      security:
+        - clerkAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  description: The AI-generated text to humanize
+                options:
+                  type: object
+                  description: Advanced options for humanization (Pro feature)
+                  properties:
+                    targetScore:
+                      type: number
+                      description: Target AI detection score (0-1, lower is more human-like)
+                      default: 0.2
+                      minimum: 0
+                      maximum: 1
+                    maxIterations:
+                      type: integer
+                      description: Maximum iterations to attempt
+                      default: 5
+                      minimum: 1
+                      maximum: 10
+                    semanticFloor:
+                      type: number
+                      description: Minimum semantic similarity to maintain
+                      default: 0.85
+                      minimum: 0.7
+                      maximum: 1
+                    timeBudgetMs:
+                      type: integer
+                      description: Maximum time budget in milliseconds
+                      default: 20000
+                      minimum: 5000
+                      maximum: 60000
+      responses:
+        '200':
+          description: Successfully humanized text
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  humanizedText:
+                    type: string
+                    description: The humanized version of the input text
+                  saplingScore:
+                    type: number
+                    description: The AI detection score from Sapling (0-1, lower is more human-like)
+                    minimum: 0
+                    maximum: 1
+                  iterations:
+                    type: integer
+                    description: Number of iterations performed
+                    minimum: 0
+                  similarity:
+                    type: number
+                    description: Semantic similarity between original and humanized text
+                    minimum: 0
+                    maximum: 1
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden (e.g., advanced options for free tier)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /stripe/checkout:
+    post:
+      tags:
+        - billing
+      summary: Create a Stripe checkout session
+      description: Creates a checkout session for subscription purchase.
+      security:
+        - clerkAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - priceId
+              properties:
+                priceId:
+                  type: string
+                  description: The Stripe price ID
+      responses:
+        '200':
+          description: Successfully created checkout session
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessionId:
+                    type: string
+                    description: The Stripe checkout session ID
+                  url:
+                    type: string
+                    format: uri
+                    description: The URL to redirect the user to for checkout
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /stripe/portal:
+    post:
+      tags:
+        - billing
+      summary: Create a Stripe billing portal session
+      description: Creates a billing portal session for managing subscriptions.
+      security:
+        - clerkAuth: []
+      responses:
+        '200':
+          description: Successfully created billing portal session
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    format: uri
+                    description: The URL to redirect the user to for the billing portal
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /stripe/webhook:
+    post:
+      tags:
+        - billing
+      summary: Handle Stripe webhook events
+      description: Processes webhook events from Stripe (e.g., subscription updates).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Successfully processed webhook
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  received:
+                    type: boolean
+                    example: true
+        '400':
+          description: Invalid webhook signature
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /healthz:
+    get:
+      tags:
+        - health
+      summary: Check system health
+      description: Checks if the system is operational.
+      responses:
+        '200':
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ok]
+                    example: ok
+        '500':
+          description: System is unhealthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [error]
+                    example: error
+                  message:
+                    type: string
+                    example: Database connection failed
+
+components:
+  securitySchemes:
+    clerkAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token issued by Clerk
+
+  schemas:
+    Pair:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the pair
+        term:
+          type: string
+          description: The term or concept
+        definition:
+          type: string
+          description: The definition or explanation of the term
+        question:
+          type: string
+          description: The question form of the term
+        answer:
+          type: string
+          description: The answer to the question
+        order:
+          type: integer
+          description: The order in the original submission
+      required:
+        - term
+        - definition
+        - question
+        - answer
+
+    StudyStat:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the study stat
+        userId:
+          type: string
+          description: ID of the user
+        pairId:
+          type: string
+          format: uuid
+          description: ID of the pair
+        correctCount:
+          type: integer
+          description: Number of times answered correctly
+        incorrectCount:
+          type: integer
+          description: Number of times answered incorrectly
+        lastReviewed:
+          type: string
+          format: date-time
+          description: Timestamp of the last review
+        confidence:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: User's confidence level (1-5)
+        status:
+          type: string
+          enum: [unseen, learning, reviewing, mastered]
+          description: Current learning status
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+      required:
+        - error
