@@ -21,6 +21,17 @@ class MockPrismaClient {
   // Add connection methods
   async $connect() { return Promise.resolve(); }
   async $disconnect() { return Promise.resolve(); }
+  
+  // Add raw query methods
+  async $queryRaw(...args: any[]) { 
+    console.log('MOCK DB: $queryRaw', args);
+    return Promise.resolve([{ 1: 1 }]); 
+  }
+  
+  async $executeRaw(...args: any[]) { 
+    console.log('MOCK DB: $executeRaw', args);
+    return Promise.resolve(1); 
+  }
 
   createMockModel(name: string) {
     const mockData: any[] = [];
