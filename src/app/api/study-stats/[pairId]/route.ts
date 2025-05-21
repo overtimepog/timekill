@@ -5,7 +5,10 @@ import { requireLogin } from '../../../../../packages/core/lib/auth';
 /**
  * Route handler for POST /api/study-stats/[pairId]
  */
-export async function POST(request: NextRequest, { params }: { params: { pairId: string } }) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { pairId: string } }
+) {
   try {
     // Get the pair ID from the route params
     const { pairId } = params;
