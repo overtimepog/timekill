@@ -8,13 +8,16 @@ import Link from 'next/link';
 export default async function BillingPage({
   searchParams,
 }: {
-  searchParams: { success?: string; canceled?: string; session_id?: string };
+  searchParams: Promise<{ success?: string; canceled?: string; session_id?: string }>;
 }) {
   const user = await currentUser();
   
   if (!user) {
     redirect('/sign-in');
   }
+  
+  // Wait for searchParams to resolve
+  const resolvedSearchParams = await searchParams;
   
   // Get the user's subscription
   const subscription = await prisma.subscription.findUnique({
@@ -92,7 +95,7 @@ export default async function BillingPage({
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold mb-8">Billing Settings</h1>
           
-          {searchParams.success === 'true' && (
+          {resolvedSearchParams.success === 'true' && (
             <div className="mb-8 p-4 bg-green-50 text-green-800 rounded-lg border border-green-200">
               <p className="font-medium">
                 Your subscription has been updated successfully! You now have access to all Pro features.
@@ -100,7 +103,7 @@ export default async function BillingPage({
             </div>
           )}
           
-          {searchParams.canceled === 'true' && (
+          {resolvedSearchParams.canceled === 'true' && (
             <div className="mb-8 p-4 bg-yellow-50 text-yellow-800 rounded-lg border border-yellow-200">
               <p className="font-medium">
                 Your checkout was canceled. You have not been charged.

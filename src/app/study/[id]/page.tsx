@@ -7,7 +7,7 @@ import { prisma } from '../../../../packages/core/lib/prisma';
 export default async function StudyPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const user = await currentUser();
   
@@ -15,10 +15,13 @@ export default async function StudyPage({
     redirect('/sign-in');
   }
   
+  // Get params
+  const { id } = await params;
+  
   // Get the submission and its pairs
   const submission = await prisma.noteSubmission.findUnique({
     where: {
-      id: params.id,
+      id,
       userId: user.id,
     },
     include: {
@@ -40,7 +43,7 @@ export default async function StudyPage({
     where: {
       userId: user.id,
       pair: {
-        submissionId: params.id,
+        submissionId: id,
       },
     },
     _count: {
@@ -125,7 +128,7 @@ export default async function StudyPage({
                 Review with spaced repetition. Flip cards and rate your confidence to optimize learning.
               </p>
               <Link
-                href={`/study/${params.id}/flashcards`}
+                href={`/study/${id}/flashcards`}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium inline-block"
               >
                 Study Flashcards
@@ -138,7 +141,7 @@ export default async function StudyPage({
                 Test your knowledge with multiple choice, fill-in-the-blank, and true/false questions.
               </p>
               <Link
-                href={`/study/${params.id}/quiz`}
+                href={`/study/${id}/quiz`}
                 className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm font-medium inline-block"
               >
                 Take Quiz
@@ -151,7 +154,7 @@ export default async function StudyPage({
                 Adaptive learning system that focuses on what you need to review most.
               </p>
               <Link
-                href={`/study/${params.id}/learn`}
+                href={`/study/${id}/learn`}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium inline-block"
               >
                 Start Learning
@@ -163,7 +166,7 @@ export default async function StudyPage({
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-medium">Notes Summary</h2>
               <Link
-                href={`/notes/${params.id}`}
+                href={`/notes/${id}`}
                 className="text-blue-600 hover:text-blue-800 text-sm font-medium"
               >
                 View Full Notes

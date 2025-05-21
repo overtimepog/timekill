@@ -7,7 +7,7 @@ import LearnComponent from './learn-component';
 export default async function LearnPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const user = await currentUser();
   
@@ -15,10 +15,13 @@ export default async function LearnPage({
     redirect('/sign-in');
   }
   
+  // Get params
+  const { id } = await params;
+  
   // Get the submission and its pairs with their study stats
   const submission = await prisma.noteSubmission.findUnique({
     where: {
-      id: params.id,
+      id,
       userId: user.id,
     },
     include: {
@@ -66,7 +69,7 @@ export default async function LearnPage({
             <h1 className="text-3xl font-bold">Learn Mode</h1>
             <div className="space-x-4">
               <a
-                href={`/study/${params.id}`}
+                href={`/study/${id}`}
                 className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
               >
                 Back to Study
@@ -77,7 +80,7 @@ export default async function LearnPage({
           {pairsWithStats.length > 0 ? (
             <LearnComponent 
               pairs={pairsWithStats}
-              submissionId={params.id}
+              submissionId={id}
               userId={user.id}
             />
           ) : (
