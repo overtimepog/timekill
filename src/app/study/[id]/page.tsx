@@ -62,7 +62,7 @@ export default async function StudyPage({
   // Type for the result of prisma.studyStat.groupBy
   type StatGroupResult = Awaited<ReturnType<typeof prisma.studyStat.groupBy>>[number];
   
-  stats.forEach((stat) => {
+  stats.forEach((stat: StatGroupResult) => {
     // The _count property is an object with the status count
     const statusCount = typeof stat._count === 'object' ? stat._count.status : 0;
     

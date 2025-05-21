@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useUser } from '@clerk/nextjs';
 import { useState } from 'react';
 
@@ -44,7 +45,7 @@ export function Navbar() {
                     </div>
                     <Link href="/settings/profile" className="relative inline-flex h-8 w-8 rounded-full overflow-hidden bg-background">
                       {user.imageUrl ? (
-                        <img src={user.imageUrl} alt={user.fullName || 'User'} className="h-full w-full object-cover" />
+                        <Image src={user.imageUrl} alt={user.fullName || 'User'} width={32} height={32} className="h-full w-full" objectFit="cover" />
                       ) : (
                         <span className="flex h-full w-full items-center justify-center text-foreground text-sm font-medium">
                           {(user.fullName || user.primaryEmailAddress?.emailAddress || 'U').charAt(0).toUpperCase()}

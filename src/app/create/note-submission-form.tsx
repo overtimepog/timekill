@@ -41,6 +41,7 @@ export default function NoteSubmissionForm({ userId }: NoteSubmissionFormProps) 
           notes,
           language,
           maxPairs,
+          userId,
         }),
       });
       

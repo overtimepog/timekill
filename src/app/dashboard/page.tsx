@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { prisma } from '../../../packages/core/lib/prisma';
 import { syncUserWithClerk } from '../../../packages/core/lib/auth';
+import type { JsonValue } from '@prisma/client/runtime/library';
 
 // TypeScript interface for the submission with _count
 interface SubmissionWithCount {
@@ -11,7 +12,7 @@ interface SubmissionWithCount {
   userId: string;
   rawText: string;
   language: string | null;
-  metadata: any; // Using any for simplicity, ideally should be properly typed
+  metadata: JsonValue | null;
   createdAt: Date;
   updatedAt: Date;
   _count: {
