@@ -11,9 +11,11 @@ type Pair = {
   answer: string;
 };
 
-type NoteSubmissionFormProps = Record<string, never>;
+type NoteSubmissionFormProps = {
+  userId: string;
+};
 
-export default function NoteSubmissionForm({}: NoteSubmissionFormProps) {
+export default function NoteSubmissionForm({ userId }: NoteSubmissionFormProps) {
   const router = useRouter();
   const [notes, setNotes] = useState('');
   const [language, setLanguage] = useState('English');
