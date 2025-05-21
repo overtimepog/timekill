@@ -196,11 +196,11 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 
 // Handle a successful invoice payment
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
-  if (!invoice.subscription) return;
+  if (!invoice.parent?.subscription) return;
   
   // Get the subscription
   const subscription = await stripe.subscriptions.retrieve(
-    invoice.subscription as string
+    invoice.parent.subscription as string
   );
   
   // Get the user from the customer
@@ -230,11 +230,11 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 
 // Handle a failed invoice payment
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
-  if (!invoice.subscription) return;
+  if (!invoice.parent?.subscription) return;
   
   // Get the subscription
   const subscription = await stripe.subscriptions.retrieve(
-    invoice.subscription as string
+    invoice.parent.subscription as string
   );
   
   // Get the user from the customer
