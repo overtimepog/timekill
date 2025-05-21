@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model - synced with Clerk user.id
+model User {
+  id        String   @id
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  subscription  Subscription?
+  submissions   NoteSubmission[]
+  pairs         Pair[]
+  studyStats    StudyStat[]
+  humanizerRuns HumanizerRun[]
+}
+
+// Subscription model - connected to Stripe
+model Subscription {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  stripeCustomerId     String?   @unique
+  stripePriceId        String?
+  stripeSubscriptionId String?   @unique
+  status               String? // 'active', 'canceled', 'past_due', etc.
+  plan                 String? // 'free', 'pro', etc.
+  currentPeriodEnd     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Note submission model
+model NoteSubmission {
+  id       String  @id @default(cuid())
+  userId   String
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rawText  String // Original text submitted by the user
+  language String? // The language the notes are in
+  metadata Json? // Additional metadata (e.g., source, course, etc.)
+
+  // Relations
+  pairs Pair[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Pair model - represents term/definition and question/answer pairs
+model Pair {
+  id           String         @id @default(cuid())
+  userId       String
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  submissionId String
+  submission   NoteSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  term       String // The term or concept
+  definition String // The definition or explanation
+  question   String // The question form of the term
+  answer     String // The answer to the question
+  order      Int // The order in the original submission
+
+  // Relations
+  studyStats StudyStat[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Study statistics model
+model StudyStat {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pairId String
+  pair   Pair   @relation(fields: [pairId], references: [id], onDelete: Cascade)
+
+  correctCount   Int       @default(0)
+  incorrectCount Int       @default(0)
+  lastReviewed   DateTime?
+  confidence     Int? // 1-5 rating
+  status         String    @default("unseen") // unseen, learning, reviewing, mastered
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, pairId])
+}
+
+// Humanizer run model
+model HumanizerRun {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  inputText    String // Original text
+  outputText   String // Humanized text
+  saplingScore Float? // AI detection score from Sapling
+  iterations   Int // Number of iterations to achieve the score
+  similarity   Float? // Semantic similarity score
+
+  createdAt DateTime @default(now())
+}

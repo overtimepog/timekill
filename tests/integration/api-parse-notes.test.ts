@@ -32,24 +32,24 @@ import { mockPrismaClient, mockClerkUser, sampleNotes, samplePairs } from '../he
 import { type NextRequest } from 'next/server';
 
 // Mock dependencies
-vi.mock('@clerk/nextjs', () => ({
+vi.mock('@clerk/nextjs/server', () => ({
   currentUser: vi.fn(),
   auth: vi.fn(),
 }));
 
-vi.mock('../../../packages/core/lib/prisma', () => ({
+vi.mock('../../packages/core/lib/prisma', () => ({
   prisma: mockPrismaClient(),
 }));
 
-vi.mock('../../../packages/core/lib/gemini', () => ({
+vi.mock('../../packages/core/lib/gemini', () => ({
   extractPairsFromNotes: vi.fn(),
 }));
 
 // Import handlers and mocked dependencies
-import { POST } from '../../../src/app/api/parse-notes/route';
-import { currentUser } from '@clerk/nextjs';
-import { prisma } from '../../../packages/core/lib/prisma';
-import { extractPairsFromNotes } from '../../../packages/core/lib/gemini';
+import { POST } from '../../src/app/api/parse-notes/route';
+import { currentUser } from '@clerk/nextjs/server';
+import { prisma } from '../../packages/core/lib/prisma';
+import { extractPairsFromNotes } from '../../packages/core/lib/gemini';
 
 // Helper to create a mock NextRequest
 const createMockRequest = (body: any) => {
@@ -91,13 +91,13 @@ describe('Parse Notes API', () => {
     
     // Check the response
     expect(response.status).toBe(200);
-    expect(data).toEqual({
+    expect(data).toMatchObject({
       submission: {
         id: submissionId,
-        createdAt: expect.any(Date),
       },
       pairs: samplePairs,
     });
+    expect(data.submission).toHaveProperty('createdAt');
     
     // Verify extractPairsFromNotes was called correctly
     expect(extractPairsFromNotes).toHaveBeenCalledWith(
@@ -249,13 +249,13 @@ describe('Parse Notes API', () => {
       maxPairs: 20,
     });
     
-    // Call the API route and expect it to throw
-    try {
-      await POST(req);
-      fail('Expected POST to throw an error');
-    } catch (error) {
-      expect(error.message).toContain('Authentication required');
-    }
+    // Call the API route and get response
+    const response = await POST(req);
+    
+    // Check the response
+    expect(response.status).toBe(401);
+    const data = await response.json();
+    expect(data.error).toContain('Authentication required');
     
     // Verify no operations were performed
     expect(extractPairsFromNotes).not.toHaveBeenCalled();

@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TimeKill - Study Platform",
-  description: "A modern Quizlet-style study platform",
+  title: "TimeKill - Modern Study Platform",
+  description: "Transform your notes into interactive study materials",
 };
 
 export default function RootLayout({
@@ -24,7 +24,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        elements: {
+          // Apply Tailwind-friendly styling
+          formButtonPrimary: "bg-blue-600 hover:bg-blue-700 text-white",
+          footerActionLink: "text-blue-600 hover:text-blue-800",
+          card: "bg-white dark:bg-slate-800",
+        },
+      }}
+    >
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}

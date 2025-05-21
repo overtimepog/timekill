@@ -1,31 +1,55 @@
-import { authMiddleware, redirectToSignIn } from '@clerk/nextjs';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import { prisma } from '../packages/core/lib/prisma';
 
-// See https://clerk.com/docs/references/nextjs/auth-middleware
-export default authMiddleware({
-  // Routes that can be accessed while signed out
-  publicRoutes: [
-    '/',
-    '/api/stripe/webhook',
-    '/api/healthz',
-  ],
-  
-  // Routes that can always be accessed, and have no middleware applied to them
-  ignoredRoutes: [
-    '/api/stripe/webhook',
-    '/api/healthz',
-  ],
-  
-  // Custom handling when a user is not authenticated
-  afterAuth(auth, req) {
-    // Handle requests to /dashboard and other protected routes
-    if (!auth.userId && !auth.isPublicRoute) {
-      return redirectToSignIn({ returnBackUrl: req.url });
+// Public routes that don't require authentication
+const publicRoutes = [
+  '/',
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+  '/api/stripe/webhook',
+  '/api/healthz',
+];
+
+// Create a route matcher for protected routes
+const isPublicRoute = createRouteMatcher(publicRoutes);
+
+// Middleware function that ensures database connections are handled properly
+async function withDbConnection(req: Request, res: NextResponse) {
+  try {
+    // Make sure Prisma client is connected
+    await prisma.$connect();
+    return res;
+  } catch (error) {
+    console.error('Database connection error:', error);
+    
+    // Only return error response for API routes
+    if (req.url.includes('/api/')) {
+      return NextResponse.json(
+        { error: 'Database connection error' },
+        { status: 500 }
+      );
     }
     
-    // If the user is authenticated and trying to access a public route, let them through
-    return NextResponse.next();
-  },
+    // For non-API routes, continue but log the error
+    return res;
+  } finally {
+    // For serverless environments, we should disconnect after each request
+    // This is commented out because Next.js may reuse the instance
+    // await prisma.$disconnect();
+  }
+}
+
+// Using the new Clerk middleware
+export default clerkMiddleware(async (auth, req) => {
+  // If the route is not public, protect it
+  if (!isPublicRoute(req)) {
+    await auth.protect();
+  }
+  
+  // For authenticated routes or public routes, ensure database connection
+  const response = NextResponse.next();
+  return withDbConnection(req, response);
 });
 
 export const config = {

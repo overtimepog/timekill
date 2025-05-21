@@ -29,21 +29,21 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mockPrismaClient, mockClerkUser } from '../helpers/mocks';
-import { requireLogin, requireSubscription, syncUserWithClerk } from '../../../packages/core/lib/auth';
+import { requireLogin, requireSubscription, syncUserWithClerk } from '../../packages/core/lib/auth';
 
 // Mock dependencies
-vi.mock('@clerk/nextjs', () => ({
+vi.mock('@clerk/nextjs/server', () => ({
   currentUser: vi.fn(),
   auth: vi.fn(),
 }));
 
-vi.mock('../../../packages/core/lib/prisma', () => ({
+vi.mock('../../packages/core/lib/prisma', () => ({
   prisma: mockPrismaClient(),
 }));
 
 // Import mocked dependencies for assertions
-import { currentUser } from '@clerk/nextjs';
-import { prisma } from '../../../packages/core/lib/prisma';
+import { currentUser } from '@clerk/nextjs/server';
+import { prisma } from '../../packages/core/lib/prisma';
 
 describe('Authentication Utilities', () => {
   beforeEach(() => {

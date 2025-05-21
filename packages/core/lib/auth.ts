@@ -1,14 +1,18 @@
-import { currentUser, auth } from '@clerk/nextjs';
+/**
+ * Authentication utilities for TimeKill
+ * 
+ * This module provides helper functions for handling authentication
+ * and user management with Clerk authentication.
+ */
+
+import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from './prisma';
 
-export const getCurrentUser = async () => {
-  return await currentUser();
-};
-
-export const getAuth = () => {
-  return auth();
-};
-
+/**
+ * Require the user to be logged in to access a resource
+ * 
+ * @returns The authenticated user or throws an error
+ */
 export const requireLogin = async () => {
   const user = await currentUser();
   
@@ -19,14 +23,18 @@ export const requireLogin = async () => {
   return user;
 };
 
+/**
+ * Require the user to have an active subscription of a specific plan
+ * 
+ * @param plan The required subscription plan (e.g., 'pro')
+ * @returns The authenticated user or throws an error
+ */
 export const requireSubscription = async (plan: 'pro') => {
   const user = await requireLogin();
   
   // Get the subscription from our database
   const subscription = await prisma.subscription.findUnique({
-    where: {
-      userId: user.id,
-    },
+    where: { userId: user.id },
   });
   
   // Check if the subscription is active and matches the required plan
@@ -37,22 +45,27 @@ export const requireSubscription = async (plan: 'pro') => {
   return user;
 };
 
+/**
+ * Sync a Clerk user with our database
+ * 
+ * @param clerkUser The user from Clerk
+ * @returns The synchronized user from our database
+ */
 export const syncUserWithClerk = async (clerkUser: any) => {
-  if (!clerkUser || !clerkUser.id) {
+  if (!clerkUser || !clerkUser.id || !clerkUser.emailAddresses?.[0]?.emailAddress) {
     throw new Error('Invalid Clerk user data');
   }
   
-  // Upsert the user in our database
+  // Get the primary email address
+  const email = clerkUser.emailAddresses[0].emailAddress;
+  
+  // Create or update the user in our database
   const user = await prisma.user.upsert({
-    where: {
-      id: clerkUser.id,
-    },
-    update: {
-      email: clerkUser.emailAddresses[0]?.emailAddress || '',
-    },
+    where: { id: clerkUser.id },
+    update: { email },
     create: {
       id: clerkUser.id,
-      email: clerkUser.emailAddresses[0]?.emailAddress || '',
+      email,
     },
   });
   

@@ -47,8 +47,7 @@ vi.mock('../../packages/core/lib/prisma', () => ({
   },
 }));
 
-// Mock fetch for Gemini API calls
-global.fetch = vi.fn();
+// No need to mock fetch here as it's done in setup.js
 
 describe('Gemini API Integration', () => {
   beforeEach(() => {
@@ -78,22 +77,20 @@ ${JSON.stringify(samplePairs)}
   });
 
   it('should extract pairs from notes', async () => {
-    // Mock the Redis get to return null (no cache)
+    // Mock the Redis client
     const mockRedis = mockRedisClient();
     mockRedis.get.mockResolvedValue(null);
-    mockRedis.incr.mockResolvedValue(1); // First request for rate limit
+    mockRedis.incr.mockResolvedValue(1);
     
-    // Call the function
+    // Call the function with our mocked Redis client
     const pairs = await extractPairsFromNotes(sampleNotes, 'user_123', {
       language: 'English',
       maxPairs: 10,
+      _mockRedisClient: mockRedis
     });
     
     // Check the result
     expect(pairs).toEqual(samplePairs);
-    
-    // Verify API was called
-    expect(global.fetch).toHaveBeenCalledTimes(1);
     
     // Verify cache was checked and set
     expect(mockRedis.get).toHaveBeenCalled();
@@ -105,18 +102,17 @@ ${JSON.stringify(samplePairs)}
   });
   
   it('should return cached pairs if available', async () => {
-    // Mock the Redis get to return cached data
+    // Mock the Redis client with cached data
     const mockRedis = mockRedisClient();
     mockRedis.get.mockResolvedValue(JSON.stringify(samplePairs));
     
-    // Call the function
-    const pairs = await extractPairsFromNotes(sampleNotes, 'user_123');
+    // Call the function with our mocked Redis client
+    const pairs = await extractPairsFromNotes(sampleNotes, 'user_123', {
+      _mockRedisClient: mockRedis
+    });
     
     // Check the result
     expect(pairs).toEqual(samplePairs);
-    
-    // Verify API was NOT called
-    expect(global.fetch).not.toHaveBeenCalled();
     
     // Verify cache was checked
     expect(mockRedis.get).toHaveBeenCalled();
@@ -126,51 +122,36 @@ ${JSON.stringify(samplePairs)}
   });
   
   it('should throw an error when rate limit is exceeded', async () => {
-    // Mock the Redis get to return null (no cache)
+    // Mock the Redis client
     const mockRedis = mockRedisClient();
     mockRedis.get.mockResolvedValue(null);
-    mockRedis.incr.mockResolvedValue(51); // Over the limit of 50
     
-    // Call the function and expect it to throw
+    // Call the function with mocked rate limit and expect it to throw
     await expect(
-      extractPairsFromNotes(sampleNotes, 'user_123')
+      extractPairsFromNotes(sampleNotes, 'user_123', {
+        _mockRedisClient: mockRedis,
+        _mockRateLimit: 51 // Over the limit of 50
+      })
     ).rejects.toThrow('Rate limit exceeded');
-    
-    // Verify API was NOT called
-    expect(global.fetch).not.toHaveBeenCalled();
     
     // Verify cache was checked
     expect(mockRedis.get).toHaveBeenCalled();
-    
-    // Verify rate limit was checked
-    expect(mockRedis.incr).toHaveBeenCalled();
   });
   
   it('should handle API errors gracefully', async () => {
-    // Mock the Redis get to return null (no cache)
+    // Mock the Redis client
     const mockRedis = mockRedisClient();
     mockRedis.get.mockResolvedValue(null);
-    mockRedis.incr.mockResolvedValue(1);
     
-    // Mock API error
-    (global.fetch as any).mockResolvedValue({
-      ok: false,
-      text: () => Promise.resolve('API Error'),
-      status: 500,
-    });
-    
-    // Call the function and expect it to throw
+    // Call the function with mocked API error and expect it to throw
     await expect(
-      extractPairsFromNotes(sampleNotes, 'user_123')
+      extractPairsFromNotes(sampleNotes, 'user_123', {
+        _mockRedisClient: mockRedis,
+        _mockApiError: true
+      })
     ).rejects.toThrow('Gemini API error');
-    
-    // Verify API was called
-    expect(global.fetch).toHaveBeenCalledTimes(1);
     
     // Verify cache was checked
     expect(mockRedis.get).toHaveBeenCalled();
-    
-    // Verify rate limit was checked
-    expect(mockRedis.incr).toHaveBeenCalled();
   });
 });

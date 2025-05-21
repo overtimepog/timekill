@@ -1,5 +1,5 @@
 import { Navbar } from '../components/navbar';
-import { currentUser } from '@clerk/nextjs';
+import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { prisma } from '../../../packages/core/lib/prisma';

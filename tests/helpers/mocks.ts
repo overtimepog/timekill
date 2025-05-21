@@ -158,7 +158,7 @@ export const samplePairs = [
     term: 'Nucleus',
     definition: 'Contains DNA and controls cell activities',
     question: 'Which organelle houses DNA and directs cellular activities?',
-    answer: 'The nucleus contains the cell's genetic material and coordinates cellular functions',
+    answer: 'The nucleus contains the cell\'s genetic material and coordinates cellular functions',
     order: 1,
   },
   {
