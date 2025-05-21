@@ -2,11 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
-  // For better deployment performance
-  experimental: {
-    serverComponentsExternalPackages: ['@prisma/client', 'prisma']
-  }
+  // For better deployment performance with Prisma
+  serverExternalPackages: ['@prisma/client', 'prisma']
 };
 
 export default nextConfig;

@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../../packages/core/lib/prisma';
 import { requireLogin } from '../../../../../packages/core/lib/auth';
-import { RouteContext, PairIdParams } from '../../../../types/next';
 
+// Follow Next.js route handler parameter pattern exactly
 export async function POST(
   request: NextRequest,
-  context: RouteContext<PairIdParams>
+  { params }: { params: { pairId: string } }
 ) {
-  const { params } = context;
   try {
     // Authenticate the user
     const user = await requireLogin();

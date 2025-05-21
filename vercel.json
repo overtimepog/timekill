@@ -33,6 +33,7 @@
     "NODE_ENV": "production",
     "VERCEL_DEPLOYMENT": "1",
     "NEXT_PUBLIC_APP_URL": "https://timekill.app",
-    "STRIPE_WEBHOOK_SECRET": "whsec_timekill_webhook_secret"
+    "STRIPE_WEBHOOK_SECRET": "whsec_timekill_webhook_secret",
+    "DATABASE_URL": "prisma+postgres://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiMDFKVlQ1UTExQ1lGNjMzTUNXS0JWWVJWSlYiLCJ0ZW5hbnRfaWQiOiIyOGJjNjE1OTg0MGZjMWMxNWRhZjY5YjhmMDQyYjNlOWIxNmZhOTNkMTBlNjIzYWY5MDA0ZjliM2IwNzg0MDYwIiwiaW50ZXJuYWxfc2VjcmV0IjoiMWQ4MWNhOTAtMWZlNi00ZjcxLWE0YjAtYjFiNzU1MWY4NjRkIn0.FBcKe9zSGauD7TpsMd761jrO1eP7Fyk0U6fjQr7BlI0"
   }
 }

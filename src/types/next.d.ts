@@ -1,24 +1,17 @@
 // Type definitions for Next.js App Router
-// This helps ensure we're using the correct parameter types in route handlers
+// This follows the exact pattern required by Next.js App Router
 
 import { NextRequest } from 'next/server';
 
-// Define the context parameter structure for dynamic routes
-export type RouteContext<T extends Record<string, string>> = {
-  params: T;
+// These types follow the exact structure expected by Next.js App Router
+// Do not use these directly in route handlers - use the inline type annotations instead
+// This is kept as reference for the correct pattern
+
+// Define parameter structures for specific routes
+export type PairIdContext = {
+  params: { pairId: string };
 };
 
-// Create generic route handler types
-export type RouteHandler<T extends Record<string, string>> = (
-  request: NextRequest,
-  context: RouteContext<T>
-) => Promise<Response> | Response;
-
-// Define specific route parameter types
-export type PairIdParams = {
-  pairId: string;
-};
-
-export type SubmissionIdParams = {
-  id: string;
+export type SubmissionIdContext = {
+  params: { id: string };
 };
