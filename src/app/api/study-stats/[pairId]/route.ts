@@ -4,9 +4,8 @@ import { requireLogin } from '../../../../../packages/core/lib/auth';
 
 export async function POST(
   request: NextRequest,
-  context: { params: { pairId: string } }
+  { params }: { params: { pairId: string } }
 ) {
-  const { params } = context;
   try {
     // Authenticate the user
     const user = await requireLogin();

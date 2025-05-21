@@ -32,6 +32,7 @@
   "env": {
     "NODE_ENV": "production",
     "VERCEL_DEPLOYMENT": "1",
-    "NEXT_PUBLIC_APP_URL": "https://timekill.app"
+    "NEXT_PUBLIC_APP_URL": "https://timekill.app",
+    "STRIPE_WEBHOOK_SECRET": "whsec_timekill_webhook_secret"
   }
 }
