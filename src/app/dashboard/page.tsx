@@ -42,52 +42,70 @@ export default async function DashboardPage() {
           <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+            <div className="bg-secondary p-6 rounded-lg shadow-sm border border-border">
               <h2 className="text-xl font-medium mb-4">Create Flashcards</h2>
-              <p className="text-gray-600 mb-4">
+              <p className="text-foreground/70 mb-4">
                 Paste your notes and generate flashcards, quiz questions, and more.
               </p>
               <Link
                 href="/create"
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium inline-block"
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover text-sm font-medium inline-block"
               >
                 Create Now
               </Link>
             </div>
             
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+            <div className="bg-secondary p-6 rounded-lg shadow-sm border border-border">
               <h2 className="text-xl font-medium mb-4">Study Flashcards</h2>
-              <p className="text-gray-600 mb-4">
+              <p className="text-foreground/70 mb-4">
                 Review your flashcards with spaced-repetition to optimize your learning.
               </p>
-              <Link
-                href="/flashcards"
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium inline-block"
-              >
-                Study Now
-              </Link>
+              {submissions.length > 0 ? (
+                <Link
+                  href={`/study/${submissions[0].id}/flashcards`}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium inline-block"
+                >
+                  Study Now
+                </Link>
+              ) : (
+                <Link
+                  href="/create"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium inline-block"
+                >
+                  Create First
+                </Link>
+              )}
             </div>
             
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+            <div className="bg-secondary p-6 rounded-lg shadow-sm border border-border">
               <h2 className="text-xl font-medium mb-4">Take Quizzes</h2>
-              <p className="text-gray-600 mb-4">
+              <p className="text-foreground/70 mb-4">
                 Test your knowledge with multiple-choice, fill-in-the-blank, and true/false questions.
               </p>
-              <Link
-                href="/quizzes"
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm font-medium inline-block"
-              >
-                Quiz Yourself
-              </Link>
+              {submissions.length > 0 ? (
+                <Link
+                  href={`/study/${submissions[0].id}/quiz`}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm font-medium inline-block"
+                >
+                  Quiz Yourself
+                </Link>
+              ) : (
+                <Link
+                  href="/create"
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm font-medium inline-block"
+                >
+                  Create First
+                </Link>
+              )}
             </div>
           </div>
           
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 mb-8">
+          <div className="bg-secondary p-6 rounded-lg shadow-sm border border-border mb-8">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-medium">Recent Notes</h2>
               <Link
-                href="/notes"
-                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                href="/dashboard"
+                className="text-primary hover:text-primary-hover text-sm font-medium"
               >
                 View All
               </Link>
@@ -95,53 +113,53 @@ export default async function DashboardPage() {
             
             {submissions.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-border">
+                  <thead className="bg-background">
                     <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground/70 uppercase tracking-wider">
                         Date
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground/70 uppercase tracking-wider">
                         Note Length
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground/70 uppercase tracking-wider">
                         Pairs
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground/70 uppercase tracking-wider">
                         Language
                       </th>
-                      <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-foreground/70 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-secondary divide-y divide-border">
                     {submissions.map((submission) => (
                       <tr key={submission.id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground/70">
                           {new Date(submission.createdAt).toLocaleDateString()}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground/70">
                           {submission.rawText.length > 100 
                             ? `${submission.rawText.substring(0, 100)}...` 
                             : submission.rawText}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground/70">
                           {submission._count.pairs}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground/70">
                           {submission.language || 'Auto-detect'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <Link
                             href={`/notes/${submission.id}`}
-                            className="text-blue-600 hover:text-blue-900 mr-4"
+                            className="text-primary hover:text-primary-hover mr-4"
                           >
                             View
                           </Link>
                           <Link
                             href={`/study/${submission.id}`}
-                            className="text-green-600 hover:text-green-900"
+                            className="text-green-600 hover:text-green-700"
                           >
                             Study
                           </Link>
@@ -153,10 +171,10 @@ export default async function DashboardPage() {
               </div>
             ) : (
               <div className="text-center py-8">
-                <p className="text-gray-600 mb-4">You haven't created any notes yet.</p>
+                <p className="text-foreground/70 mb-4">You haven't created any notes yet.</p>
                 <Link
                   href="/create"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium inline-block"
+                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover text-sm font-medium inline-block"
                 >
                   Create Your First Note
                 </Link>
@@ -164,13 +182,13 @@ export default async function DashboardPage() {
             )}
           </div>
           
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-100">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-6 rounded-lg border border-blue-100 dark:border-blue-900">
             <div className="flex flex-col md:flex-row items-center justify-between">
               <div className="mb-4 md:mb-0">
-                <h2 className="text-xl font-medium text-blue-800 mb-2">
+                <h2 className="text-xl font-medium text-blue-800 dark:text-blue-300 mb-2">
                   Upgrade to TimeKill Pro
                 </h2>
-                <p className="text-blue-700">
+                <p className="text-blue-700 dark:text-blue-400">
                   Get unlimited notes, priority AI processing, and advanced study features.
                 </p>
               </div>

@@ -9,26 +9,26 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   return (
-    <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-slate-900">
+    <header className="border-b border-border bg-secondary">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <Link href="/" className="text-lg font-bold text-gray-900 dark:text-white">
+            <Link href="/" className="text-lg font-bold text-foreground">
               TimeKill
             </Link>
             {isLoaded && isSignedIn && (
               <nav className="hidden ml-10 space-x-4 md:flex">
-                <Link href="/dashboard" className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+                <Link href="/dashboard" className="px-3 py-2 text-sm font-medium text-foreground hover:text-primary">
                   Dashboard
                 </Link>
-                <Link href="/flashcards" className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
-                  Flashcards
+                <Link href="/create" className="px-3 py-2 text-sm font-medium text-foreground hover:text-primary">
+                  Create
                 </Link>
-                <Link href="/quizzes" className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
-                  Quizzes
+                <Link href="/humanize" className="px-3 py-2 text-sm font-medium text-foreground hover:text-primary">
+                  Humanize
                 </Link>
-                <Link href="/learn" className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
-                  Learn
+                <Link href="/pricing" className="px-3 py-2 text-sm font-medium text-foreground hover:text-primary">
+                  Pricing
                 </Link>
               </nav>
             )}
@@ -39,22 +39,22 @@ export function Navbar() {
               isSignedIn ? (
                 <div className="flex items-center">
                   <div className="hidden md:flex md:items-center md:space-x-2">
-                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <div className="text-sm font-medium text-foreground">
                       {user.fullName || user.primaryEmailAddress?.emailAddress}
                     </div>
-                    <Link href="/settings/profile" className="relative inline-flex h-8 w-8 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
+                    <Link href="/settings/profile" className="relative inline-flex h-8 w-8 rounded-full overflow-hidden bg-background">
                       {user.imageUrl ? (
                         <img src={user.imageUrl} alt={user.fullName || 'User'} className="h-full w-full object-cover" />
                       ) : (
-                        <span className="flex h-full w-full items-center justify-center text-gray-500 dark:text-gray-300 text-sm font-medium">
+                        <span className="flex h-full w-full items-center justify-center text-foreground text-sm font-medium">
                           {(user.fullName || user.primaryEmailAddress?.emailAddress || 'U').charAt(0).toUpperCase()}
                         </span>
                       )}
                     </Link>
-                    <Link href="/user-profile" className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+                    <Link href="/user-profile" className="ml-2 text-sm font-medium text-foreground hover:text-primary">
                       Profile
                     </Link>
-                    <Link href="/sign-out" className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+                    <Link href="/sign-out" className="ml-2 text-sm font-medium text-foreground hover:text-primary">
                       Sign out
                     </Link>
                   </div>
@@ -62,7 +62,7 @@ export function Navbar() {
                   {/* Mobile menu button */}
                   <button
                     type="button"
-                    className="md:hidden ml-2 p-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                    className="md:hidden ml-2 p-2 text-foreground hover:text-primary"
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                   >
                     <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -74,20 +74,20 @@ export function Navbar() {
                 <div className="space-x-2">
                   <Link 
                     href="/sign-in"
-                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                    className="px-4 py-2 text-sm font-medium text-foreground hover:text-primary"
                   >
                     Sign in
                   </Link>
                   <Link
                     href="/sign-up"
-                    className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="px-4 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary-hover"
                   >
                     Sign up
                   </Link>
                 </div>
               )
             ) : (
-              <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+              <div className="h-8 w-24 bg-border rounded animate-pulse"></div>
             )}
           </div>
         </div>
@@ -97,22 +97,22 @@ export function Navbar() {
       {isMenuOpen && (
         <div className="md:hidden">
           <div className="space-y-1 px-2 pb-3 pt-2">
-            <Link href="/dashboard" className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md">
+            <Link href="/dashboard" className="block px-3 py-2 text-base font-medium text-foreground hover:bg-background rounded-md">
               Dashboard
             </Link>
-            <Link href="/flashcards" className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md">
-              Flashcards
+            <Link href="/create" className="block px-3 py-2 text-base font-medium text-foreground hover:bg-background rounded-md">
+              Create
             </Link>
-            <Link href="/quizzes" className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md">
-              Quizzes
+            <Link href="/humanize" className="block px-3 py-2 text-base font-medium text-foreground hover:bg-background rounded-md">
+              Humanize
             </Link>
-            <Link href="/learn" className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md">
-              Learn
+            <Link href="/pricing" className="block px-3 py-2 text-base font-medium text-foreground hover:bg-background rounded-md">
+              Pricing
             </Link>
-            <Link href="/user-profile" className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md">
+            <Link href="/user-profile" className="block px-3 py-2 text-base font-medium text-foreground hover:bg-background rounded-md">
               Profile
             </Link>
-            <Link href="/sign-out" className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md">
+            <Link href="/sign-out" className="block px-3 py-2 text-base font-medium text-foreground hover:bg-background rounded-md">
               Sign out
             </Link>
           </div>

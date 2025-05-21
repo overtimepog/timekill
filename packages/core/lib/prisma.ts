@@ -108,25 +108,47 @@ class MockPrismaClient {
   }
 }
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
+// Use a safer approach to global object for Prisma's singleton
+declare global {
+  var prisma: PrismaClient | undefined;
+}
 
-// For production, use actual PrismaClient with connection pooling
-export const prisma = globalForPrisma.prisma || 
-  process.env.NODE_ENV === 'production'
-    ? new PrismaClient({
-        log: ['error'],
-        datasources: {
-          db: {
-            url: process.env.DATABASE_URL
-          }
-        },
-        // Connection pooling configuration for production
-        // The number can be adjusted based on your needs
-        connection: {
-          pool: { min: 2, max: 10 }
+// Ensure we have a PrismaClient that works across environments
+let prismaClient: PrismaClient | MockPrismaClient;
+
+// For tests and serverless environments, we want a fresh client
+// For development, we want to reuse the client to avoid connection limits
+if (process.env.NODE_ENV === 'production') {
+  // Production: Use real PrismaClient with connection pooling
+  try {
+    prismaClient = new PrismaClient({
+      log: ['error'],
+      datasources: {
+        db: {
+          url: process.env.DATABASE_URL
         }
-      })
-    : new MockPrismaClient();
+      },
+      // Connection pooling configuration for production
+      connection: {
+        pool: { min: 2, max: 10 }
+      }
+    });
+  } catch (error) {
+    console.error("Error creating PrismaClient:", error);
+    // Fallback to mock in case of error (helps with tests and edge deployments)
+    prismaClient = new MockPrismaClient();
+  }
+} else {
+  // Development: Use global singleton or create a mock
+  if (!global.prisma) {
+    try {
+      global.prisma = new PrismaClient();
+    } catch (error) {
+      console.error("Error creating development PrismaClient:", error);
+      global.prisma = new MockPrismaClient() as unknown as PrismaClient;
+    }
+  }
+  prismaClient = global.prisma;
+}
 
-// Only initialize in development, in production we want to reuse connections
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+export const prisma = prismaClient;

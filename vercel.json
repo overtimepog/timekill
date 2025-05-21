@@ -31,6 +31,7 @@
   ],
   "env": {
     "NODE_ENV": "production",
-    "VERCEL_DEPLOYMENT": "1"
+    "VERCEL_DEPLOYMENT": "1",
+    "NEXT_PUBLIC_APP_URL": "https://timekill.app"
   }
 }

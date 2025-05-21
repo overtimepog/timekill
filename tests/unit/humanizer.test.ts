@@ -28,7 +28,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mockRedisClient } from '../helpers/mocks';
+import { mockRedisClient, mockPrismaClient } from '../helpers/mocks';
 import { humanizeText } from '../../packages/core/lib/humanizer';
 
 // Mock dependencies

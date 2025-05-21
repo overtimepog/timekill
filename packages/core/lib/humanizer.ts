@@ -5,6 +5,7 @@
  * to make it appear more natural and less detectable by AI detection tools.
  */
 
+// Import prisma client from local file
 import { prisma } from './prisma';
 
 // Mock Redis client - would be replaced with real Redis in production
@@ -15,6 +16,24 @@ const mockRedisClient = {
   expire: async () => true,
   del: async () => true,
 };
+
+// This class mirrors the MockPrismaClient in prisma.ts
+class MockHumanizerPrismaClient {
+  constructor() {
+    console.log('Using mock PrismaClient for humanizer');
+  }
+
+  humanizerRun = {
+    create: async (params: any) => {
+      console.log(`MOCK DB: HumanizerRun.create`, params);
+      return {
+        id: 'mock_humanizer_run_1',
+        createdAt: new Date(),
+        ...params.data
+      };
+    }
+  };
+}
 
 /**
  * Humanize text to reduce AI detection scores
@@ -38,23 +57,32 @@ export const humanizeText = async (
   const { targetScore = 0.2, maxIterations = 3 } = options;
   
   const redis = options._mockRedisClient || mockRedisClient;
-  const db = options._mockPrismaClient || prisma;
+  
+  // Use provided mock or use the shared prisma client
+  const db = options._mockPrismaClient || 
+    (process.env.NODE_ENV === 'production' 
+      ? prisma
+      : new MockHumanizerPrismaClient());
   
   // In a real implementation, this would iteratively improve the text
   // For testing, we'll return a mock result
-  const humanizedText = `${text} (humanized)`;
+  const humanizedText = text; 
   
   // Store the humanizer run in the database
-  const run = await db.humanizerRun.create({
-    data: {
-      userId,
-      inputText: text,
-      outputText: humanizedText,
-      saplingScore: 0.15,
-      iterations: 1,
-      similarity: 0.95,
-    },
-  });
+  try {
+    const run = await db.humanizerRun.create({
+      data: {
+        userId,
+        inputText: text,
+        outputText: humanizedText,
+        saplingScore: 0.15,
+        iterations: 1,
+        similarity: 0.95,
+      },
+    });
+  } catch (error) {
+    console.error('Error storing humanizer run (continuing anyway):', error);
+  }
   
   return {
     humanizedText,

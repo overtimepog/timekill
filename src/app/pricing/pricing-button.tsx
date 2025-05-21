@@ -77,11 +77,11 @@ export default function PricingButton({
       disabled={isLoading}
       className={`w-full py-3 px-4 rounded-md shadow-sm text-sm font-medium ${
         isCurrentPlan
-          ? 'bg-green-100 text-green-800 border border-green-300'
+          ? 'bg-green-900/20 text-green-400 border border-green-900/30'
           : highlight
-          ? 'bg-blue-600 text-white hover:bg-blue-700'
-          : 'bg-white text-gray-800 border border-gray-300 hover:bg-gray-50'
-      }`}
+          ? 'bg-primary text-white hover:bg-primary-hover'
+          : 'bg-secondary text-foreground border border-border hover:bg-slate-700'
+      } transition-colors duration-200`}
     >
       {isLoading ? 'Processing...' : cta}
     </button>

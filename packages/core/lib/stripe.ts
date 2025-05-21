@@ -23,8 +23,8 @@ export async function createCheckoutSession(userId: string, priceId: string, mod
           quantity: 1,
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings/billing?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings/billing?canceled=true`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://timekill.app'}/settings/billing?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://timekill.app'}/settings/billing?canceled=true`,
       metadata: {
         userId,
       },
@@ -50,7 +50,7 @@ export async function createBillingPortalSession(userId: string) {
     // Create the portal session
     const session = await stripe.billingPortal.sessions.create({
       customer: customer.stripeCustomerId,
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings/billing`,
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://timekill.app'}/settings/billing`,
     });
     
     return session;

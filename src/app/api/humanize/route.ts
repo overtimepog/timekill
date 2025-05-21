@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { humanizeText } from '../../../../packages/core/lib/humanizer';
 import { requireLogin, requireSubscription } from '../../../../packages/core/lib/auth';
+import { PrismaClient } from '@prisma/client';
 
 export async function POST(request: NextRequest) {
   try {
@@ -44,8 +45,17 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    // Humanize the text
-    const result = await humanizeText(text, user.id, options || {});
+    // Humanize the text - we don't need to wrap this in try/catch since
+    // the humanizeText function handles its own database errors gracefully
+    let optionsToUse = options || {};
+    
+    // In development or test, ensure we provide mocked clients if needed
+    if (process.env.NODE_ENV !== 'production') {
+      // MockPrismaClient is already handled in the humanizeText function
+      optionsToUse = { ...optionsToUse };
+    }
+    
+    const result = await humanizeText(text, user.id, optionsToUse);
     
     // Return the humanized text and stats
     return NextResponse.json(result);

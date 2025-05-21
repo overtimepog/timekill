@@ -5,7 +5,8 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': '/Users/overtime/Documents/GitHub/timekill'
+      '@': '/Users/overtime/Documents/GitHub/timekill',
+      '@prisma/client': '/Users/overtime/Documents/GitHub/timekill/tests/helpers/mocks.ts'
     }
   },
   test: {

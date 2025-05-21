@@ -1,16 +1,26 @@
 @import "tailwindcss";
 
+/* Force dark mode across the site */
 :root {
-  --background: #f1f5f9;      /* slate-100 */
-  --foreground: #334155;      /* slate-700 */
-  --primary: #0284c7;         /* sky-600 */
-  --primary-hover: #0369a1;   /* sky-700 */
-  --secondary: #ffffff;        /* white (e.g., for card backgrounds) */
-  --accent: #f59e0b;          /* amber-500 */
-  --border: #cbd5e1;          /* slate-300 */
+  --background: #020617;      /* slate-950 - darker background */
+  --foreground: #cbd5e1;      /* slate-300 - less harsh white text */
+  --primary: #0ea5e9;         /* sky-500 */
+  --primary-rgb: 14, 165, 233; /* sky-500 in RGB format for opacity */
+  --primary-hover: #0284c7;   /* sky-600 */
+  --secondary: #0f172a;       /* slate-900 - darker card backgrounds */
+  --accent: #fbbf24;          /* amber-400 */
+  --border: #1e293b;          /* slate-800 - darker borders */
+  --input-bg: #1e293b;        /* slate-800 - darker input backgrounds */
+  --input-text: #e2e8f0;      /* slate-200 - slightly brighter text for inputs */
+  --input-placeholder: #64748b; /* slate-500 - subtle placeholder text */
+  --input-border: #334155;    /* slate-700 - slightly lighter border for inputs */
+  --tips-bg: #0f172a;         /* slate-900 - darker tips background */
+  --tips-border: #1e293b;     /* slate-800 - darker tips border */
+  --tips-text: #7dd3fc;       /* sky-300 - brighter blue text for tips */
 }
 
-@theme inline {
+/* Theme variables - standard CSS */
+:root {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
@@ -22,16 +32,15 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f172a;      /* slate-900 */
-    --foreground: #e2e8f0;      /* slate-200 */
-    --primary: #0ea5e9;         /* sky-500 */
-    --primary-hover: #0284c7;   /* sky-600 */
-    --secondary: #1e293b;        /* slate-800 (e.g., for card backgrounds) */
-    --accent: #fbbf24;          /* amber-400 */
-    --border: #334155;          /* slate-700 */
-  }
+/* Light mode styles preserved for reference but not used */
+.light-mode-reference {
+  --background: #f1f5f9;      /* slate-100 */
+  --foreground: #334155;      /* slate-700 */
+  --primary: #0284c7;         /* sky-600 */
+  --primary-hover: #0369a1;   /* sky-700 */
+  --secondary: #f8fafc;       /* slate-50 instead of pure white */
+  --accent: #f59e0b;          /* amber-500 */
+  --border: #cbd5e1;          /* slate-300 */
 }
 
 body {
@@ -64,33 +73,61 @@ button, input, textarea, select {
 /* Custom utility classes */
 .card {
   /* Now uses theme variables directly via --secondary and --border */
-  @apply bg-secondary rounded-lg shadow-sm border border-border p-6;
+  background-color: var(--secondary);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
 }
 
 .btn-primary {
   /* Uses --primary and --primary-hover. Assumes white text provides good contrast. */
-  @apply px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover font-medium;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  background-color: var(--primary);
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
 }
 
 .btn-secondary {
-  /* Updated to use theme variables for border and text.
-     Hover state uses a light background derived from theme. */
-  @apply px-4 py-2 border border-border rounded-lg text-foreground font-medium;
+  /* Updated to use theme variables for border and text */
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  color: var(--foreground);
+  font-weight: 500;
+}
 
-  @media (prefers-color-scheme: light) {
-    &:hover {
-      @apply bg-slate-200; /* Lighter gray for hover in light mode */
-    }
-  }
-  @media (prefers-color-scheme: dark) {
-    &:hover {
-      @apply bg-slate-700; /* Darker gray for hover in dark mode (was --border) */
-    }
-  }
+.btn-secondary:hover {
+  background-color: #334155; /* slate-700 for hover */
 }
 
 
+/* Input and form element styles */
+input, textarea, select {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border-color: var(--input-border);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--input-placeholder);
+}
+
 /* Input focus styles */
 input:focus, textarea:focus, select:focus {
-  @apply outline-none ring-2 ring-primary/50; /* Changed to var(--primary) */
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.5);
+  border-color: rgba(var(--primary-rgb), 0.7);
+  background-color: var(--input-bg);
 }
