@@ -59,7 +59,14 @@ export default async function StudyPage({
     mastered: 0,
   };
   
-  stats.forEach((stat: any) => {
+  interface StatCount {
+    status: string;
+    _count: {
+      status: number;
+    };
+  }
+  
+  stats.forEach((stat: StatCount) => {
     if (stat._count && stat._count.status !== undefined) {
       statsSummary[stat.status as keyof typeof statsSummary] = stat._count.status;
     }

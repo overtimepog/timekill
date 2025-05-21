@@ -100,11 +100,13 @@ export async function POST(request: NextRequest) {
       submission,
       pairs,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error parsing notes:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An error occurred while parsing notes';
+    const errorStatus = (error as { status?: number }).status || 500;
     return NextResponse.json(
-      { error: error.message || 'An error occurred while parsing notes' },
-      { status: error.status || 500 }
+      { error: errorMessage },
+      { status: errorStatus }
     );
   }
 }

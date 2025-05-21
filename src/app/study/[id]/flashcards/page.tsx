@@ -42,14 +42,33 @@ export default async function FlashcardsPage({
     where: {
       userId: user.id,
       pairId: {
-        in: submission.pairs.map((pair: any) => pair.id),
+        in: submission.pairs.map((pair: { id: string }) => pair.id),
       },
     },
   });
   
+  // Define types for better type checking
+  interface Pair {
+    id: string;
+    term: string;
+    definition: string;
+    question: string;
+    answer: string;
+    order: number;
+  }
+  
+  interface StudyStat {
+    pairId: string;
+    correctCount: number;
+    incorrectCount: number;
+    lastReviewed: Date | null;
+    confidence: number | null;
+    status: string;
+  }
+  
   // Map the stats to the pairs
-  const pairsWithStats = submission.pairs.map((pair: any) => {
-    const stats = studyStats.find((stat: any) => stat.pairId === pair.id);
+  const pairsWithStats = submission.pairs.map((pair: Pair) => {
+    const stats = studyStats.find((stat: StudyStat) => stat.pairId === pair.id);
     return {
       ...pair,
       stats: stats || {

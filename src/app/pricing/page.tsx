@@ -26,7 +26,13 @@ export default async function PricingPage() {
   
   // Format the products for display
   const plans = stripeProducts.data.map(product => {
-    const price = product.default_price as any;
+    const price = product.default_price as {
+      id?: string;
+      unit_amount?: number;
+      recurring?: {
+        interval?: string;
+      };
+    };
     const amount = price?.unit_amount ? (price.unit_amount / 100).toFixed(2) : '0';
     const interval = price?.recurring?.interval;
     
@@ -150,7 +156,7 @@ export default async function PricingPage() {
                   
                   <div className="mt-6">
                     <h3 className="text-sm font-semibold uppercase tracking-wider mb-3">
-                      What's included
+                      What&apos;s included
                     </h3>
                     <ul className="space-y-3">
                       {plan.features.map((feature: string) => (
@@ -192,7 +198,7 @@ export default async function PricingPage() {
               <div className="bg-secondary p-6 rounded-lg border border-border">
                 <h3 className="text-lg font-medium mb-2">Can I cancel my subscription?</h3>
                 <p className="opacity-80">
-                  Yes, you can cancel your subscription at any time. You'll still have access to Pro features until the end of your billing period.
+                  Yes, you can cancel your subscription at any time. You&apos;ll still have access to Pro features until the end of your billing period.
                 </p>
               </div>
               

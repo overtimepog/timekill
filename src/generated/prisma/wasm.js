@@ -9,8 +9,7 @@ const {
   objectEnumValues,
   makeStrictEnum,
   Public,
-  getRuntime,
-  skip
+  getRuntime
 } = require('./runtime/index-browser.js')
 
 
@@ -229,7 +228,7 @@ exports.Prisma.ModelName = {
 class PrismaClient {
   constructor() {
     return new Proxy(this, {
-      get(target, prop) {
+      get() {
         let message
         const runtime = getRuntime()
         if (runtime.isEdge) {

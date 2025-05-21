@@ -54,7 +54,7 @@ describe('Gemini API Integration', () => {
     vi.clearAllMocks();
     
     // Mock successful API response
-    (global.fetch as any).mockResolvedValue({
+    (global.fetch as unknown as vi.Mock).mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({
         candidates: [

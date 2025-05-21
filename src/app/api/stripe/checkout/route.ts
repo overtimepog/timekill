@@ -21,10 +21,11 @@ export async function POST(request: NextRequest) {
     const session = await createCheckoutSession(user.id, priceId, 'subscription');
     
     return NextResponse.json({ sessionId: session.id, url: session.url });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error creating checkout session:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An error occurred while creating the checkout session';
     return NextResponse.json(
-      { error: error.message || 'An error occurred while creating the checkout session' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

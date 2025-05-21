@@ -2,19 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '../../../../../../packages/core/lib/prisma';
 import { requireLogin } from '../../../../../../packages/core/lib/auth';
 
-// Define the Pair type based on the Prisma schema
-type Pair = {
-  id: string;
-  userId: string;
-  submissionId: string;
-  term: string;
-  definition: string;
-  question: string;
-  answer: string;
-  order: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
+// Import Pair type from Prisma client if needed
+// import { Pair } from '@prisma/client';
 
 // Follow Next.js route handler parameter pattern exactly
 export async function PUT(
@@ -85,10 +74,11 @@ export async function PUT(
       success: true,
       message: 'Pairs updated successfully',
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error updating pairs:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An error occurred while updating pairs';
     return NextResponse.json(
-      { error: error.message || 'An error occurred while updating pairs' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

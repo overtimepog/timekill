@@ -32,7 +32,7 @@ export default function QuizComponent({
   pairs,
   allPairs,
   submissionId,
-  userId,
+  // userId not used in this component
 }: QuizComponentProps) {
   const router = useRouter();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);

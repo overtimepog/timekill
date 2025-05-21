@@ -30,6 +30,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mockPrismaClient, mockClerkUser, sampleNotes, samplePairs } from '../helpers/mocks';
 import { type NextRequest } from 'next/server';
+import { ParseNotesRequest } from '../helpers/types';
 
 // Mock dependencies
 vi.mock('@clerk/nextjs/server', () => ({
@@ -52,7 +53,7 @@ import { prisma } from '../../packages/core/lib/prisma';
 import { extractPairsFromNotes } from '../../packages/core/lib/gemini';
 
 // Helper to create a mock NextRequest
-const createMockRequest = (body: any) => {
+const createMockRequest = (body: ParseNotesRequest) => {
   return {
     json: () => Promise.resolve(body),
   } as unknown as NextRequest;
@@ -66,14 +67,14 @@ describe('Parse Notes API', () => {
   it('should successfully parse notes and create pairs', async () => {
     // Mock authenticated user
     const mockUser = mockClerkUser();
-    (currentUser as any).mockResolvedValue(mockUser);
+    (currentUser as unknown as vi.Mock).mockResolvedValue(mockUser);
     
     // Mock extractPairsFromNotes
-    (extractPairsFromNotes as any).mockResolvedValue(samplePairs);
+    (extractPairsFromNotes as unknown as vi.Mock).mockResolvedValue(samplePairs);
     
     // Mock database operations
     const submissionId = 'submission_123';
-    (prisma.noteSubmission.create as any).mockResolvedValue({
+    (prisma.noteSubmission.create as unknown as vi.Mock).mockResolvedValue({
       id: submissionId,
       createdAt: new Date(),
     });
@@ -138,7 +139,7 @@ describe('Parse Notes API', () => {
   it('should return 400 for missing notes', async () => {
     // Mock authenticated user
     const mockUser = mockClerkUser();
-    (currentUser as any).mockResolvedValue(mockUser);
+    (currentUser as unknown as vi.Mock).mockResolvedValue(mockUser);
     
     // Create a mock request with no notes
     const req = createMockRequest({
@@ -164,13 +165,13 @@ describe('Parse Notes API', () => {
   it('should return 403 for notes exceeding length limit without Pro subscription', async () => {
     // Mock authenticated user
     const mockUser = mockClerkUser();
-    (currentUser as any).mockResolvedValue(mockUser);
+    (currentUser as unknown as vi.Mock).mockResolvedValue(mockUser);
     
     // Mock long notes (over 10000 characters)
     const longNotes = 'a'.repeat(10001);
     
     // Mock no subscription
-    (prisma.subscription.findUnique as any).mockResolvedValue(null);
+    (prisma.subscription.findUnique as unknown as vi.Mock).mockResolvedValue(null);
     
     // Create a mock request
     const req = createMockRequest({
@@ -197,24 +198,24 @@ describe('Parse Notes API', () => {
   it('should allow long notes with Pro subscription', async () => {
     // Mock authenticated user
     const mockUser = mockClerkUser();
-    (currentUser as any).mockResolvedValue(mockUser);
+    (currentUser as unknown as vi.Mock).mockResolvedValue(mockUser);
     
     // Mock long notes (over 10000 characters)
     const longNotes = 'a'.repeat(10001);
     
     // Mock active Pro subscription
-    (prisma.subscription.findUnique as any).mockResolvedValue({
+    (prisma.subscription.findUnique as unknown as vi.Mock).mockResolvedValue({
       userId: mockUser.id,
       status: 'active',
       plan: 'pro',
     });
     
     // Mock extractPairsFromNotes
-    (extractPairsFromNotes as any).mockResolvedValue(samplePairs);
+    (extractPairsFromNotes as unknown as vi.Mock).mockResolvedValue(samplePairs);
     
     // Mock database operations
     const submissionId = 'submission_123';
-    (prisma.noteSubmission.create as any).mockResolvedValue({
+    (prisma.noteSubmission.create as unknown as vi.Mock).mockResolvedValue({
       id: submissionId,
       createdAt: new Date(),
     });
@@ -240,7 +241,7 @@ describe('Parse Notes API', () => {
   
   it('should return 401 when not authenticated', async () => {
     // Mock unauthenticated user
-    (currentUser as any).mockResolvedValue(null);
+    (currentUser as unknown as vi.Mock).mockResolvedValue(null);
     
     // Create a mock request
     const req = createMockRequest({

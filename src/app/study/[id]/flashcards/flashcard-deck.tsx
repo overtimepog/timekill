@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 type PairWithStats = {
@@ -26,8 +26,7 @@ type FlashcardDeckProps = {
 
 export default function FlashcardDeck({
   pairs,
-  submissionId,
-  userId,
+  // submissionId and userId not used in this component
 }: FlashcardDeckProps) {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -47,20 +46,23 @@ export default function FlashcardDeck({
   const currentCard = pairs[currentIndex];
   
   // Flip the card
-  const handleFlip = () => {
-    setShowAnswer(!showAnswer);
-  };
+  const handleFlip = useCallback(() => {
+    setShowAnswer(prev => !prev);
+  }, []);
   
   // Rate your confidence and move to next card
-  const handleRate = async (confidence: number) => {
+  const handleRate = useCallback(async (confidence: number) => {
+    // Get current card
+    const card = pairs[currentIndex];
+    
     // Store the rating
     setConfidenceRatings((prev) => ({
       ...prev,
-      [currentCard.id]: confidence,
+      [card.id]: confidence,
     }));
     
     // Update the study stats in the database
-    await fetch(`/api/study-stats/${currentCard.id}`, {
+    await fetch(`/api/study-stats/${card.id}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -72,13 +74,16 @@ export default function FlashcardDeck({
     });
     
     // Move to the next card or end the session
-    if (currentIndex < pairs.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-      setShowAnswer(false);
-    } else {
-      setStudyComplete(true);
-    }
-  };
+    setCurrentIndex(currentIdx => {
+      if (currentIdx < pairs.length - 1) {
+        setShowAnswer(false);
+        return currentIdx + 1;
+      } else {
+        setStudyComplete(true);
+        return currentIdx;
+      }
+    });
+  }, [currentIndex, pairs]);
   
   // Handle keyboard navigation
   useEffect(() => {
@@ -104,7 +109,7 @@ export default function FlashcardDeck({
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showAnswer, currentIndex, pairs.length]);
+  }, [showAnswer, currentIndex, pairs.length, handleFlip, handleRate]);
   
   // Restart the study session
   const handleRestart = () => {

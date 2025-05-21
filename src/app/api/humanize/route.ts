@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { humanizeText } from '../../../../packages/core/lib/humanizer';
 import { requireLogin, requireSubscription } from '../../../../packages/core/lib/auth';
-import { PrismaClient } from '@prisma/client';
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,7 +24,7 @@ export async function POST(request: NextRequest) {
       // Check if user has Pro subscription for longer texts
       try {
         await requireSubscription('pro');
-      } catch (error) {
+      } catch {
         return NextResponse.json(
           { error: 'Text exceeds maximum length. Upgrade to Pro for longer texts.' },
           { status: 403 }
@@ -37,7 +36,7 @@ export async function POST(request: NextRequest) {
     if (options && Object.keys(options).length > 0) {
       try {
         await requireSubscription('pro');
-      } catch (error) {
+      } catch {
         return NextResponse.json(
           { error: 'Advanced humanization options require a Pro subscription.' },
           { status: 403 }
@@ -59,11 +58,13 @@ export async function POST(request: NextRequest) {
     
     // Return the humanized text and stats
     return NextResponse.json(result);
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error humanizing text:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An error occurred while humanizing text';
+    const errorStatus = (error as { status?: number }).status || 500;
     return NextResponse.json(
-      { error: error.message || 'An error occurred while humanizing text' },
-      { status: error.status || 500 }
+      { error: errorMessage },
+      { status: errorStatus }
     );
   }
 }

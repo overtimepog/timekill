@@ -75,10 +75,11 @@ export async function POST(
       success: true,
       stat,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error updating study stats:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An error occurred while updating study stats';
     return NextResponse.json(
-      { error: error.message || 'An error occurred while updating study stats' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

@@ -12,7 +12,8 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const userId = user.id;
+    // User ID available for future operations
+    // const userId = user.id;
 
     // Fetch products with prices from Stripe
     const products = await stripe.products.list({
@@ -22,7 +23,15 @@ export async function GET() {
 
     // Format the products for the frontend
     const formattedProducts = products.data.map(product => {
-      const price = product.default_price as any;
+      const price = product.default_price as {
+        id: string;
+        unit_amount: number;
+        currency: string;
+        recurring?: {
+          interval: string;
+          interval_count: number;
+        };
+      };
       
       return {
         id: product.id,

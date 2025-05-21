@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createBillingPortalSession } from '../../../../../packages/core/lib/stripe';
 import { requireLogin } from '../../../../../packages/core/lib/auth';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // Authenticate the user
     const user = await requireLogin();
@@ -11,10 +11,11 @@ export async function POST(request: NextRequest) {
     const session = await createBillingPortalSession(user.id);
     
     return NextResponse.json({ url: session.url });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error creating billing portal session:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An error occurred while creating the billing portal session';
     return NextResponse.json(
-      { error: error.message || 'An error occurred while creating the billing portal session' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

@@ -3,7 +3,7 @@
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 
-// Define the Pair type locally since there seems to be an issue with the import
+// Define the Pair type locally
 type Pair = {
   term: string;
   definition: string;
@@ -11,11 +11,9 @@ type Pair = {
   answer: string;
 };
 
-type NoteSubmissionFormProps = {
-  userId: string;
-};
+type NoteSubmissionFormProps = Record<string, never>;
 
-export default function NoteSubmissionForm({ userId }: NoteSubmissionFormProps) {
+export default function NoteSubmissionForm({}: NoteSubmissionFormProps) {
   const router = useRouter();
   const [notes, setNotes] = useState('');
   const [language, setLanguage] = useState('English');
@@ -53,18 +51,21 @@ export default function NoteSubmissionForm({ userId }: NoteSubmissionFormProps) 
       setPairs(data.pairs);
       setSubmissionId(data.submission.id);
       setIsLoading(false);
-    } catch (err: any) {
-      setError(err.message || 'An error occurred');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      setError(errorMessage);
       setIsLoading(false);
     }
   };
   
-  // Handle navigating to study
+  // Handle navigating to study - Not used currently but kept for future use
+  /* 
   const handleStudy = () => {
     if (submissionId) {
       router.push(`/study/${submissionId}`);
     }
   };
+  */
   
   // Handle editing a pair
   const handleEditPair = (index: number, field: keyof Pair, value: string) => {
@@ -102,8 +103,9 @@ export default function NoteSubmissionForm({ userId }: NoteSubmissionFormProps) 
       
       // Navigate to study page after saving
       router.push(`/study/${submissionId}`);
-    } catch (err: any) {
-      setError(err.message || 'An error occurred while saving');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred while saving';
+      setError(errorMessage);
       setIsLoading(false);
     }
   };

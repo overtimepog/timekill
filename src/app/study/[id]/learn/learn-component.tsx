@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 type PairWithStats = {
@@ -27,7 +27,7 @@ type LearnComponentProps = {
 export default function LearnComponent({
   pairs,
   submissionId,
-  userId,
+  // userId parameter not used
 }: LearnComponentProps) {
   const router = useRouter();
   const [studyQueue, setStudyQueue] = useState<PairWithStats[]>([]);
@@ -58,7 +58,7 @@ export default function LearnComponent({
   };
   
   // Rate your confidence and move to next card
-  const handleRate = async (confidence: number) => {
+  const handleRate = useCallback(async (confidence: number) => {
     if (!currentPair) return;
     
     // Update the study stats in the database
@@ -106,7 +106,7 @@ export default function LearnComponent({
     } else {
       setSessionComplete(true);
     }
-  };
+  }, [currentPair, studyQueue]);
   
   // Handle keyboard navigation
   useEffect(() => {
@@ -126,7 +126,7 @@ export default function LearnComponent({
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showAnswer, currentPair]);
+  }, [showAnswer, currentPair, handleRate]);
   
   // Handle finishing the session
   const handleFinish = () => {

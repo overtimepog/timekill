@@ -28,7 +28,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mockRedisClient, mockPrismaClient } from '../helpers/mocks';
+import { mockRedisClient } from '../helpers/mocks';
 import { humanizeText } from '../../packages/core/lib/humanizer';
 
 // Mock dependencies
@@ -47,7 +47,7 @@ describe('Humanizer Utility', () => {
     vi.clearAllMocks();
     
     // Mock Sapling API response - initial detection
-    (global.fetch as any).mockImplementation((url) => {
+    (global.fetch as unknown as vi.Mock).mockImplementation((url) => {
       if (url.includes('sapling.ai')) {
         return Promise.resolve({
           ok: true,

@@ -44,8 +44,25 @@ export default async function LearnPage({
     redirect('/dashboard');
   }
   
+  // Define types for better type checking
+  interface Pair {
+    id: string;
+    term: string;
+    definition: string;
+    question: string;
+    answer: string;
+    order: number;
+    studyStats: Array<{
+      correctCount: number;
+      incorrectCount: number;
+      lastReviewed: Date | null;
+      confidence: number | null;
+      status: string;
+    }>;
+  }
+  
   // Format the pairs with their stats
-  const pairsWithStats = submission.pairs.map((pair: any) => {
+  const pairsWithStats = submission.pairs.map((pair: Pair) => {
     const stats = pair.studyStats[0];
     return {
       ...pair,

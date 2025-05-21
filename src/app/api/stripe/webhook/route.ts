@@ -27,10 +27,11 @@ export async function POST(request: NextRequest) {
         signature,
         process.env.STRIPE_WEBHOOK_SECRET || ''
       );
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error verifying webhook signature:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return NextResponse.json(
-        { error: `Webhook signature verification failed: ${error.message}` },
+        { error: `Webhook signature verification failed: ${errorMessage}` },
         { status: 400 }
       );
     }
@@ -39,10 +40,11 @@ export async function POST(request: NextRequest) {
     await handleStripeWebhook(event);
     
     return NextResponse.json({ received: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error handling webhook:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An error occurred while handling the webhook';
     return NextResponse.json(
-      { error: error.message || 'An error occurred while handling the webhook' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

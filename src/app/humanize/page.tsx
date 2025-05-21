@@ -6,7 +6,7 @@ import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 
 export default function HumanizePage() {
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { isLoaded, isSignedIn } = useUser();
   const router = useRouter();
   const [text, setText] = useState('');
   const [humanizedText, setHumanizedText] = useState('');

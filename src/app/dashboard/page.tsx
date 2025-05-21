@@ -6,18 +6,18 @@ import { prisma } from '../../../packages/core/lib/prisma';
 import { syncUserWithClerk } from '../../../packages/core/lib/auth';
 
 // Define the type for submissions with _count
-type SubmissionWithCount = {
+interface SubmissionWithMetadata {
   id: string;
   userId: string;
   rawText: string;
   language: string | null;
-  metadata: any;
+  metadata: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
   _count: {
     pairs: number;
   };
-};
+}
 
 export default async function DashboardPage() {
   const user = await currentUser();
@@ -148,7 +148,7 @@ export default async function DashboardPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-secondary divide-y divide-border">
-                    {submissions.map((submission: any) => (
+                    {submissions.map((submission: SubmissionWithMetadata) => (
                       <tr key={submission.id}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground/70">
                           {new Date(submission.createdAt).toLocaleDateString()}
@@ -185,7 +185,7 @@ export default async function DashboardPage() {
               </div>
             ) : (
               <div className="text-center py-8">
-                <p className="text-foreground/70 mb-4">You haven't created any notes yet.</p>
+                <p className="text-foreground/70 mb-4">You haven&apos;t created any notes yet.</p>
                 <Link
                   href="/create"
                   className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover text-sm font-medium inline-block"
