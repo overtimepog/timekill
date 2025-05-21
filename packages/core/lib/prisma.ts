@@ -127,10 +127,6 @@ if (process.env.NODE_ENV === 'production') {
         db: {
           url: process.env.DATABASE_URL
         }
-      },
-      // Connection pooling configuration for production
-      connection: {
-        pool: { min: 2, max: 10 }
       }
     });
   } catch (error) {
