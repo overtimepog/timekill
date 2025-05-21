@@ -185,7 +185,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         stripePriceId: subscription.items.data[0].price.id,
         status: subscription.status,
         plan: getPlanFromPriceId(subscription.items.data[0].price.id),
-        currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+        currentPeriodEnd: new Date(subscription.items.data[0].current_period_end * 1000),
       },
     });
     
@@ -223,7 +223,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     },
     data: {
       status: subscription.status,
-      currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+      currentPeriodEnd: new Date(subscription.items.data[0].current_period_end * 1000),
     },
   });
 }
@@ -285,7 +285,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
       status: subscription.status,
       stripePriceId: subscription.items.data[0].price.id,
       plan: getPlanFromPriceId(subscription.items.data[0].price.id),
-      currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+      currentPeriodEnd: new Date(subscription.items.data[0].current_period_end * 1000),
     },
   });
 }
