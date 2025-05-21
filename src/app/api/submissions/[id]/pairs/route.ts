@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../../../packages/core/lib/prisma';
 import { requireLogin } from '../../../../../../packages/core/lib/auth';
 import { type Pair } from '../../../../../../packages/core/lib/gemini';
+import { RouteContext, SubmissionIdParams } from '../../../../../types/next';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext<SubmissionIdParams>
 ) {
+  const { params } = context;
   try {
     // Authenticate the user
     const user = await requireLogin();
