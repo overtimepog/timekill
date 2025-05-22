@@ -63,7 +63,7 @@ export default async function DashboardPage() {
             <div className="bg-secondary p-6 rounded-lg shadow-sm border border-border">
               <h2 className="text-xl font-medium mb-4">Create Flashcards</h2>
               <p className="text-foreground/70 mb-4">
-                Paste your notes and generate flashcards, quiz questions, and more.
+                Paste your notes and generate sets with flashcards, quiz questions, and more.
               </p>
               <Link
                 href="/create"
@@ -120,7 +120,7 @@ export default async function DashboardPage() {
           
           <div className="bg-secondary p-6 rounded-lg shadow-sm border border-border mb-8">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-medium">Recent Notes</h2>
+              <h2 className="text-xl font-medium">Recent Sets</h2>
               <Link
                 href="/dashboard"
                 className="text-primary hover:text-primary-hover text-sm font-medium"
@@ -135,10 +135,10 @@ export default async function DashboardPage() {
                   <thead className="bg-background">
                     <tr>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground/70 uppercase tracking-wider">
-                        Date
+                        Set Name
                       </th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground/70 uppercase tracking-wider">
-                        Note Length
+                        Date
                       </th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground/70 uppercase tracking-wider">
                         Pairs
@@ -154,13 +154,11 @@ export default async function DashboardPage() {
                   <tbody className="bg-secondary divide-y divide-border">
                     {submissions.map((submission) => (
                       <tr key={submission.id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground/70">
-                          {new Date(submission.createdAt).toLocaleDateString()}
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground/70 font-medium">
+                          {(submission.metadata as any)?.setName || `Set ${new Date(submission.createdAt).toLocaleDateString()}`}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground/70">
-                          {submission.rawText.length > 100 
-                            ? `${submission.rawText.substring(0, 100)}...` 
-                            : submission.rawText}
+                          {new Date(submission.createdAt).toLocaleDateString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground/70">
                           {submission._count.pairs}
@@ -170,7 +168,7 @@ export default async function DashboardPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <Link
-                            href={`/notes/${submission.id}`}
+                            href={`/sets/${submission.id}`}
                             className="text-primary hover:text-primary-hover mr-4"
                           >
                             View
@@ -189,12 +187,12 @@ export default async function DashboardPage() {
               </div>
             ) : (
               <div className="text-center py-8">
-                <p className="text-foreground/70 mb-4">You haven&apos;t created any notes yet.</p>
+                <p className="text-foreground/70 mb-4">You haven&apos;t created any sets yet.</p>
                 <Link
                   href="/create"
                   className="px-4 py-2 bg-primary text-[var(--button-text)] rounded-lg hover:bg-primary-hover text-sm font-medium inline-block shadow-sm transition-colors duration-200"
                 >
-                  Create Your First Note
+                  Create Your First Set
                 </Link>
               </div>
             )}

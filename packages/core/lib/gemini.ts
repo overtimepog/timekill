@@ -28,8 +28,6 @@ export const extractPairsFromNotes = async (
   notes: string,
   userId: string,
   options: {
-    language?: string;
-    maxPairs?: number;
     _mockRedisClient?: any; // For testing
     _mockRateLimit?: number; // For testing
     _mockApiError?: boolean; // For testing

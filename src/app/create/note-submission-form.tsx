@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, ChangeEvent, useRef, DragEvent } from 'react';
 import { useRouter } from 'next/navigation';
 
 // Define the Pair type locally
@@ -11,20 +11,70 @@ type Pair = {
   answer: string;
 };
 
-type NoteSubmissionFormProps = {
+type SetSubmissionFormProps = {
   userId: string;
 };
 
-export default function NoteSubmissionForm({ userId }: NoteSubmissionFormProps) {
+export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
   const router = useRouter();
-  const [notes, setNotes] = useState('');
-  const [language, setLanguage] = useState('English');
-  const [maxPairs, setMaxPairs] = useState(20);
+  const [content, setContent] = useState('');
+  const [setName, setSetName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pairs, setPairs] = useState<Pair[] | null>(null);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
+  // Format number with commas
+  const formatNumber = (num: number): string => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  // Handle file upload
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+    }
+  };
+  
+  // Handle drag events
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  
+  const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      setFile(e.dataTransfer.files[0]);
+      e.dataTransfer.clearData();
+    }
+  };
+
+  // Handle file reading
+  const readFileContent = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          resolve(event.target.result as string);
+        } else {
+          reject(new Error('Failed to read file'));
+        }
+      };
+      reader.onerror = () => reject(new Error('File read error'));
+      reader.readAsText(file);
+    });
+  };
+
   // Handle form submission
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -32,16 +82,31 @@ export default function NoteSubmissionForm({ userId }: NoteSubmissionFormProps) 
     setError(null);
     
     try {
-      const response = await fetch('/api/parse-notes', {
+      let contentContent = content;
+      
+      // If a file was uploaded, read its contents
+      if (file) {
+        try {
+          contentContent = await readFileContent(file);
+        } catch (fileError) {
+          throw new Error('Failed to read uploaded file');
+        }
+      }
+      
+      // Ensure we have content to process
+      if (!contentContent.trim()) {
+        throw new Error('Please provide notes either by text or file upload');
+      }
+      
+      const response = await fetch('/api/parse-content', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          notes,
-          language,
-          maxPairs,
+          notes: contentContent,
           userId,
+          setName,
         }),
       });
       
@@ -61,14 +126,12 @@ export default function NoteSubmissionForm({ userId }: NoteSubmissionFormProps) 
     }
   };
   
-  // Handle navigating to study - Not used currently but kept for future use
-  /* 
+  // Handle navigating to study
   const handleStudy = () => {
     if (submissionId) {
-      router.push(`/study/${submissionId}`);
+      router.push(`/sets/${submissionId}`);
     }
   };
-  */
   
   // Handle editing a pair
   const handleEditPair = (index: number, field: keyof Pair, value: string) => {
@@ -104,8 +167,8 @@ export default function NoteSubmissionForm({ userId }: NoteSubmissionFormProps) 
         throw new Error(data.error || 'Failed to save pairs');
       }
       
-      // Navigate to study page after saving
-      router.push(`/study/${submissionId}`);
+      // Navigate to set detail page after saving
+      router.push(`/sets/${submissionId}`);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred while saving';
       setError(errorMessage);
@@ -118,63 +181,65 @@ export default function NoteSubmissionForm({ userId }: NoteSubmissionFormProps) 
       {!pairs ? (
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="notes" className="block text-sm font-medium mb-1">
-              Your Notes
+            <label htmlFor="setName" className="block text-sm font-medium mb-1">
+              Set Name
+            </label>
+            <input
+              id="setName"
+              type="text"
+              value={setName}
+              onChange={(e) => setSetName(e.target.value)}
+              placeholder="Enter a name for your study set"
+              className="w-full rounded-md border border-input-border shadow-sm px-4 py-2 bg-input-bg text-input-text placeholder-input-placeholder focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/70"
+            />
+          </div>
+          <div>
+            <label htmlFor="content" className="block text-sm font-medium mb-1">
+              Content for Your Study Set
             </label>
             <textarea
-              id="notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              id="content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
               rows={10}
               className="w-full rounded-md border border-input-border shadow-sm px-4 py-2 bg-input-bg text-input-text placeholder-input-placeholder focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/70"
-              placeholder="Paste your notes, lecture slides, or study materials here..."
-              required
+              placeholder="Paste your notes, lecture slides, or study materials here to create a study set..."
             />
             <p className="mt-1 text-sm text-gray-400">
-              {notes.length}/10000 characters {notes.length > 10000 ? '(Pro plan required for longer notes)' : ''}
+              {formatNumber(content.length)}/10,000 characters
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="language" className="block text-sm font-medium mb-1">
-                Language
-              </label>
-              <select
-                id="language"
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                className="w-full rounded-md border border-input-border shadow-sm px-4 py-2 bg-input-bg text-input-text focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/70"
-              >
-                <option value="English">English</option>
-                <option value="Spanish">Spanish</option>
-                <option value="French">French</option>
-                <option value="German">German</option>
-                <option value="Italian">Italian</option>
-                <option value="Portuguese">Portuguese</option>
-                <option value="Russian">Russian</option>
-                <option value="Japanese">Japanese</option>
-                <option value="Chinese">Chinese</option>
-                <option value="Korean">Korean</option>
-              </select>
-            </div>
-            
-            <div>
-              <label htmlFor="maxPairs" className="block text-sm font-medium mb-1">
-                Maximum Pairs
-              </label>
+          <div>
+            <label htmlFor="file-upload" className="block text-sm font-medium mb-1">
+              Or Upload a File
+            </label>
+            <div
+              className="border-2 border-dashed border-input-border rounded-lg p-6 flex flex-col items-center justify-center bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer"
+              onClick={() => fileInputRef.current?.click()}
+              onDragOver={handleDragOver}
+              onDragEnter={handleDragEnter}
+              onDrop={handleDrop}
+            >
               <input
-                id="maxPairs"
-                type="number"
-                value={maxPairs}
-                onChange={(e) => setMaxPairs(parseInt(e.target.value, 10))}
-                min={5}
-                max={50}
-                className="w-full rounded-md border border-input-border shadow-sm px-4 py-2 bg-input-bg text-input-text focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/70"
+                id="file-upload"
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+                accept=".txt,.md,.doc,.docx,.pdf,.rtf"
               />
-              <p className="mt-1 text-sm text-gray-400">
-                Maximum number of term/definition pairs to extract (5-50)
-              </p>
+              <div className="text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mx-auto text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                <p className="text-sm font-medium mb-1">
+                  {file ? file.name : 'Drag and drop your file here, or click to browse'}
+                </p>
+                <p className="text-xs text-gray-400">
+                  Supported formats: .txt, .md, .doc, .docx, .pdf, .rtf
+                </p>
+              </div>
             </div>
           </div>
           
@@ -187,10 +252,25 @@ export default function NoteSubmissionForm({ userId }: NoteSubmissionFormProps) 
           <div>
             <button
               type="submit"
-              disabled={isLoading || notes.length === 0}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-[var(--button-text)] bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50 disabled:bg-primary/30 disabled:cursor-not-allowed"
+              disabled={isLoading || content.length === 0}
+              className="w-full flex justify-center items-center py-4 px-6 border border-transparent rounded-lg shadow-md text-base font-semibold text-[var(--button-text)] bg-gradient-to-r from-primary to-primary-hover hover:from-primary-hover hover:to-primary transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              {isLoading ? 'Processing...' : 'Generate Study Materials'}
+              {isLoading ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <svg className="-ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  Generate Study Materials
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -264,9 +344,24 @@ export default function NoteSubmissionForm({ userId }: NoteSubmissionFormProps) 
             <button
               onClick={handleSavePairs}
               disabled={isLoading}
-              className="flex-1 py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-[var(--button-text)] bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50 disabled:bg-primary/30 disabled:cursor-not-allowed"
+              className="flex-1 flex justify-center items-center py-4 px-6 border border-transparent rounded-lg shadow-md text-base font-semibold text-[var(--button-text)] bg-gradient-to-r from-primary to-primary-hover hover:from-primary-hover hover:to-primary transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              {isLoading ? 'Saving...' : 'Save & Continue to Study'}
+              {isLoading ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <svg className="-ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                  Save & Continue to Study
+                </>
+              )}
             </button>
             
             <button
@@ -275,8 +370,11 @@ export default function NoteSubmissionForm({ userId }: NoteSubmissionFormProps) 
                 setSubmissionId(null);
               }}
               disabled={isLoading}
-              className="flex-1 py-3 px-4 border border-border rounded-md shadow-sm text-sm font-medium text-[var(--secondary-button-text)] bg-secondary hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50 disabled:bg-slate-800 disabled:cursor-not-allowed"
+              className="flex-1 flex justify-center items-center py-4 px-6 border border-gray-600 rounded-lg shadow-md text-base font-semibold text-[var(--secondary-button-text)] bg-secondary hover:bg-secondary/80 transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
+              <svg className="-ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
               Start Over
             </button>
           </div>
