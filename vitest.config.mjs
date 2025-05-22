@@ -15,7 +15,7 @@ export default defineConfig({
     setupFiles: ['./tests/setup.js'],
     include: ['./tests/**/*.test.{js,jsx,ts,tsx}'],
     coverage: {
-      provider: 'c8',
+      provider: 'v8',
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/**',
