@@ -2,17 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '../../../../../packages/core/lib/prisma';
 
-// Define an interface for the route context
-interface RouteContext {
-  params: {
-    id: string;
-  };
-}
-
 // PATCH /api/pairs/[id] - Update a pair
 export async function PATCH(
   request: NextRequest,
-  context: RouteContext
+  { params }: { params: { id: string } }
 ) {
   try {
     // Get the current user
@@ -23,7 +16,7 @@ export async function PATCH(
     }
     
     // Safely extract the ID from params
-    const pairId = context.params.id;
+    const pairId = params.id;
     
     // Add a type check for pairId
     if (typeof pairId !== 'string') {
