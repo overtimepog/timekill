@@ -44,7 +44,7 @@ export default async function SetDetailPage({ params }: { params: any }) {
             <p className="mb-4">The set you're looking for doesn't exist or you don't have permission to view it.</p>
             <Link
               href="/dashboard"
-              className="px-4 py-2 bg-primary text-[var(--button-text)] rounded-lg hover:bg-primary-hover text-sm font-medium inline-block shadow-sm transition-colors duration-200"
+              className="px-4 py-2 bg-amber-400 text-black rounded-lg hover:bg-amber-500 text-sm font-medium inline-block shadow-sm transition-colors duration-200"
             >
               Return to Dashboard
             </Link>

@@ -151,7 +151,7 @@ export default function FlashcardDeck({
         <div className="flex justify-center space-x-4">
           <button
             onClick={handleRestart}
-            className="px-6 py-3 bg-primary text-button-text rounded-lg hover:bg-primary-hover"
+            className="px-6 py-3 bg-amber-400 text-black rounded-lg hover:bg-amber-500"
           >
             Study Again
           </button>
@@ -182,7 +182,7 @@ export default function FlashcardDeck({
       
       <div className="w-full bg-control-bg rounded-full h-2 mb-8">
         <div
-          className="bg-primary h-2 rounded-full"
+          className="bg-accent h-2 rounded-full"
           style={{ width: `${progress}%` }}
         ></div>
       </div>

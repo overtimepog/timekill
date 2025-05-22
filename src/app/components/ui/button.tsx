@@ -39,12 +39,12 @@ export function Button({
   
   // Variant styles
   const variantStyles = {
-    primary: 'bg-primary text-button-text hover:bg-primary-hover hover:scale-[1.02]',
-    secondary: 'bg-control-bg border border-control-border text-foreground hover:bg-control-hover hover:border-primary/30',
-    green: 'bg-green-button text-button-text hover:bg-green-button-hover hover:scale-[1.02]',
-    purple: 'bg-purple-button text-button-text hover:bg-purple-button-hover hover:scale-[1.02]',
-    outline: 'bg-transparent border border-control-border text-foreground hover:bg-control-hover hover:border-primary/50',
-    ghost: 'bg-transparent text-foreground hover:bg-control-bg hover:text-primary/90',
+    primary: 'bg-amber-400 text-black hover:bg-amber-500 hover:scale-[1.02]',
+    secondary: 'bg-control-bg border border-control-border text-foreground hover:bg-control-hover hover:border-control-border',
+    green: 'bg-green-700 text-white hover:bg-green-800 hover:scale-[1.02]',
+    purple: 'bg-purple-700 text-white hover:bg-purple-800 hover:scale-[1.02]',
+    outline: 'bg-transparent border border-control-border text-foreground hover:bg-control-hover hover:border-control-border',
+    ghost: 'bg-transparent text-foreground hover:bg-control-bg hover:text-foreground',
   };
 
   // Width style

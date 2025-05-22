@@ -152,7 +152,7 @@ export default function LearnComponent({
         
         <button
           onClick={handleFinish}
-          className="px-6 py-3 bg-green-button text-button-text rounded-lg hover:bg-green-button-hover"
+          className="px-6 py-3 bg-green-700 text-white rounded-lg hover:bg-green-800"
         >
           Back to Study
         </button>
@@ -210,7 +210,7 @@ export default function LearnComponent({
             ) : (
               <button
                 onClick={handleShowAnswer}
-                className="mt-4 px-6 py-3 bg-green-button text-button-text rounded-lg hover:bg-green-button-hover"
+                className="mt-4 px-6 py-3 bg-green-700 text-white rounded-lg hover:bg-green-800"
               >
                 Show Answer
               </button>

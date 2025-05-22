@@ -141,7 +141,7 @@ export default function QuizComponent({
         <h2 className="text-2xl font-bold mb-4">Quiz Complete!</h2>
         
         <div className="mb-8">
-          <div className="text-5xl font-bold text-primary mb-4">{results.score}%</div>
+          <div className="text-5xl font-bold text-accent mb-4">{results.score}%</div>
           <p className="text-foreground mb-2">
             You answered {results.correct} out of {results.totalQuestions} questions correctly.
           </p>
@@ -150,7 +150,7 @@ export default function QuizComponent({
         <div className="flex justify-center space-x-4">
           <button
             onClick={handleRestart}
-            className="px-6 py-3 bg-primary text-button-text rounded-lg hover:bg-primary-hover"
+            className="px-6 py-3 bg-amber-400 text-black rounded-lg hover:bg-amber-500"
           >
             Try Again
           </button>
@@ -249,13 +249,13 @@ export default function QuizComponent({
                 setQuestions(updatedQuestions);
               }}
               placeholder="Type your answer here..."
-              className="w-full p-4 rounded-lg border border-input-border bg-input-bg text-input-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+              className="w-full p-4 rounded-lg border border-input-border bg-input-bg text-input-text focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent"
               disabled={currentQuestion.isCorrect !== undefined}
             />
             <div className="mt-4 flex justify-end">
               <button
                 onClick={() => handleSelectAnswer(currentQuestion.userAnswer || '')}
-                className="px-4 py-2 bg-purple-button text-button-text rounded-lg hover:bg-purple-button-hover"
+                className="px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800"
                 disabled={!currentQuestion.userAnswer || currentQuestion.isCorrect !== undefined}
               >
                 Submit Answer

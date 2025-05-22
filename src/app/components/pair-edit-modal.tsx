@@ -133,7 +133,7 @@ export default function PairEditModal({
                 <textarea
                   value={values.term}
                   onChange={(e) => handleChange('term', e.target.value)}
-                  className="w-full p-3 bg-input-bg border border-input-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-none min-h-[100px]"
+                  className="w-full p-3 bg-input-bg border border-input-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent resize-none min-h-[100px]"
                   ref={fieldToEdit === 'term' ? initialFieldRef : undefined}
                 />
               </div>
@@ -145,7 +145,7 @@ export default function PairEditModal({
                 <textarea
                   value={values.definition}
                   onChange={(e) => handleChange('definition', e.target.value)}
-                  className="w-full p-3 bg-input-bg border border-input-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-none min-h-[100px]"
+                  className="w-full p-3 bg-input-bg border border-input-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent resize-none min-h-[100px]"
                   ref={fieldToEdit === 'definition' ? initialFieldRef : undefined}
                 />
               </div>
@@ -159,7 +159,7 @@ export default function PairEditModal({
                 <textarea
                   value={values.question}
                   onChange={(e) => handleChange('question', e.target.value)}
-                  className="w-full p-3 bg-input-bg border border-input-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-none min-h-[100px]"
+                  className="w-full p-3 bg-input-bg border border-input-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent resize-none min-h-[100px]"
                   ref={fieldToEdit === 'question' ? initialFieldRef : undefined}
                 />
               </div>
@@ -171,7 +171,7 @@ export default function PairEditModal({
                 <textarea
                   value={values.answer}
                   onChange={(e) => handleChange('answer', e.target.value)}
-                  className="w-full p-3 bg-input-bg border border-input-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-none min-h-[100px]"
+                  className="w-full p-3 bg-input-bg border border-input-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent resize-none min-h-[100px]"
                   ref={fieldToEdit === 'answer' ? initialFieldRef : undefined}
                 />
               </div>

@@ -61,7 +61,7 @@ export default function EditPairButton({
     <>
       <button
         onClick={openModal}
-        className="p-1.5 text-foreground/70 hover:text-primary hover:bg-secondary rounded transition-all duration-200 hover:shadow-sm"
+        className="p-1.5 text-foreground/70 hover:text-accent hover:bg-secondary rounded transition-all duration-200 hover:shadow-sm"
         aria-label={`Edit ${field || 'pair'}`}
       >
         <FaEdit className="w-4 h-4" />

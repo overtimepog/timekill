@@ -16,9 +16,9 @@ export default function SignInPage() {
             appearance={{
               elements: {
                 card: "bg-transparent shadow-none",
-                formButtonPrimary: "bg-primary hover:bg-primary-hover text-button-text",
+                formButtonPrimary: "bg-amber-400 hover:bg-amber-500 text-black",
                 formFieldInput: "border border-input-border bg-input-bg text-input-text",
-                footerActionLink: "text-primary hover:text-primary-hover",
+                footerActionLink: "text-accent hover:text-accent/80",
                 formFieldLabel: "text-foreground",
                 headerTitle: "text-foreground",
                 headerSubtitle: "text-text-dimmed",
@@ -26,7 +26,7 @@ export default function SignInPage() {
                 dividerLine: "bg-border",
                 dividerText: "text-text-muted",
                 identityPreviewText: "text-foreground",
-                identityPreviewEditButtonIcon: "text-primary",
+                identityPreviewEditButtonIcon: "text-accent",
               },
             }}
             routing="path"

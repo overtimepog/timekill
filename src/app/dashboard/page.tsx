@@ -67,7 +67,7 @@ export default async function DashboardPage() {
               </p>
               <Link
                 href="/create"
-                className="px-4 py-2 bg-primary text-[var(--button-text)] rounded-lg hover:bg-primary-hover text-sm font-medium inline-block shadow-sm transition-colors duration-200"
+                className="px-4 py-2 bg-accent text-black rounded-lg hover:bg-accent/80 text-sm font-medium inline-block shadow-sm transition-colors duration-200"
               >
                 Create Now
               </Link>
@@ -81,14 +81,14 @@ export default async function DashboardPage() {
               {submissions.length > 0 ? (
                 <Link
                   href={`/study/${submissions[0].id}/flashcards`}
-                  className="px-4 py-2 bg-[var(--green-button)] text-[var(--button-text)] rounded-lg hover:bg-[var(--green-button-hover)] text-sm font-medium inline-block shadow-sm transition-colors duration-200"
+                  className="px-4 py-2 bg-green-700 text-black rounded-lg hover:bg-green-800 text-sm font-medium inline-block shadow-sm transition-colors duration-200"
                 >
                   Study Now
                 </Link>
               ) : (
                 <Link
                   href="/create"
-                  className="px-4 py-2 bg-[var(--green-button)] text-[var(--button-text)] rounded-lg hover:bg-[var(--green-button-hover)] text-sm font-medium inline-block shadow-sm transition-colors duration-200"
+                  className="px-4 py-2 bg-green-700 text-black rounded-lg hover:bg-green-800 text-sm font-medium inline-block shadow-sm transition-colors duration-200"
                 >
                   Create First
                 </Link>
@@ -103,14 +103,14 @@ export default async function DashboardPage() {
               {submissions.length > 0 ? (
                 <Link
                   href={`/study/${submissions[0].id}/quiz`}
-                  className="px-4 py-2 bg-[var(--purple-button)] text-[var(--button-text)] rounded-lg hover:bg-[var(--purple-button-hover)] text-sm font-medium inline-block shadow-sm transition-colors duration-200"
+                  className="px-4 py-2 bg-purple-700 text-black rounded-lg hover:bg-purple-800 text-sm font-medium inline-block shadow-sm transition-colors duration-200"
                 >
                   Quiz Yourself
                 </Link>
               ) : (
                 <Link
                   href="/create"
-                  className="px-4 py-2 bg-[var(--purple-button)] text-[var(--button-text)] rounded-lg hover:bg-[var(--purple-button-hover)] text-sm font-medium inline-block shadow-sm transition-colors duration-200"
+                  className="px-4 py-2 bg-purple-700 text-black rounded-lg hover:bg-purple-800 text-sm font-medium inline-block shadow-sm transition-colors duration-200"
                 >
                   Create First
                 </Link>
@@ -123,7 +123,7 @@ export default async function DashboardPage() {
               <h2 className="text-xl font-medium">Recent Sets</h2>
               <Link
                 href="/dashboard"
-                className="text-primary hover:text-primary-hover text-sm font-medium"
+                className="text-black hover:text-black/80 text-sm font-medium"
               >
                 View All
               </Link>
@@ -169,13 +169,13 @@ export default async function DashboardPage() {
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <Link
                             href={`/sets/${submission.id}`}
-                            className="text-primary hover:text-primary-hover mr-4"
+                            className="text-black hover:text-black/80 mr-4"
                           >
                             View
                           </Link>
                           <Link
                             href={`/study/${submission.id}`}
-                            className="text-[var(--green-button)] hover:text-[var(--green-button-hover)] font-medium"
+                            className="text-green-600 hover:text-green-700 font-medium"
                           >
                             Study
                           </Link>
@@ -190,7 +190,7 @@ export default async function DashboardPage() {
                 <p className="text-foreground/70 mb-4">You haven&apos;t created any sets yet.</p>
                 <Link
                   href="/create"
-                  className="px-4 py-2 bg-primary text-[var(--button-text)] rounded-lg hover:bg-primary-hover text-sm font-medium inline-block shadow-sm transition-colors duration-200"
+                  className="px-4 py-2 bg-accent text-black rounded-lg hover:bg-accent/80 text-sm font-medium inline-block shadow-sm transition-colors duration-200"
                 >
                   Create Your First Set
                 </Link>

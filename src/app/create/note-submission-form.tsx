@@ -190,7 +190,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
               value={setName}
               onChange={(e) => setSetName(e.target.value)}
               placeholder="Enter a name for your study set"
-              className="w-full rounded-md border border-input-border shadow-sm px-4 py-2 bg-input-bg text-input-text placeholder-input-placeholder focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/70"
+              className="w-full rounded-md border border-input-border shadow-sm px-4 py-2 bg-input-bg text-input-text placeholder-input-placeholder focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/70"
             />
           </div>
           <div>
@@ -202,7 +202,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows={10}
-              className="w-full rounded-md border border-input-border shadow-sm px-4 py-2 bg-input-bg text-input-text placeholder-input-placeholder focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/70"
+              className="w-full rounded-md border border-input-border shadow-sm px-4 py-2 bg-input-bg text-input-text placeholder-input-placeholder focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/70"
               placeholder="Paste your notes, lecture slides, or study materials here to create a study set..."
             />
             <p className="mt-1 text-sm text-gray-400">
@@ -215,7 +215,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
               Or Upload a File
             </label>
             <div
-              className="border-2 border-dashed border-input-border rounded-lg p-6 flex flex-col items-center justify-center bg-secondary/30 hover:bg-secondary/50 hover:border-primary/50 transition-all duration-200 cursor-pointer hover:shadow-md"
+              className="border-2 border-dashed border-input-border rounded-lg p-6 flex flex-col items-center justify-center bg-secondary/30 hover:bg-secondary/50 hover:border-accent/50 transition-all duration-200 cursor-pointer hover:shadow-md"
               onClick={() => fileInputRef.current?.click()}
               onDragOver={handleDragOver}
               onDragEnter={handleDragEnter}
@@ -253,7 +253,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
             <button
               type="submit"
               disabled={isLoading || content.length === 0}
-              className="w-full flex justify-center items-center py-4 px-6 border border-transparent rounded-lg shadow-md text-base font-semibold text-[var(--button-text)] bg-gradient-to-r from-primary to-primary-hover hover:from-primary-hover hover:to-primary transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="w-full flex justify-center items-center py-4 px-6 border border-transparent rounded-lg shadow-md text-base font-semibold text-black bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-400 transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-400/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               {isLoading ? (
                 <>
@@ -280,7 +280,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
           
           <div className="space-y-4">
             {pairs.map((pair, index) => (
-              <div key={index} className="bg-secondary p-6 rounded-lg shadow-md border border-border hover:border-primary/30 transition-all duration-200">
+              <div key={index} className="bg-secondary p-6 rounded-lg shadow-md border border-border hover:border-accent/30 transition-all duration-200">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-1">
@@ -290,7 +290,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
                       type="text"
                       value={pair.term}
                       onChange={(e) => handleEditPair(index, 'term', e.target.value)}
-                      className="w-full rounded-md border border-input-border shadow-sm px-3 py-2 bg-input-bg text-input-text focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/70"
+                      className="w-full rounded-md border border-input-border shadow-sm px-3 py-2 bg-input-bg text-input-text focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/70"
                     />
                   </div>
                   
@@ -302,7 +302,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
                       value={pair.definition}
                       onChange={(e) => handleEditPair(index, 'definition', e.target.value)}
                       rows={2}
-                      className="w-full rounded-md border border-input-border shadow-sm px-3 py-2 bg-input-bg text-input-text focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/70"
+                      className="w-full rounded-md border border-input-border shadow-sm px-3 py-2 bg-input-bg text-input-text focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/70"
                     />
                   </div>
                   
@@ -314,7 +314,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
                       type="text"
                       value={pair.question}
                       onChange={(e) => handleEditPair(index, 'question', e.target.value)}
-                      className="w-full rounded-md border border-input-border shadow-sm px-3 py-2 bg-input-bg text-input-text focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/70"
+                      className="w-full rounded-md border border-input-border shadow-sm px-3 py-2 bg-input-bg text-input-text focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/70"
                     />
                   </div>
                   
@@ -326,7 +326,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
                       value={pair.answer}
                       onChange={(e) => handleEditPair(index, 'answer', e.target.value)}
                       rows={2}
-                      className="w-full rounded-md border border-input-border shadow-sm px-3 py-2 bg-input-bg text-input-text focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/70"
+                      className="w-full rounded-md border border-input-border shadow-sm px-3 py-2 bg-input-bg text-input-text focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/70"
                     />
                   </div>
                 </div>
@@ -344,7 +344,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
             <button
               onClick={handleSavePairs}
               disabled={isLoading}
-              className="flex-1 flex justify-center items-center py-4 px-6 border border-transparent rounded-lg shadow-md text-base font-semibold text-[var(--button-text)] bg-gradient-to-r from-primary to-primary-hover hover:from-primary-hover hover:to-primary transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="flex-1 flex justify-center items-center py-4 px-6 border border-transparent rounded-lg shadow-md text-base font-semibold text-black bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-400 transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-400/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               {isLoading ? (
                 <>
@@ -370,7 +370,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
                 setSubmissionId(null);
               }}
               disabled={isLoading}
-              className="flex-1 flex justify-center items-center py-4 px-6 border border-gray-600 rounded-lg shadow-md text-base font-semibold text-[var(--secondary-button-text)] bg-secondary hover:bg-secondary/80 transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="flex-1 flex justify-center items-center py-4 px-6 border border-gray-600 rounded-lg shadow-md text-base font-semibold text-slate-100 bg-secondary hover:bg-secondary/80 transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               <svg className="-ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

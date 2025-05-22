@@ -84,23 +84,23 @@ export default function SetDetails({ set: initialSet }: SetDetailsProps) {
         </div>
         
         <div className="flex items-center gap-3">
-          <button className="p-2 text-foreground/70 hover:text-primary hover:bg-secondary rounded-full transition-all duration-200 hover:shadow-sm">
+          <button className="p-2 text-foreground/70 hover:text-accent hover:bg-secondary rounded-full transition-all duration-200 hover:shadow-sm">
             <FaRegStar className="w-5 h-5" />
           </button>
           <DeleteSetButton setId={set.id} />
           <div className="relative group">
-            <button className="p-2 text-foreground/70 hover:text-primary hover:bg-secondary rounded-full transition-all duration-200 hover:shadow-sm">
+            <button className="p-2 text-foreground/70 hover:text-accent hover:bg-secondary rounded-full transition-all duration-200 hover:shadow-sm">
               <HiOutlineDotsVertical className="w-5 h-5" />
             </button>
             <div className="absolute right-0 mt-2 w-48 bg-secondary border border-border rounded-lg shadow-lg z-10 hidden group-hover:block">
               <div className="py-1">
-                <Link href={`/sets/${set.id}/edit`} className="block px-4 py-2 text-sm hover:bg-control-hover hover:text-primary transition-colors duration-200">
+                <Link href={`/sets/${set.id}/edit`} className="block px-4 py-2 text-sm hover:bg-control-hover hover:text-accent transition-colors duration-200">
                   Edit Set
                 </Link>
-                <button className="block w-full text-left px-4 py-2 text-sm hover:bg-control-hover hover:text-primary transition-colors duration-200">
+                <button className="block w-full text-left px-4 py-2 text-sm hover:bg-control-hover hover:text-accent transition-colors duration-200">
                   Share Set
                 </button>
-                <button className="block w-full text-left px-4 py-2 text-sm hover:bg-control-hover hover:text-primary transition-colors duration-200">
+                <button className="block w-full text-left px-4 py-2 text-sm hover:bg-control-hover hover:text-accent transition-colors duration-200">
                   Print Set
                 </button>
               </div>
@@ -113,7 +113,7 @@ export default function SetDetails({ set: initialSet }: SetDetailsProps) {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
         <Link
           href={`/study/${set.id}/flashcards`}
-          className="flex flex-col items-center justify-center p-6 bg-secondary hover:bg-secondary/90 rounded-lg border border-border hover:border-primary/30 transition-all duration-200 hover:shadow-md transform hover:scale-[1.02]"
+          className="flex flex-col items-center justify-center p-6 bg-secondary hover:bg-secondary/90 rounded-lg border border-border hover:border-accent/30 transition-all duration-200 hover:shadow-md transform hover:scale-[1.02]"
         >
           <div className="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-600 rounded-lg mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -125,7 +125,7 @@ export default function SetDetails({ set: initialSet }: SetDetailsProps) {
         
         <Link
           href={`/study/${set.id}/learn`}
-          className="flex flex-col items-center justify-center p-6 bg-secondary hover:bg-secondary/90 rounded-lg border border-border hover:border-primary/30 transition-all duration-200 hover:shadow-md transform hover:scale-[1.02]"
+          className="flex flex-col items-center justify-center p-6 bg-secondary hover:bg-secondary/90 rounded-lg border border-border hover:border-accent/30 transition-all duration-200 hover:shadow-md transform hover:scale-[1.02]"
         >
           <div className="w-12 h-12 flex items-center justify-center bg-purple-100 text-purple-600 rounded-lg mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -137,7 +137,7 @@ export default function SetDetails({ set: initialSet }: SetDetailsProps) {
         
         <Link
           href={`/study/${set.id}/quiz`}
-          className="flex flex-col items-center justify-center p-6 bg-secondary hover:bg-secondary/90 rounded-lg border border-border hover:border-primary/30 transition-all duration-200 hover:shadow-md transform hover:scale-[1.02]"
+          className="flex flex-col items-center justify-center p-6 bg-secondary hover:bg-secondary/90 rounded-lg border border-border hover:border-accent/30 transition-all duration-200 hover:shadow-md transform hover:scale-[1.02]"
         >
           <div className="w-12 h-12 flex items-center justify-center bg-green-100 text-green-600 rounded-lg mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -149,7 +149,7 @@ export default function SetDetails({ set: initialSet }: SetDetailsProps) {
         
         <Link
           href={`/study/${set.id}/match`}
-          className="flex flex-col items-center justify-center p-6 bg-secondary hover:bg-secondary/90 rounded-lg border border-border hover:border-primary/30 transition-all duration-200 hover:shadow-md transform hover:scale-[1.02]"
+          className="flex flex-col items-center justify-center p-6 bg-secondary hover:bg-secondary/90 rounded-lg border border-border hover:border-accent/30 transition-all duration-200 hover:shadow-md transform hover:scale-[1.02]"
         >
           <div className="w-12 h-12 flex items-center justify-center bg-yellow-100 text-yellow-600 rounded-lg mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -163,13 +163,13 @@ export default function SetDetails({ set: initialSet }: SetDetailsProps) {
       {/* Tabs for different views */}
       <div className="border-b border-border mb-6 bg-secondary/30">
         <div className="flex space-x-8">
-          <button className="py-3 border-b-2 border-primary text-primary font-medium transition-all duration-200 hover:bg-secondary/50">
+          <button className="py-3 border-b-2 border-accent text-accent font-medium transition-all duration-200 hover:bg-secondary/50">
             Cards
           </button>
-          <button className="py-3 text-foreground/70 hover:text-primary border-b-2 border-transparent hover:border-primary/30 transition-all duration-200 hover:bg-secondary/50">
+          <button className="py-3 text-foreground/70 hover:text-accent border-b-2 border-transparent hover:border-accent/30 transition-all duration-200 hover:bg-secondary/50">
             Original Text
           </button>
-          <button className="py-3 text-foreground/70 hover:text-primary border-b-2 border-transparent hover:border-primary/30 transition-all duration-200 hover:bg-secondary/50">
+          <button className="py-3 text-foreground/70 hover:text-accent border-b-2 border-transparent hover:border-accent/30 transition-all duration-200 hover:bg-secondary/50">
             Set Info
           </button>
         </div>
@@ -180,15 +180,15 @@ export default function SetDetails({ set: initialSet }: SetDetailsProps) {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-medium">Terms in this set ({set.pairs.length})</h2>
           <div className="flex items-center gap-3">
-            <button className="text-sm text-foreground/70 hover:text-primary transition-all duration-200 px-2 py-1 rounded hover:bg-secondary/70">
+            <button className="text-sm text-foreground/70 hover:text-accent transition-all duration-200 px-2 py-1 rounded hover:bg-secondary/70">
               Add Card
             </button>
-            <button className="text-sm text-foreground/70 hover:text-primary transition-all duration-200 px-2 py-1 rounded hover:bg-secondary/70">
+            <button className="text-sm text-foreground/70 hover:text-accent transition-all duration-200 px-2 py-1 rounded hover:bg-secondary/70">
               Import
             </button>
             <div className="relative">
               <select 
-                className="appearance-none bg-secondary border border-border rounded-lg px-3 py-1.5 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary/50 transition-all duration-200"
+                className="appearance-none bg-secondary border border-border rounded-lg px-3 py-1.5 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-accent hover:border-accent/50 transition-all duration-200"
                 value={selectedSort}
                 onChange={(e) => setSelectedSort(e.target.value)}
               >
@@ -207,7 +207,7 @@ export default function SetDetails({ set: initialSet }: SetDetailsProps) {
         {sortedPairs.length > 0 ? (
           <div className="space-y-4">
             {sortedPairs.map((pair: Pair, index: number) => (
-              <div key={pair.id} className="group bg-secondary p-5 rounded-lg border border-border hover:border-primary/50 hover:shadow-md transition-all">
+              <div key={pair.id} className="group bg-secondary p-5 rounded-lg border border-border hover:border-accent/50 hover:shadow-md transition-all">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <div className="flex justify-between items-start">
@@ -216,7 +216,7 @@ export default function SetDetails({ set: initialSet }: SetDetailsProps) {
                         <p className="font-medium text-lg">{pair.term}</p>
                       </div>
                       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="p-1.5 text-foreground/70 hover:text-primary hover:bg-secondary/90 rounded transition-all duration-200 hover:shadow-sm">
+                        <button className="p-1.5 text-foreground/70 hover:text-accent hover:bg-secondary/90 rounded transition-all duration-200 hover:shadow-sm">
                           <FaVolumeUp className="w-4 h-4" />
                         </button>
                         <EditPairButton 
@@ -235,7 +235,7 @@ export default function SetDetails({ set: initialSet }: SetDetailsProps) {
                         <p className="text-lg">{pair.definition}</p>
                       </div>
                       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="p-1.5 text-foreground/70 hover:text-primary hover:bg-secondary/90 rounded transition-all duration-200 hover:shadow-sm">
+                        <button className="p-1.5 text-foreground/70 hover:text-accent hover:bg-secondary/90 rounded transition-all duration-200 hover:shadow-sm">
                           <FaVolumeUp className="w-4 h-4" />
                         </button>
                         <EditPairButton 
@@ -293,7 +293,7 @@ export default function SetDetails({ set: initialSet }: SetDetailsProps) {
             <p className="text-foreground/70">No cards found for this set.</p>
             <Link 
               href={`/sets/${set.id}/edit`}
-              className="mt-4 px-4 py-2 bg-primary text-[var(--button-text)] rounded-lg hover:bg-primary-hover text-sm font-medium inline-block shadow-sm transition-colors duration-200"
+              className="mt-4 px-4 py-2 bg-amber-400 text-black rounded-lg hover:bg-amber-500 text-sm font-medium inline-block shadow-sm transition-colors duration-200"
             >
               Add Cards
             </Link>

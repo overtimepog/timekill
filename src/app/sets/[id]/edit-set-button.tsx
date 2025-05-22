@@ -61,7 +61,7 @@ export default function EditSetButton({ setId, currentName }: EditSetButtonProps
     <>
       <button
         onClick={openModal}
-        className="p-1 text-foreground/70 hover:text-primary hover:bg-secondary rounded-full transition-all duration-200 hover:shadow-sm"
+        className="p-1 text-foreground/70 hover:text-accent hover:bg-secondary rounded-full transition-all duration-200 hover:shadow-sm"
         aria-label="Edit set name"
       >
         <FaPencilAlt className="w-4 h-4" />
@@ -81,7 +81,7 @@ export default function EditSetButton({ setId, currentName }: EditSetButtonProps
                   id="setName"
                   value={setName}
                   onChange={(e) => setSetName(e.target.value)}
-                  className="w-full px-3 py-2 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
                   placeholder="Enter set name"
                   autoFocus
                 />
@@ -91,14 +91,14 @@ export default function EditSetButton({ setId, currentName }: EditSetButtonProps
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-4 py-2 bg-control-bg border border-control-border text-foreground rounded-lg hover:bg-control-hover hover:border-primary/30 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
+                  className="px-4 py-2 bg-control-bg border border-control-border text-foreground rounded-lg hover:bg-control-hover hover:border-accent/30 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
                   disabled={isSubmitting}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary text-[var(--button-text)] rounded-lg hover:bg-primary-hover hover:scale-[1.02] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
+                  className="px-4 py-2 bg-amber-400 text-black rounded-lg hover:bg-amber-500 hover:scale-[1.02] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Saving...' : 'Save Changes'}

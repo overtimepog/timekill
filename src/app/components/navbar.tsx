@@ -19,16 +19,16 @@ export function Navbar() {
             </Link>
             {isLoaded && isSignedIn && (
               <nav className="hidden ml-10 space-x-4 md:flex">
-                <Link href="/dashboard" className="px-3 py-2 text-sm font-medium text-foreground hover:text-primary">
+                <Link href="/dashboard" className="px-3 py-2 text-sm font-medium text-foreground hover:text-accent">
                   Dashboard
                 </Link>
-                <Link href="/create" className="px-3 py-2 text-sm font-medium text-foreground hover:text-primary">
+                <Link href="/create" className="px-3 py-2 text-sm font-medium text-foreground hover:text-accent">
                   Create
                 </Link>
-                <Link href="/humanize" className="px-3 py-2 text-sm font-medium text-foreground hover:text-primary">
+                <Link href="/humanize" className="px-3 py-2 text-sm font-medium text-foreground hover:text-accent">
                   Humanize
                 </Link>
-                <Link href="/pricing" className="px-3 py-2 text-sm font-medium text-foreground hover:text-primary">
+                <Link href="/pricing" className="px-3 py-2 text-sm font-medium text-foreground hover:text-accent">
                   Pricing
                 </Link>
               </nav>
@@ -52,10 +52,10 @@ export function Navbar() {
                         </span>
                       )}
                     </Link>
-                    <Link href="/user-profile" className="ml-2 text-sm font-medium text-foreground hover:text-primary">
+                    <Link href="/user-profile" className="ml-2 text-sm font-medium text-foreground hover:text-accent">
                       Profile
                     </Link>
-                    <Link href="/sign-out" className="ml-2 text-sm font-medium text-foreground hover:text-primary">
+                    <Link href="/sign-out" className="ml-2 text-sm font-medium text-foreground hover:text-accent">
                       Sign out
                     </Link>
                   </div>
@@ -63,7 +63,7 @@ export function Navbar() {
                   {/* Mobile menu button */}
                   <button
                     type="button"
-                    className="md:hidden ml-2 p-2 text-foreground hover:text-primary"
+                    className="md:hidden ml-2 p-2 text-foreground hover:text-accent"
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                   >
                     <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -75,13 +75,13 @@ export function Navbar() {
                 <div className="space-x-2">
                   <Link 
                     href="/sign-in"
-                    className="px-4 py-2 text-sm font-medium text-foreground hover:text-primary"
+                    className="px-4 py-2 text-sm font-medium text-foreground hover:text-accent"
                   >
                     Sign in
                   </Link>
                   <Link
                     href="/sign-up"
-                    className="px-4 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary-hover"
+                    className="px-4 py-2 text-sm font-medium bg-accent text-black rounded-lg hover:bg-accent/80"
                   >
                     Sign up
                   </Link>

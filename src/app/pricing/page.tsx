@@ -128,7 +128,7 @@ export default async function PricingPage() {
                 } overflow-hidden`}
               >
                 {plan.highlight && (
-                  <div className="bg-primary text-white text-center py-2 text-sm font-medium">
+                  <div className="bg-accent text-black text-center py-2 text-sm font-medium">
                     MOST POPULAR
                   </div>
                 )}
@@ -232,7 +232,7 @@ export default async function PricingPage() {
             </p>
             <Link
               href="/contact"
-              className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover text-lg font-medium inline-block"
+              className="px-6 py-3 bg-accent text-black rounded-lg hover:bg-accent/80 text-lg font-medium inline-block"
             >
               Contact Sales
             </Link>
