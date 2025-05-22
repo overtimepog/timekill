@@ -50,7 +50,34 @@ export default async function PricingPage() {
     console.error('Error fetching pricing data:', error);
   }
 
-  let processedPlans = [freePlan, ...stripeProducts.data.map((product: unknown) => {
+  // Add fallback Pro plan if no Stripe products are found
+  const fallbackProPlan = {
+    id: 'pro-fallback',
+    name: 'TimekillPro',
+    description: 'For serious students and professionals who need unlimited access.',
+    price: '$2.99',
+    period: 'per month',
+    features: [
+      'Unlimited document conversions',
+      'Unlimited study sets',
+      'All study modes including learn mode',
+      '50 humanizer credits per month',
+      'Advanced humanizer settings',
+      'Priority AI processing',
+      'No character limits',
+      'Email support',
+    ],
+    limitations: [],
+    priceId: 'price_1RQKRH4MJK50EYMQrXDySiGs', // Default Pro price ID
+    cta: '',
+    isCurrentPlan: false,
+    highlight: true,
+  };
+
+  let processedPlans = [
+    freePlan, 
+    ...(stripeProducts.data.length > 0 
+      ? stripeProducts.data.map((product: unknown) => {
     const productData = product as { 
       id: string; 
       name: string; 
@@ -103,7 +130,10 @@ export default async function PricingPage() {
       isCurrentPlan: false,
       highlight: productData.name?.toLowerCase().includes('pro'), 
     };
-  })];
+  }) 
+      : [fallbackProPlan] // Use fallback Pro plan if no Stripe products
+    )
+  ];
 
   processedPlans = processedPlans.map(plan => {
     let ctaText = 'Upgrade Now';
