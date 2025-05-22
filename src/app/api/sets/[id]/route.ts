@@ -5,7 +5,7 @@ import { prisma } from '../../../../../packages/core/lib/prisma';
 // PATCH /api/sets/[id] - Update a set
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await currentUser();
@@ -14,7 +14,8 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const id = params.id;
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
     const body = await request.json();
     
     // Verify the set belongs to the user
@@ -49,7 +50,7 @@ export async function PATCH(
 // DELETE /api/sets/[id] - Delete a set
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await currentUser();
@@ -58,7 +59,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const id = params.id;
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
     
     // Verify the set belongs to the user
     const existingSet = await prisma.noteSubmission.findUnique({
