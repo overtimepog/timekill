@@ -69,7 +69,7 @@ export default async function QuizPage({
         <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="max-w-5xl mx-auto text-center">
             <h1 className="text-2xl font-bold mb-4">Quiz Configuration Missing</h1>
-            <p className="mb-6 text-muted-foreground">It looks like the quiz settings weren't specified correctly.</p>
+            <p className="mb-6 text-muted-foreground">It looks like the quiz settings weren&apos;t specified correctly.</p>
             <Link 
               href={`/study/${id}/quiz/configure?maxQ=${submission?.pairs?.length || 10}`}
               className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 text-sm font-medium"

@@ -6,7 +6,7 @@ const Checkbox = React.forwardRef<HTMLButtonElement, React.InputHTMLAttributes<H
   return (
     <input
       type="checkbox"
-      ref={ref as any} // Basic ref handling
+      ref={ref as unknown as React.Ref<HTMLInputElement>} // Proper type casting
       className={className}
       {...props}
     />

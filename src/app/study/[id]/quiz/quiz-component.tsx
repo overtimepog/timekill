@@ -411,7 +411,7 @@ function generateQuiz(
         } else {
           // Find a word to blank out (preferably not a stop word)
           const wordIndex = Math.floor(Math.random() * words.length);
-          answer = words[wordIndex];
+          const answerWord = words[wordIndex];
           words[wordIndex] = '___';
           blankedQuestion = `Complete: "${pair.term}" is defined as "${words.join(' ')}"`;
         }
