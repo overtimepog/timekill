@@ -42,7 +42,7 @@ export default function DeleteSetButton({ setId }: DeleteSetButtonProps) {
     <>
       <button
         onClick={openModal}
-        className="p-2 text-foreground/70 hover:text-status-error hover:bg-secondary rounded-full transition-all duration-200 hover:shadow-sm hover:scale-105"
+        className="p-2 text-foreground/70 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-full transition-all duration-200 hover:shadow-lg hover:scale-110 border border-transparent hover:border-red-200 dark:hover:border-red-800"
         aria-label="Delete set"
       >
         <FaTrash className="w-5 h-5" />

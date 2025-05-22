@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent, ChangeEvent, useRef, DragEvent } from 'react';
+import { useState, FormEvent, ChangeEvent, useRef, DragEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 // Define the Pair type locally
@@ -25,6 +25,34 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [usage, setUsage] = useState<{
+    planType: string;
+    currentUsage: { totalDocuments: number };
+    limits: { totalDocuments: number };
+    remaining: { totalDocuments: number };
+  } | null>(null);
+  const [loadingUsage, setLoadingUsage] = useState(true);
+  const [canCreateDocument, setCanCreateDocument] = useState(true);
+  
+  // Fetch usage information on component mount
+  useEffect(() => {
+    fetchUsage();
+  }, []);
+
+  const fetchUsage = async () => {
+    try {
+      const response = await fetch('/api/usage');
+      if (response.ok) {
+        const usageData = await response.json();
+        setUsage(usageData);
+        setCanCreateDocument(usageData.remaining.totalDocuments > 0 || usageData.limits.totalDocuments === Infinity);
+      }
+    } catch (error) {
+      console.error('Error fetching usage:', error);
+    } finally {
+      setLoadingUsage(false);
+    }
+  };
   
   // Format number with commas
   const formatNumber = (num: number): string => {
@@ -254,6 +282,47 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
   
   return (
     <div>
+      {/* Usage Information */}
+      {!loadingUsage && usage && (
+        <div className="mb-6 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
+                Plan: {usage.planType}
+              </p>
+              <p className="text-sm text-blue-600 dark:text-blue-400">
+                {usage.limits.totalDocuments === Infinity 
+                  ? 'Unlimited documents' 
+                  : `${usage.remaining.totalDocuments} / ${usage.limits.totalDocuments} documents remaining`
+                }
+              </p>
+            </div>
+            {usage.limits.totalDocuments !== Infinity && (
+              <div className="text-right">
+                <div className="w-32 bg-blue-200 dark:bg-blue-900 rounded-full h-2">
+                  <div 
+                    className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                    style={{
+                      width: `${Math.max(0, Math.min(100, (usage.currentUsage.totalDocuments / usage.limits.totalDocuments) * 100))}%`
+                    }}
+                  ></div>
+                </div>
+                <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                  {usage.currentUsage.totalDocuments} used
+                </p>
+              </div>
+            )}
+          </div>
+          {!canCreateDocument && (
+            <div className="mt-3 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-md">
+              <p className="text-sm text-red-700 dark:text-red-300">
+                You have reached your document limit. <a href="/pricing" className="underline font-medium">Upgrade to Pro</a> for unlimited documents.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
       {!pairs ? (
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -328,7 +397,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
           <div>
             <button
               type="submit"
-              disabled={isLoading || content.length === 0}
+              disabled={isLoading || content.length === 0 || !canCreateDocument}
               className="w-full flex justify-center items-center py-4 px-6 border border-transparent rounded-lg shadow-md text-base font-semibold text-black bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-400 transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-400/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               {isLoading ? (
@@ -338,6 +407,13 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                   Processing...
+                </>
+              ) : !canCreateDocument ? (
+                <>
+                  <svg className="-ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  Document Limit Reached
                 </>
               ) : (
                 <>

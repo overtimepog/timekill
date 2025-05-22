@@ -64,10 +64,11 @@ export const humanizeText = async (
   const redis = options._mockRedisClient || mockRedisClient;
   
   // Use provided mock or use the shared prisma client
+  // Only use mock in testing, not in development
   const db = options._mockPrismaClient || 
-    (process.env.NODE_ENV === 'production' 
-      ? prisma
-      : new MockHumanizerPrismaClient());
+    (process.env.NODE_ENV === 'test' 
+      ? new MockHumanizerPrismaClient()
+      : prisma);
   
   // In a real implementation, this would iteratively improve the text
   // For testing, we'll return a mock result

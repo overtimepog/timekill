@@ -78,10 +78,14 @@ export const syncUserWithClerk = async (clerkUser: any) => {
     });
     
     if (existingUser) {
-      console.log(`[syncUserWithClerk] User ${clerkUser.id} exists. Email: ${existingUser.email}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[syncUserWithClerk] User ${clerkUser.id} exists. Email: ${existingUser.email}`);
+      }
       // If user exists, update their email if needed
       if (existingUser.email !== email) {
-        console.log(`[syncUserWithClerk] Updating email for user ${clerkUser.id} from ${existingUser.email} to ${email}`);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`[syncUserWithClerk] Updating email for user ${clerkUser.id} from ${existingUser.email} to ${email}`);
+        }
         return await prisma.user.update({
           where: { id: clerkUser.id },
           data: { email },
@@ -105,7 +109,9 @@ export const syncUserWithClerk = async (clerkUser: any) => {
     if (userWithEmail) {
       // If a user with this email exists but has a different ID,
       // we need to update the existing user's ID to match Clerk
-      console.log(`[syncUserWithClerk] User with email ${email} exists with ID ${userWithEmail.id}, updating to Clerk ID ${clerkUser.id}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[syncUserWithClerk] User with email ${email} exists with ID ${userWithEmail.id}, updating to Clerk ID ${clerkUser.id}`);
+      }
       
       try {
         // Check if there's already a user with the Clerk ID
@@ -115,7 +121,9 @@ export const syncUserWithClerk = async (clerkUser: any) => {
         
         if (userWithClerkId) {
           // If both users exist, we have a conflict - the Clerk user should take precedence
-          console.log(`[syncUserWithClerk] Both users exist, using existing Clerk user ${clerkUser.id}`);
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`[syncUserWithClerk] Both users exist, using existing Clerk user ${clerkUser.id}`);
+          }
           return userWithClerkId;
         }
         
@@ -174,7 +182,9 @@ export const syncUserWithClerk = async (clerkUser: any) => {
             where: { id: userWithEmail.id },
           });
           
-          console.log(`[syncUserWithClerk] Successfully updated user ${userWithEmail.id} to ${clerkUser.id}`);
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`[syncUserWithClerk] Successfully updated user ${userWithEmail.id} to ${clerkUser.id}`);
+          }
           return newUser;
         });
         
@@ -189,7 +199,9 @@ export const syncUserWithClerk = async (clerkUser: any) => {
             where: { id: clerkUser.id },
           });
           if (existingUser) {
-            console.log(`[syncUserWithClerk] Found existing user ${clerkUser.id}, returning it`);
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`[syncUserWithClerk] Found existing user ${clerkUser.id}, returning it`);
+            }
             return existingUser;
           }
         }
@@ -202,14 +214,18 @@ export const syncUserWithClerk = async (clerkUser: any) => {
     }
     
     // Create a new user if no conflicts
-    console.log(`[syncUserWithClerk] Creating new user ${clerkUser.id} with email ${email}`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[syncUserWithClerk] Creating new user ${clerkUser.id} with email ${email}`);
+    }
     const newUser = await prisma.user.create({
       data: {
         id: clerkUser.id,
         email,
       },
     });
-    console.log(`[syncUserWithClerk] Successfully created new user ${newUser.id}`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[syncUserWithClerk] Successfully created new user ${newUser.id}`);
+    }
     
     // Track the new user for stats
     await trackNewUser(newUser.id);

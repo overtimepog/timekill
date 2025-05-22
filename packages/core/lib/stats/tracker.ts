@@ -13,7 +13,9 @@ import { prisma } from '../prisma';
 export async function trackNewUser(userId: string) {
   try {
     // No need to do anything special here since we count users directly from the User table
-    console.log(`Stats: Tracked new user ${userId}`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Stats: Tracked new user ${userId}`);
+    }
     return true;
   } catch (error) {
     console.error('Error tracking new user:', error);
@@ -29,7 +31,9 @@ export async function trackNewUser(userId: string) {
 export async function trackNewSet(submissionId: string, userId: string) {
   try {
     // No need to do anything special here since we count sets directly from the NoteSubmission table
-    console.log(`Stats: Tracked new set ${submissionId} for user ${userId}`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Stats: Tracked new set ${submissionId} for user ${userId}`);
+    }
     return true;
   } catch (error) {
     console.error('Error tracking new set:', error);
@@ -47,7 +51,9 @@ export async function trackHumanization(humanizerRunId: string, userId: string, 
   try {
     // No need to do anything special here since we calculate characters humanized from the HumanizerRun table
     const charactersHumanized = inputText.length;
-    console.log(`Stats: Tracked humanization of ${charactersHumanized} characters for user ${userId}`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Stats: Tracked humanization of ${charactersHumanized} characters for user ${userId}`);
+    }
     return true;
   } catch (error) {
     console.error('Error tracking humanization:', error);

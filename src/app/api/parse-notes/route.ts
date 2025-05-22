@@ -10,7 +10,7 @@ import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '../../../../packages/core/lib/prisma';
 import { extractPairsFromNotes } from '../../../../packages/core/lib/gemini';
 import { trackNewSet } from '../../../../packages/core/lib/stats/tracker';
-import { canUserConvertDocument, trackDocumentConversion, validateDocumentLength } from '../../../../packages/core/lib/usage-tracker';
+import { canUserCreateDocument, validateDocumentLength } from '../../../../packages/core/lib/usage-tracker';
 
 
 
@@ -50,11 +50,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user can perform document conversion
-    const conversionCheck = await canUserConvertDocument(user.id);
-    if (!conversionCheck.allowed) {
+    // Check if user can create a new document
+    const documentCheck = await canUserCreateDocument(user.id);
+    if (!documentCheck.allowed) {
       return NextResponse.json(
-        { error: conversionCheck.reason },
+        { error: documentCheck.reason },
         { status: 403 }
       );
     }
@@ -73,9 +73,8 @@ export async function POST(request: NextRequest) {
       },
     });
     
-    // Track the new set for stats and usage
+    // Track the new set for stats
     await trackNewSet(submission.id, user.id);
-    await trackDocumentConversion(user.id);
     
     // Extract pairs from the document
     const pairs = await extractPairsFromNotes(notes, user.id, {});

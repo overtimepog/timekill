@@ -6,48 +6,73 @@ import { prisma } from './prisma';
 
 export const USAGE_LIMITS = {
   FREE: {
-    DOCUMENT_CONVERSIONS_PER_MONTH: 20,
-    HUMANIZER_CREDITS_PER_MONTH: 10,
+    TOTAL_DOCUMENTS: 5,
+    HUMANIZER_CREDITS_PER_WEEK: 30,
     MAX_DOCUMENT_LENGTH: 5000,
   },
   PRO: {
-    DOCUMENT_CONVERSIONS_PER_MONTH: Infinity,
-    HUMANIZER_CREDITS_PER_MONTH: 50,
+    TOTAL_DOCUMENTS: Infinity,
+    HUMANIZER_CREDITS_PER_WEEK: 50,
     MAX_DOCUMENT_LENGTH: Infinity,
   },
   POWER: {
-    DOCUMENT_CONVERSIONS_PER_MONTH: Infinity,
-    HUMANIZER_CREDITS_PER_MONTH: Infinity,
+    TOTAL_DOCUMENTS: Infinity,
+    HUMANIZER_CREDITS_PER_WEEK: Infinity,
     MAX_DOCUMENT_LENGTH: Infinity,
   },
 } as const;
 
 export type PlanType = 'FREE' | 'PRO' | 'POWER';
 
-async function getOrCreateMonthlyUsage(userId: string, year: number, month: number) {
-  const existingUsage = await prisma.monthlyUsage.findUnique({
+/**
+ * Get the start of the current week (Monday)
+ */
+function getWeekStart(date: Date = new Date()): Date {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+  return new Date(d.setDate(diff));
+}
+
+/**
+ * Get current week's usage for humanizer credits (using ISO week)
+ */
+export async function getCurrentWeekUsage(userId: string) {
+  const now = new Date();
+  const year = now.getFullYear();
+  const weekNumber = getISOWeek(now);
+  
+  // @ts-expect-error - WeeklyUsage model exists in schema but TypeScript doesn't recognize it
+  return await prisma.weeklyUsage.upsert({
     where: {
-      userId_year_month: {
+      userId_year_week: {
         userId,
         year,
-        month,
+        week: weekNumber,
       },
     },
-  });
-
-  if (existingUsage) {
-    return existingUsage;
-  }
-
-  return await prisma.monthlyUsage.create({
-    data: {
+    update: {},
+    create: {
       userId,
       year,
-      month,
-      documentConversions: 0,
+      week: weekNumber,
+      humanizerCreditsUsed: 0,
     },
   });
-}/**
+}
+
+/**
+ * Get ISO week number
+ */
+function getISOWeek(date: Date): number {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+}
+
+/**
  * Get user's subscription plan type
  */
 export async function getUserPlanType(userId: string): Promise<PlanType> {
@@ -70,50 +95,45 @@ export async function getUserPlanType(userId: string): Promise<PlanType> {
 }
 
 /**
- * Get current month's usage for a user
+ * Check if user can create a new document
  */
-export async function getCurrentMonthUsage(userId: string) {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth() + 1;
-
-  return await getOrCreateMonthlyUsage(userId, year, month);
-}
-
-/**
- * Check if user can perform a document conversion
- */
-export async function canUserConvertDocument(userId: string): Promise<{ allowed: boolean; reason?: string; usage?: any }> {
+export async function canUserCreateDocument(userId: string): Promise<{ allowed: boolean; reason?: string; usage?: any }> {
   try {
     const planType = await getUserPlanType(userId);
-    const usage = await getCurrentMonthUsage(userId);
-    const limit = USAGE_LIMITS[planType].DOCUMENT_CONVERSIONS_PER_MONTH;
+    const limit = USAGE_LIMITS[planType].TOTAL_DOCUMENTS;
 
     if (limit === Infinity) {
-      return { allowed: true, usage };
+      return { allowed: true };
     }
 
-    if (usage.documentConversions >= limit) {
+    // Count total documents created by user
+    const totalDocuments = await prisma.noteSubmission.count({
+      where: { userId },
+    });
+
+    if (totalDocuments >= limit) {
       return {
         allowed: false,
-        reason: `You have reached your monthly limit of ${limit} document conversions. Upgrade to Pro for unlimited conversions.`,
-        usage,
+        reason: `You have reached your limit of ${limit} documents. Upgrade to Pro for unlimited documents.`,
+        usage: { totalDocuments, limit },
       };
     }
 
-    return { allowed: true, usage };
+    return { allowed: true, usage: { totalDocuments, limit } };
   } catch (error) {
-    console.error('Error checking document conversion limit:', error);
-    return { allowed: false, reason: 'Unable to verify usage limits. Please try again.' };
+    console.error('Error checking document creation limit:', error);
+    return { allowed: false, reason: 'Unable to verify document limits. Please try again.' };
   }
-}/**
+}
+
+/**
  * Check if user can use humanizer credits
  */
 export async function canUserUseHumanizer(userId: string, creditsNeeded: number = 1): Promise<{ allowed: boolean; reason?: string; usage?: any }> {
   try {
     const planType = await getUserPlanType(userId);
-    const usage = await getCurrentMonthUsage(userId);
-    const limit = USAGE_LIMITS[planType].HUMANIZER_CREDITS_PER_MONTH;
+    const usage = await getCurrentWeekUsage(userId);
+    const limit = USAGE_LIMITS[planType].HUMANIZER_CREDITS_PER_WEEK;
 
     if (limit === Infinity) {
       return { allowed: true, usage };
@@ -123,7 +143,7 @@ export async function canUserUseHumanizer(userId: string, creditsNeeded: number 
       const remaining = Math.max(0, limit - usage.humanizerCreditsUsed);
       return {
         allowed: false,
-        reason: `Insufficient humanizer credits. You have ${remaining} credits remaining this month. Upgrade to Pro for more credits.`,
+        reason: `Insufficient humanizer credits. You have ${remaining} credits remaining this week. Upgrade to Pro for more credits.`,
         usage,
       };
     }
@@ -136,53 +156,24 @@ export async function canUserUseHumanizer(userId: string, creditsNeeded: number 
 }
 
 /**
- * Track a document conversion
- */
-export async function trackDocumentConversion(userId: string): Promise<void> {
-  try {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth() + 1;
-
-    await prisma.monthlyUsage.upsert({
-      where: {
-        userId_year_month: {
-          userId,
-          year,
-          month,
-        },
-      },
-      update: {
-        documentConversions: {
-          increment: 1,
-        },
-      },
-      create: {
-        userId,
-        year,
-        month,
-        documentConversions: 1,
-        humanizerCreditsUsed: 0,
-      },
-    });
-  } catch (error) {
-    console.error('Error tracking document conversion:', error);
-  }
-}/**
  * Track humanizer credit usage
  */
 export async function trackHumanizerUsage(userId: string, creditsUsed: number = 1): Promise<void> {
   try {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[trackHumanizerUsage] Tracking ${creditsUsed} credits for user ${userId}`);
+    }
     const now = new Date();
     const year = now.getFullYear();
-    const month = now.getMonth() + 1;
+    const weekNumber = getISOWeek(now);
 
-    await prisma.monthlyUsage.upsert({
+    // @ts-expect-error - WeeklyUsage model exists in schema but TypeScript doesn't recognize it
+    const result = await prisma.weeklyUsage.upsert({
       where: {
-        userId_year_month: {
+        userId_year_week: {
           userId,
           year,
-          month,
+          week: weekNumber,
         },
       },
       update: {
@@ -193,11 +184,13 @@ export async function trackHumanizerUsage(userId: string, creditsUsed: number = 
       create: {
         userId,
         year,
-        month,
-        documentConversions: 0,
+        week: weekNumber,
         humanizerCreditsUsed: creditsUsed,
       },
     });
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[trackHumanizerUsage] Successfully tracked ${creditsUsed} credits for week ${weekNumber}. New total: ${result.humanizerCreditsUsed}`);
+    }
   } catch (error) {
     console.error('Error tracking humanizer usage:', error);
   }
@@ -209,27 +202,30 @@ export async function trackHumanizerUsage(userId: string, creditsUsed: number = 
 export async function getUserUsageSummary(userId: string) {
   try {
     const planType = await getUserPlanType(userId);
-    const usage = await getCurrentMonthUsage(userId);
+    const weeklyUsage = await getCurrentWeekUsage(userId);
+    const totalDocuments = await prisma.noteSubmission.count({
+      where: { userId },
+    });
     const limits = USAGE_LIMITS[planType];
 
     return {
       planType,
       currentUsage: {
-        documentConversions: usage.documentConversions,
-        humanizerCreditsUsed: usage.humanizerCreditsUsed || 0,
+        totalDocuments,
+        humanizerCreditsUsed: weeklyUsage.humanizerCreditsUsed || 0,
       },
       limits: {
-        documentConversions: limits.DOCUMENT_CONVERSIONS_PER_MONTH,
-        humanizerCredits: limits.HUMANIZER_CREDITS_PER_MONTH,
+        totalDocuments: limits.TOTAL_DOCUMENTS,
+        humanizerCredits: limits.HUMANIZER_CREDITS_PER_WEEK,
         maxDocumentLength: limits.MAX_DOCUMENT_LENGTH,
       },
       remaining: {
-        documentConversions: limits.DOCUMENT_CONVERSIONS_PER_MONTH === Infinity 
+        totalDocuments: limits.TOTAL_DOCUMENTS === Infinity 
           ? Infinity 
-          : Math.max(0, limits.DOCUMENT_CONVERSIONS_PER_MONTH - usage.documentConversions),
-        humanizerCredits: limits.HUMANIZER_CREDITS_PER_MONTH === Infinity 
+          : Math.max(0, limits.TOTAL_DOCUMENTS - totalDocuments),
+        humanizerCredits: limits.HUMANIZER_CREDITS_PER_WEEK === Infinity 
           ? Infinity 
-          : Math.max(0, limits.HUMANIZER_CREDITS_PER_MONTH - (usage.humanizerCreditsUsed || 0)),
+          : Math.max(0, limits.HUMANIZER_CREDITS_PER_WEEK - (weeklyUsage.humanizerCreditsUsed || 0)),
       },
     };
   } catch (error) {

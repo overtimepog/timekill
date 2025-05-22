@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { humanizeText } from '../../../../packages/core/lib/humanizer';
-import { requireLogin, requireSubscription } from '../../../../packages/core/lib/auth';
+import { requireLogin, requireSubscription, syncUserWithClerk } from '../../../../packages/core/lib/auth';
 import { canUserUseHumanizer, trackHumanizerUsage } from '../../../../packages/core/lib/usage-tracker';
 
 export async function POST(request: NextRequest) {
   try {
-    // Authenticate user
-    const user = await requireLogin();
+    // Authenticate user and ensure they exist in our database
+    const clerkUser = await requireLogin();
+    const user = await syncUserWithClerk(clerkUser);
     
     // Parse request body
     const body = await request.json();

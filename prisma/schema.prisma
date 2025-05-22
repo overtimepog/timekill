@@ -30,6 +30,7 @@ model User {
   studyStats        StudyStat[]
   humanizerRuns     HumanizerRun[]
   monthlyUsage      MonthlyUsage[]
+  weeklyUsage       WeeklyUsage[]
 }
 
 // Subscription model - connected to Stripe
@@ -132,10 +133,26 @@ model MonthlyUsage {
   month                 Int       // Month (1-12)
   
   documentConversions   Int       @default(0) // Number of document conversions this month
-  humanizerCreditsUsed  Int       @default(0) // Number of humanizer credits used this month
   
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   
   @@unique([userId, year, month])
+}
+
+// Weekly usage tracking model for humanizer credits
+model WeeklyUsage {
+  id                   String    @id @default(cuid())
+  userId               String
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  year                 Int       // Year (e.g., 2024)
+  week                 Int       // ISO week number (1-53)
+  
+  humanizerCreditsUsed Int       @default(0) // Number of humanizer credits used this week
+  
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  
+  @@unique([userId, year, week])
 }

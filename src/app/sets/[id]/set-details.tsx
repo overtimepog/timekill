@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FaRegStar, FaVolumeUp } from 'react-icons/fa';
+import { FaVolumeUp } from 'react-icons/fa';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
 import DeleteSetButton from './delete-set-button';
 import EditSetButton from './edit-set-button';
@@ -92,9 +92,6 @@ export default function SetDetails({ set: initialSet }: SetDetailsProps) {
         </div>
         
         <div className="flex items-center gap-3">
-          <button className="p-2 text-foreground/70 hover:text-accent hover:bg-secondary rounded-full transition-all duration-200 hover:shadow-sm">
-            <FaRegStar className="w-5 h-5" />
-          </button>
           <DeleteSetButton setId={set.id} />
           <div className="relative group">
             <button className="p-2 text-foreground/70 hover:text-accent hover:bg-secondary rounded-full transition-all duration-200 hover:shadow-sm">

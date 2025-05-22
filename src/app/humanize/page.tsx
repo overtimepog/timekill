@@ -1,7 +1,7 @@
 'use client';
 
 import { Navbar } from '../components/navbar';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 
@@ -17,12 +17,44 @@ export default function HumanizePage() {
     iterations?: number;
     similarity?: number;
   }>({});
+  const [usage, setUsage] = useState<{
+    planType: string;
+    currentUsage: { humanizerCreditsUsed: number };
+    limits: { humanizerCredits: number };
+    remaining: { humanizerCredits: number };
+  } | null>(null);
+  const [loadingUsage, setLoadingUsage] = useState(true);
+
+  const fetchUsage = useCallback(async () => {
+    try {
+      const response = await fetch('/api/usage');
+      if (response.ok) {
+        const usageData = await response.json();
+        setUsage(usageData);
+      }
+    } catch (error) {
+      console.error('Error fetching usage:', error);
+    } finally {
+      setLoadingUsage(false);
+    }
+  }, []);
+
+  // Fetch usage information
+  useEffect(() => {
+    if (isSignedIn) {
+      fetchUsage();
+    }
+  }, [isSignedIn, fetchUsage]);
 
   // Redirect if not signed in
   if (isLoaded && !isSignedIn) {
     router.push('/sign-in');
     return null;
   }
+
+  // Calculate credits needed for current text
+  const creditsNeeded = Math.ceil(text.length / 500); // 1 credit per 500 characters
+  const canAfford = usage ? usage.remaining.humanizerCredits >= creditsNeeded : true;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +88,9 @@ export default function HumanizePage() {
         iterations: data.iterations,
         similarity: data.similarity,
       });
+      
+      // Refresh usage after successful humanization
+      await fetchUsage();
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
@@ -70,9 +105,43 @@ export default function HumanizePage() {
       <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold mb-2">AI Text Humanizer</h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
             Make AI-generated text more natural and less detectable by AI detection tools.
           </p>
+          
+          {/* Usage Information */}
+          {!loadingUsage && usage && (
+            <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
+                    Plan: {usage.planType}
+                  </p>
+                  <p className="text-sm text-blue-600 dark:text-blue-400">
+                    {usage.limits.humanizerCredits === Infinity 
+                      ? 'Unlimited humanizer credits' 
+                      : `${usage.remaining.humanizerCredits} / ${usage.limits.humanizerCredits} credits remaining this week`
+                    }
+                  </p>
+                </div>
+                {usage.limits.humanizerCredits !== Infinity && (
+                  <div className="text-right">
+                    <div className="w-32 bg-blue-200 dark:bg-blue-900 rounded-full h-2">
+                      <div 
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                        style={{
+                          width: `${Math.max(0, Math.min(100, (usage.currentUsage.humanizerCreditsUsed / usage.limits.humanizerCredits) * 100))}%`
+                        }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                      {usage.currentUsage.humanizerCreditsUsed} used
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           
           {error && (
             <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 mb-6">
@@ -94,21 +163,45 @@ export default function HumanizePage() {
                 placeholder="Paste your AI-generated text here..."
                 required
               />
-              <p className="mt-1 text-sm text-gray-500">
-                {text.length} characters. {text.length > 2000 ? 'Pro subscription required for texts over 2000 characters.' : ''}
-              </p>
+              <div className="mt-1 flex justify-between items-center text-sm">
+                <span className="text-gray-500">
+                  {text.length} characters
+                  {text.length > 0 && (
+                    <span className="ml-2 text-blue-600 dark:text-blue-400">
+                      • {creditsNeeded} credit{creditsNeeded !== 1 ? 's' : ''} needed
+                    </span>
+                  )}
+                </span>
+                {text.length > 2000 && (
+                  <span className="text-orange-600 dark:text-orange-400">
+                    Pro subscription required for texts over 2000 characters
+                  </span>
+                )}
+                {!canAfford && usage && (
+                  <span className="text-red-600 dark:text-red-400">
+                    Insufficient credits ({usage.remaining.humanizerCredits} remaining)
+                  </span>
+                )}
+              </div>
             </div>
             
             <button
               type="submit"
-              disabled={isLoading}
-              className={`w-full px-4 py-2 text-white font-medium rounded-md ${
-                isLoading
-                  ? 'bg-blue-400 cursor-not-allowed'
+              disabled={isLoading || !canAfford}
+              className={`w-full px-4 py-2 text-white font-medium rounded-md transition-all duration-200 ${
+                isLoading || !canAfford
+                  ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-blue-600 hover:bg-blue-700'
               }`}
             >
-              {isLoading ? 'Humanizing...' : 'Humanize Text'}
+              {isLoading 
+                ? 'Humanizing...' 
+                : !canAfford 
+                  ? 'Insufficient Credits'
+                  : text.length > 0 
+                    ? `Humanize Text • -${creditsNeeded} Credit${creditsNeeded !== 1 ? 's' : ''}`
+                    : 'Humanize Text'
+              }
             </button>
           </form>
           

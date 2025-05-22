@@ -47,26 +47,28 @@ export default async function PricingPage() {
     });
     stripeProducts = products;
     
-    // Debug: Log what we're getting from Stripe
-    console.log('=== STRIPE DEBUG INFO ===');
-    console.log('Products found:', stripeProducts.data.length);
-    stripeProducts.data.forEach((product, index) => {
-      const prod = product as {
-        id: string;
-        name: string;
-        active: boolean;
-        metadata?: Record<string, string>;
-        default_price?: unknown;
-      };
-      console.log(`Product ${index + 1}:`, {
-        id: prod.id,
-        name: prod.name,
-        active: prod.active,
-        metadata: prod.metadata,
-        default_price: prod.default_price
+    // Debug: Log what we're getting from Stripe (development only)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('=== STRIPE DEBUG INFO ===');
+      console.log('Products found:', stripeProducts.data.length);
+      stripeProducts.data.forEach((product, index) => {
+        const prod = product as {
+          id: string;
+          name: string;
+          active: boolean;
+          metadata?: Record<string, string>;
+          default_price?: unknown;
+        };
+        console.log(`Product ${index + 1}:`, {
+          id: prod.id,
+          name: prod.name,
+          active: prod.active,
+          metadata: prod.metadata,
+          default_price: prod.default_price
+        });
       });
-    });
-    console.log('=== END STRIPE DEBUG ===');
+      console.log('=== END STRIPE DEBUG ===');
+    }
   } catch (error) {
     console.error('Error fetching pricing data:', error);
   }
@@ -159,14 +161,20 @@ export default async function PricingPage() {
   let processedPlans = [freePlan];
   
   if (stripeBasedPlans.length > 0 && hasProPlan) {
-    console.log('Using Stripe-based plans:', stripeBasedPlans.length);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Using Stripe-based plans:', stripeBasedPlans.length);
+    }
     processedPlans.push(...stripeBasedPlans);
   } else {
-    console.log('Using fallback Pro plan - Stripe plans:', stripeBasedPlans.length, 'Has Pro:', hasProPlan);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Using fallback Pro plan - Stripe plans:', stripeBasedPlans.length, 'Has Pro:', hasProPlan);
+    }
     processedPlans.push(fallbackProPlan);
   }
   
-  console.log('Final processed plans:', processedPlans.map(p => ({ name: p.name, features: p.features.length })));
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Final processed plans:', processedPlans.map(p => ({ name: p.name, features: p.features.length })));
+  }
 
   processedPlans = processedPlans.map(plan => {
     let ctaText = 'Upgrade Now';

@@ -11,9 +11,9 @@ type Stats = {
 };
 
 async function getStats(): Promise<Stats> {
-  // Fetch directly from the client using a relative path
+  // Respect the server's cache headers (2 minutes as set in the API route)
   const res = await fetch('/api/stats', {
-    cache: 'no-store', // Ensure fresh data for each client-side fetch too
+    next: { revalidate: 120 }, // Respect server cache of 2 minutes
   });
   
   if (!res.ok) {
@@ -34,33 +34,35 @@ export function StatsDisplay() {
   const [loading, setLoading] = useState(true);
 
   const fetchAndUpdateStats = React.useCallback(async () => {
-    if (!loading) setLoading(true); // Set loading true if not already loading (e.g. for interval updates)
     try {
       const fetchedStats = await getStats();
       setStats(fetchedStats);
     } catch (error) {
       console.error("Failed to fetch stats:", error);
-      // Set to default/error state or keep previous stats
-      setStats({
-        totalUsers: 0,
-        totalSets: 0,
-        totalPairs: 0,
-        totalCharactersHumanized: 0,
-      });
+      // Keep previous stats if fetch fails, don't reset to zeros
+      if (!stats) {
+        setStats({
+          totalUsers: 0,
+          totalSets: 0,
+          totalPairs: 0,
+          totalCharactersHumanized: 0,
+        });
+      }
     } finally {
       setLoading(false);
     }
-  }, [loading]);
+  }, [stats]); // Include stats dependency
 
   useEffect(() => {
     fetchAndUpdateStats(); // Fetch initial stats
 
+    // Increase interval to 5 minutes since we have server-side caching
     const intervalId = setInterval(() => {
       fetchAndUpdateStats();
-    }, 20 * 60 * 1000); // 20 minutes
+    }, 5 * 60 * 1000); // 5 minutes (stats are cached for 2 minutes on server)
 
     return () => clearInterval(intervalId); // Cleanup interval on unmount
-  }, [fetchAndUpdateStats]); // Include fetchAndUpdateStats in the dependency array
+  }, [fetchAndUpdateStats]); // Include fetchAndUpdateStats dependency
 
   // Display loading state or default values if stats are not yet loaded
   const displayStats = stats || { 
