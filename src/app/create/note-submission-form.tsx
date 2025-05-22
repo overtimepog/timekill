@@ -88,7 +88,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
       if (file) {
         try {
           contentContent = await readFileContent(file);
-        } catch (_) {
+        } catch {
           throw new Error('Failed to read uploaded file');
         }
       }
