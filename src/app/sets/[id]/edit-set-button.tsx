@@ -61,7 +61,7 @@ export default function EditSetButton({ setId, currentName }: EditSetButtonProps
     <>
       <button
         onClick={openModal}
-        className="p-1 text-foreground/70 hover:text-accent hover:bg-secondary rounded-full transition-all duration-200 hover:shadow-sm"
+        className="p-1 text-foreground/70 hover:text-accent hover:bg-secondary rounded-full transition-all duration-200 hover:shadow-sm hover:scale-105"
         aria-label="Edit set name"
       >
         <FaPencilAlt className="w-4 h-4" />
@@ -91,7 +91,7 @@ export default function EditSetButton({ setId, currentName }: EditSetButtonProps
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-4 py-2 bg-control-bg border border-control-border text-foreground rounded-lg hover:bg-control-hover hover:border-accent/30 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
+                  className="px-4 py-2 bg-control-bg border border-control-border text-foreground rounded-lg hover:bg-control-hover hover:border-accent/30 hover:scale-[1.02] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
                   disabled={isSubmitting}
                 >
                   Cancel

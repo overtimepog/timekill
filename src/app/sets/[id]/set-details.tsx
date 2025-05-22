@@ -109,57 +109,39 @@ export default function SetDetails({ set: initialSet }: SetDetailsProps) {
         </div>
       </div>
 
-      {/* Study mode options */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-        <Link
-          href={`/study/${set.id}/flashcards`}
-          className="flex flex-col items-center justify-center p-6 bg-secondary hover:bg-secondary/90 rounded-lg border border-border hover:border-accent/30 transition-all duration-200 hover:shadow-md transform hover:scale-[1.02]"
-        >
-          <div className="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-600 rounded-lg mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-          </div>
-          <span className="font-medium">Flashcards</span>
-        </Link>
-        
-        <Link
-          href={`/study/${set.id}/learn`}
-          className="flex flex-col items-center justify-center p-6 bg-secondary hover:bg-secondary/90 rounded-lg border border-border hover:border-accent/30 transition-all duration-200 hover:shadow-md transform hover:scale-[1.02]"
-        >
-          <div className="w-12 h-12 flex items-center justify-center bg-purple-100 text-purple-600 rounded-lg mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-          </div>
-          <span className="font-medium">Learn</span>
-        </Link>
-        
-        <Link
-          href={`/study/${set.id}/quiz`}
-          className="flex flex-col items-center justify-center p-6 bg-secondary hover:bg-secondary/90 rounded-lg border border-border hover:border-accent/30 transition-all duration-200 hover:shadow-md transform hover:scale-[1.02]"
-        >
-          <div className="w-12 h-12 flex items-center justify-center bg-green-100 text-green-600 rounded-lg mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <span className="font-medium">Quiz</span>
-        </Link>
-        
-        <Link
-          href={`/study/${set.id}/match`}
-          className="flex flex-col items-center justify-center p-6 bg-secondary hover:bg-secondary/90 rounded-lg border border-border hover:border-accent/30 transition-all duration-200 hover:shadow-md transform hover:scale-[1.02]"
-        >
-          <div className="w-12 h-12 flex items-center justify-center bg-yellow-100 text-yellow-600 rounded-lg mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-          </div>
-          <span className="font-medium">Match</span>
-        </Link>
+      {/* Study options (Flashcards, Learn, Test) */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-semibold mb-6 text-foreground">Study This Set</h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          {/* Flashcards */}
+          <Link href={`/study/${set.id}/flashcards`} className="block p-6 bg-secondary border border-blue-500 rounded-lg hover:bg-blue-500/10 hover:border-blue-400 hover:shadow-lg transition-all duration-200 group">
+            <div className="flex items-center mb-3">
+              <span className="text-2xl mr-3">🗂️</span>
+              <h3 className="text-xl font-medium text-foreground group-hover:text-primary transition-colors">Flashcards</h3>
+            </div>
+            <p className="text-foreground/70">Review terms and definitions at your own pace.</p>
+          </Link>
+
+          {/* Learn */}
+          <Link href={`/study/${set.id}/learn`} className="block p-6 bg-secondary border border-blue-500 rounded-lg hover:bg-blue-500/10 hover:border-blue-400 hover:shadow-lg transition-all duration-200 group">
+            <div className="flex items-center mb-3">
+              <span className="text-2xl mr-3">🧠</span>
+              <h3 className="text-xl font-medium text-foreground group-hover:text-primary transition-colors">Learn</h3>
+            </div>
+            <p className="text-foreground/70">Master material with guided learning and spaced repetition.</p>
+          </Link>
+
+          {/* Test */}
+          <Link href={`/study/${set.id}/quiz/configure?maxQ=${set.pairs.length}`} className="block p-6 bg-secondary border border-blue-500 rounded-lg hover:bg-blue-500/10 hover:border-blue-400 hover:shadow-lg transition-all duration-200 group">
+            <div className="flex items-center mb-3">
+              <span className="text-2xl mr-3">✍️</span>
+              <h3 className="text-xl font-medium text-foreground group-hover:text-primary transition-colors">Test</h3>
+            </div>
+            <p className="text-foreground/70">Challenge yourself with a practice test.</p>
+          </Link>
+        </div>
       </div>
-      
+
       {/* Tabs for different views */}
       <div className="border-b border-border mb-6 bg-secondary/30">
         <div className="flex space-x-8">

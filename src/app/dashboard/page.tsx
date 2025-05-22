@@ -61,15 +61,15 @@ export default async function DashboardPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             <div className="bg-secondary p-6 rounded-lg shadow-sm border border-border">
-              <h2 className="text-xl font-medium mb-4">Create Flashcards</h2>
+              <h2 className="text-xl font-medium mb-4">Create Set</h2>
               <p className="text-foreground/70 mb-4">
                 Paste your notes and generate sets with flashcards, quiz questions, and more.
               </p>
               <Link
                 href="/create"
-                className="px-4 py-2 bg-accent text-black rounded-lg hover:bg-accent/80 text-sm font-medium inline-block shadow-sm transition-colors duration-200"
+                className="px-4 py-2 bg-blue-600 text-black rounded-lg hover:bg-blue-700 text-sm font-medium inline-block shadow-sm transition-colors duration-200"
               >
-                Create Now
+                Create Set
               </Link>
             </div>
             
@@ -122,7 +122,7 @@ export default async function DashboardPage() {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-medium">Recent Sets</h2>
               <Link
-                href="/dashboard"
+                href="/sets"
                 className="text-black hover:text-black/80 text-sm font-medium"
               >
                 View All

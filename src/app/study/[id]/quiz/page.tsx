@@ -3,11 +3,14 @@ import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '../../../../../packages/core/lib/prisma';
 import QuizComponent from './quiz-component';
+import Link from 'next/link';
 
 export default async function QuizPage({
   params,
+  searchParams,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }) {
   const user = await currentUser();
   
@@ -15,9 +18,15 @@ export default async function QuizPage({
     redirect('/sign-in');
   }
   
-  // Get params
-  const { id } = await params;
-  
+  const { id } = params;
+
+  // Get quiz configuration from searchParams
+  const numQuestionsParam = searchParams?.numQuestions;
+  const typesParam = searchParams?.types;
+
+  const numQuestions = numQuestionsParam ? parseInt(Array.isArray(numQuestionsParam) ? numQuestionsParam[0] : numQuestionsParam, 10) : 10; 
+  const questionTypes = typesParam ? (Array.isArray(typesParam) ? typesParam[0] : typesParam).split(',') : ['multiple-choice', 'fill-in-blank', 'true-false']; 
+
   // Get the submission and its pairs
   const submission = await prisma.noteSubmission.findUnique({
     where: {
@@ -42,15 +51,36 @@ export default async function QuizPage({
     where: {
       userId: user.id,
       submissionId: {
-        not: id, // Exclude current submission
+        not: id, 
       },
     },
     select: {
       term: true,
       definition: true,
     },
-    take: 100, // Limit to 100 pairs for performance
+    take: 100, 
   });
+
+  // Fallback if essential parameters are missing or invalid, redirect to configuration
+  if (!numQuestionsParam || !typesParam || numQuestions <= 0 || questionTypes.length === 0) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="max-w-5xl mx-auto text-center">
+            <h1 className="text-2xl font-bold mb-4">Quiz Configuration Missing</h1>
+            <p className="mb-6 text-muted-foreground">It looks like the quiz settings weren't specified correctly.</p>
+            <Link 
+              href={`/study/${id}/quiz/configure?maxQ=${submission?.pairs?.length || 10}`}
+              className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 text-sm font-medium"
+            >
+              Configure Quiz
+            </Link>
+          </div>
+        </main>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -76,6 +106,8 @@ export default async function QuizPage({
               allPairs={allPairs}
               submissionId={id}
               userId={user.id}
+              numQuestions={numQuestions} 
+              questionTypes={questionTypes} 
             />
           ) : (
             <div className="text-center py-12">

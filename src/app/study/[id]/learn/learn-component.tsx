@@ -61,17 +61,22 @@ export default function LearnComponent({
   const handleRate = useCallback(async (confidence: number) => {
     if (!currentPair) return;
     
-    // Update the study stats in the database
-    await fetch(`/api/study-stats/${currentPair.id}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        correct: confidence >= 3, // Consider 3+ as correct
-        confidence,
-      }),
-    });
+    try {
+      // Update the study stats in the database
+      await fetch(`/api/study-stats/${currentPair.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          correct: confidence >= 3, // Consider 3+ as correct
+          confidence,
+        }),
+      });
+    } catch (error) {
+      console.error("Error updating study stats:", error);
+      // Continue with the local experience even if API call fails
+    }
     
     // Update session progress
     setSessionProgress((prev) => ({
@@ -84,15 +89,37 @@ export default function LearnComponent({
     const newQueue = [...studyQueue];
     newQueue.shift();
     
-    // If score is less than 4, add it back to the queue (spaced repetition)
+    // Dynamic spacing based on confidence - the lower the confidence, the sooner we'll see it again
     if (confidence < 4) {
-      // Add it back 2-3 cards later, or at the end if queue is short
-      const newPosition = Math.min(newQueue.length, 2 + Math.floor(Math.random() * 2));
+      // Calculate position based on confidence level
+      // Lower confidence = earlier position
+      let newPosition;
+      switch (confidence) {
+        case 1: // Very low confidence - review very soon
+          newPosition = Math.min(2, newQueue.length);
+          break;
+        case 2: // Low confidence - review soon
+          newPosition = Math.min(4, newQueue.length);
+          break;
+        case 3: // Medium confidence - review later
+          newPosition = Math.min(7, newQueue.length);
+          break;
+        default: // Shouldn't reach here for confidence < 4
+          newPosition = Math.min(5, newQueue.length);
+      }
+      
+      // Add small randomness to position to avoid predictability
+      const randomOffset = Math.floor(Math.random() * 2);
+      newPosition = Math.min(newPosition + randomOffset, newQueue.length);
+      
+      // Insert the pair back into the queue at the calculated position
       newQueue.splice(newPosition, 0, {
         ...currentPair,
         stats: {
           ...currentPair.stats,
           confidence,
+          // Update status based on confidence
+          status: confidence <= 2 ? 'learning' : 'reviewing',
         },
       });
     }
@@ -265,17 +292,66 @@ export default function LearnComponent({
   );
 }
 
-// Helper function to create an adaptive study queue
+// Helper function to create an adaptive study queue with spaced repetition
 function createAdaptiveQueue(pairs: PairWithStats[]): PairWithStats[] {
-  // Group pairs by their status
-  const unseen = pairs.filter((p) => p.stats.status === 'unseen');
-  const learning = pairs.filter((p) => p.stats.status === 'learning');
-  const reviewing = pairs.filter((p) => p.stats.status === 'reviewing');
+  // Current date for calculating time-based priority
+  const now = new Date();
   
-  // Prioritize: 1. Learning, 2. Unseen, 3. Reviewing
-  // This way users see items they're still learning first, then new items, then items to review
-  const prioritizedPairs = [...learning, ...unseen, ...reviewing];
+  // Prepare pairs with their study priority
+  const preparedPairs = pairs.map(pair => {
+    // Default priority values
+    let timeFactor = 1;
+    let confidenceFactor = 1;
+    let statusPriority = 1;
+    
+    // Calculate time factor based on last review date (if it exists)
+    if (pair.stats.lastReviewed) {
+      const daysSinceReview = Math.max(1, Math.floor((now.getTime() - new Date(pair.stats.lastReviewed).getTime()) / (1000 * 60 * 60 * 24)));
+      
+      // Exponential decay based on confidence - higher confidence means longer optimal interval
+      const confidence = pair.stats.confidence || 1;
+      const optimalInterval = Math.pow(2, confidence - 1); // 1, 2, 4, 8, 16 days
+      
+      // Time factor is higher when current time is close to or past the optimal review interval
+      timeFactor = daysSinceReview / optimalInterval;
+    }
+    
+    // Confidence factor - lower confidence means higher priority
+    confidenceFactor = pair.stats.confidence ? 6 - pair.stats.confidence : 5; // 5, 4, 3, 2, 1
+    
+    // Status priority (learning items get highest priority)
+    switch (pair.stats.status) {
+      case 'learning': statusPriority = 4; break;
+      case 'unseen': statusPriority = 3; break;
+      case 'reviewing': statusPriority = 2; break;
+      case 'mastered': statusPriority = 1; break;
+      default: statusPriority = 1;
+    }
+    
+    // Calculate final priority score (higher is more urgent to review)
+    const priorityScore = (timeFactor * 2) + (confidenceFactor * 1.5) + (statusPriority * 3);
+    
+    return {
+      ...pair,
+      priorityScore
+    };
+  });
   
-  // Limit the session to 20 items for a reasonable study session
-  return prioritizedPairs.slice(0, 20);
+  // Sort by priority score (highest first)
+  const sortedPairs = preparedPairs.sort((a, b) => {
+    return (b as any).priorityScore - (a as any).priorityScore;
+  });
+  
+  // Get the top 20 items for this study session
+  const sessionPairs = sortedPairs.slice(0, 20);
+  
+  // Randomize the first few items slightly to avoid predictability while keeping high priority items at the top
+  if (sessionPairs.length > 3) {
+    const firstFew = sessionPairs.slice(0, 3);
+    const rest = sessionPairs.slice(3);
+    firstFew.sort(() => Math.random() - 0.5);
+    return [...firstFew, ...rest];
+  }
+  
+  return sessionPairs;
 }
