@@ -393,11 +393,11 @@ function generateQuiz(
         if (words.length <= 1) {
           // If term is only one word, use the entire term
           blankedQuestion = `Complete: ___ is defined as "${pair.definition}"`;
-          answer = pair.term;
+          pair.answer = pair.term;
         } else {
           // Find a word to blank out (preferably not a stop word)
           const wordIndex = Math.floor(Math.random() * words.length);
-          answer = words[wordIndex];
+          pair.answer = words[wordIndex];
           words[wordIndex] = '___';
           blankedQuestion = `Complete: "${words.join(' ')}" is defined as "${pair.definition}"`;
         }
