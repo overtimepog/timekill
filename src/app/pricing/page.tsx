@@ -19,7 +19,7 @@ const freePlan = {
     '20 Study Sets per month',
     '10 humanizer credits per month',
   ],
-  limitations: [], 
+  limitations: [] as string[], 
   priceId: '', 
   cta: 'Get Started Free',
   isCurrentPlan: false,
@@ -46,6 +46,21 @@ export default async function PricingPage() {
       expand: ['data.default_price'],
     });
     stripeProducts = products;
+    
+    // Debug: Log what we're getting from Stripe
+    console.log('=== STRIPE DEBUG INFO ===');
+    console.log('Products found:', stripeProducts.data.length);
+    stripeProducts.data.forEach((product, index) => {
+      const prod = product as any;
+      console.log(`Product ${index + 1}:`, {
+        id: prod.id,
+        name: prod.name,
+        active: prod.active,
+        metadata: prod.metadata,
+        default_price: prod.default_price
+      });
+    });
+    console.log('=== END STRIPE DEBUG ===');
   } catch (error) {
     console.error('Error fetching pricing data:', error);
   }
@@ -74,10 +89,8 @@ export default async function PricingPage() {
     highlight: true,
   };
 
-  let processedPlans = [
-    freePlan, 
-    ...(stripeProducts.data.length > 0 
-      ? stripeProducts.data.map((product: unknown) => {
+  // Process Stripe products or use fallback
+  const stripeBasedPlans = stripeProducts.data.map((product: unknown) => {
     const productData = product as { 
       id: string; 
       name: string; 
@@ -95,22 +108,22 @@ export default async function PricingPage() {
     const amount = price?.unit_amount ? (price.unit_amount / 100).toFixed(2) : '0';
     const interval = price?.recurring?.interval;
 
-    let features = [];
+    let features: string[] = [];
     try {
       if (productData.metadata?.features) {
-        features = JSON.parse(productData.metadata.features);
-        if (!Array.isArray(features)) features = []; 
+        const parsed = JSON.parse(productData.metadata.features);
+        if (Array.isArray(parsed)) features = parsed; 
       }
     } catch (e) {
       console.error('Failed to parse features from Stripe metadata for product:', productData.id, e);
       features = []; 
     }
 
-    let limitations = [];
+    let limitations: string[] = [];
     try {
       if (productData.metadata?.limitations) {
-        limitations = JSON.parse(productData.metadata.limitations);
-        if (!Array.isArray(limitations)) limitations = []; 
+        const parsed = JSON.parse(productData.metadata.limitations);
+        if (Array.isArray(parsed)) limitations = parsed; 
       }
     } catch (e) {
       console.error('Failed to parse limitations from Stripe metadata for product:', productData.id, e);
@@ -130,10 +143,24 @@ export default async function PricingPage() {
       isCurrentPlan: false,
       highlight: productData.name?.toLowerCase().includes('pro'), 
     };
-  }) 
-      : [fallbackProPlan] // Use fallback Pro plan if no Stripe products
-    )
-  ];
+  });
+
+  // Always include fallback Pro plan if no Stripe Pro plan exists
+  const hasProPlan = stripeBasedPlans.some(plan => 
+    plan.name?.toLowerCase().includes('pro') && plan.features.length > 0
+  );
+
+  let processedPlans = [freePlan];
+  
+  if (stripeBasedPlans.length > 0 && hasProPlan) {
+    console.log('Using Stripe-based plans:', stripeBasedPlans.length);
+    processedPlans.push(...stripeBasedPlans);
+  } else {
+    console.log('Using fallback Pro plan - Stripe plans:', stripeBasedPlans.length, 'Has Pro:', hasProPlan);
+    processedPlans.push(fallbackProPlan);
+  }
+  
+  console.log('Final processed plans:', processedPlans.map(p => ({ name: p.name, features: p.features.length })));
 
   processedPlans = processedPlans.map(plan => {
     let ctaText = 'Upgrade Now';
