@@ -27,7 +27,7 @@ interface PairEditModalProps {
 export default function PairEditModal({
   isOpen,
   onClose,
-  pairId,
+  // pairId, // Unused parameter
   initialValues,
   fieldToEdit,
   onSave,

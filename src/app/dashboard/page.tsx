@@ -163,7 +163,7 @@ export default async function DashboardPage() {
                     {submissions.length > 0 && submissions.map((submission: SubmissionWithCount) => (
                       <tr key={submission.id}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground/70 font-medium">
-                          {(submission.metadata as any)?.setName || `Set ${new Date(submission.createdAt).toLocaleDateString()}`}
+                          {(() => { const metaSetName = (submission.metadata as Record<string, any>)?.setName; return typeof metaSetName === 'string' && metaSetName ? metaSetName : `Set ${new Date(submission.createdAt).toLocaleDateString()}`; })()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground/70">
                           {new Date(submission.createdAt).toLocaleDateString()}

@@ -39,10 +39,10 @@ export default function GlobalError({
               {isDuplicateEmailError ? (
                 <div className="mb-6">
                   <p className="text-foreground/80 mb-4">
-                    We've detected that your email address is already associated with another account in our system.
+                    We&apos;ve detected that your email address is already associated with another account in our system.
                   </p>
                   <p className="text-foreground/80 mb-4">
-                    This can happen if you've previously signed up with a different authentication method
+                    This can happen if you&apos;ve previously signed up with a different authentication method
                     (like Google, GitHub, or email/password).
                   </p>
                   <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-4 rounded-md text-amber-800 dark:text-amber-200 mb-6">

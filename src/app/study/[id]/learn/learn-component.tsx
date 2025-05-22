@@ -339,7 +339,7 @@ function createAdaptiveQueue(pairs: PairWithStats[]): PairWithStats[] {
   
   // Sort by priority score (highest first)
   const sortedPairs = preparedPairs.sort((a, b) => {
-    return (b as any).priorityScore - (a as any).priorityScore;
+    return (b as StudyPair).priorityScore - (a as StudyPair).priorityScore;
   });
   
   // Get the top 20 items for this study session

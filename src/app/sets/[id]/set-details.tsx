@@ -8,7 +8,7 @@ import { HiOutlineDotsVertical } from 'react-icons/hi';
 import DeleteSetButton from './delete-set-button';
 import EditSetButton from './edit-set-button';
 import EditPairButton from './edit-pair-button';
-import { Button } from '../../components/ui/button';
+// import { Button } from '../../components/ui/button';
 
 export interface Pair {
   id: string;
@@ -18,7 +18,7 @@ export interface Pair {
   answer: string;
   submissionId: string;
   order: number;
-  metadata: any;
+  metadata: Record<string, unknown>;
 }
 
 export interface SetWithPairs {
@@ -26,7 +26,7 @@ export interface SetWithPairs {
   userId: string;
   rawText: string;
   language: string | null;
-  metadata: any;
+  metadata: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
   pairs: Pair[];
@@ -71,8 +71,8 @@ export default function SetDetails({ set: initialSet }: SetDetailsProps) {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold">{(set.metadata as any)?.setName || `Set ${new Date(set.createdAt).toLocaleDateString()}`}</h1>
-            <EditSetButton setId={set.id} currentName={(set.metadata as any)?.setName || ''} />
+            <h1 className="text-3xl font-bold">{(set.metadata as Record<string, unknown>)?.setName || `Set ${new Date(set.createdAt).toLocaleDateString()}`}</h1>
+            <EditSetButton setId={set.id} currentName={(set.metadata as Record<string, unknown>)?.setName as string || ''} />
           </div>
           <div className="flex items-center mt-2 text-sm text-foreground/70">
             <span>{set.pairs.length} terms</span>
@@ -188,7 +188,7 @@ export default function SetDetails({ set: initialSet }: SetDetailsProps) {
         
         {sortedPairs.length > 0 ? (
           <div className="space-y-4">
-            {sortedPairs.map((pair: Pair, index: number) => (
+            {sortedPairs.map((pair: Pair) => (
               <div key={pair.id} className="group bg-secondary p-5 rounded-lg border border-border hover:border-accent/50 hover:shadow-md transition-all">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>

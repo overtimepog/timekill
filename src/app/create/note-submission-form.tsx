@@ -88,7 +88,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
       if (file) {
         try {
           contentContent = await readFileContent(file);
-        } catch (fileError) {
+        } catch (error) {
           throw new Error('Failed to read uploaded file');
         }
       }
@@ -126,12 +126,12 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
     }
   };
   
-  // Handle navigating to study
-  const handleStudy = () => {
-    if (submissionId) {
-      router.push(`/sets/${submissionId}`);
-    }
-  };
+  // No longer used - we use handleSavePairs for navigation
+  // const handleStudy = () => {
+  //   if (submissionId) {
+  //     router.push(`/sets/${submissionId}`);
+  //   }
+  // };
   
   // Handle editing a pair
   const handleEditPair = (index: number, field: keyof Pair, value: string) => {

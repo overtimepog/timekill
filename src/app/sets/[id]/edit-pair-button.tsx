@@ -15,7 +15,13 @@ interface EditPairButtonProps {
     answer: string;
   };
   field?: PairField;
-  onPairUpdated: (updatedPair: any) => void;
+  onPairUpdated: (updatedPair: {
+    term: string;
+    definition: string;
+    question: string;
+    answer: string;
+    id: string;
+  }) => void;
 }
 
 export default function EditPairButton({

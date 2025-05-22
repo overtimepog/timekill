@@ -73,7 +73,7 @@ export default function PricingButton({
   };
   
   // Determine the button variant based on the plan status
-  let variant: 'primary' | 'secondary' | 'green' = isCurrentPlan 
+  const variant: 'primary' | 'secondary' | 'green' = isCurrentPlan 
     ? 'green' 
     : highlight 
       ? 'primary' 

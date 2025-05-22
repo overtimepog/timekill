@@ -93,7 +93,7 @@ export default async function AllSetsPage() {
                     {submissions.map((submission) => (
                       <tr key={submission.id}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground/70 font-medium">
-                          {(submission.metadata as any)?.setName || `Set ${new Date(submission.createdAt).toLocaleDateString()}`}
+                          {(submission.metadata as Record<string, unknown>)?.setName || `Set ${new Date(submission.createdAt).toLocaleDateString()}`}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground/70">
                           {new Date(submission.createdAt).toLocaleDateString()}

@@ -79,7 +79,7 @@ export default function QuizConfigurePage() {
       alert('Please select at least one question type.');
       return;
     }
-    let num = parseInt(numQuestions, 10);
+    const num = parseInt(numQuestions, 10);
     if (isNaN(num) || num <= 0) {
         alert('Please enter a valid number of questions.');
         return;

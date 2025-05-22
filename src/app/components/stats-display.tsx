@@ -33,7 +33,7 @@ export function StatsDisplay() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchAndUpdateStats = async () => {
+  const fetchAndUpdateStats = React.useCallback(async () => {
     if (!loading) setLoading(true); // Set loading true if not already loading (e.g. for interval updates)
     try {
       const fetchedStats = await getStats();
@@ -50,7 +50,7 @@ export function StatsDisplay() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [loading]);
 
   useEffect(() => {
     fetchAndUpdateStats(); // Fetch initial stats
@@ -60,7 +60,7 @@ export function StatsDisplay() {
     }, 20 * 60 * 1000); // 20 minutes
 
     return () => clearInterval(intervalId); // Cleanup interval on unmount
-  }, []); // Empty dependency array means this runs once on mount and cleanup on unmount
+  }, [fetchAndUpdateStats]); // Include fetchAndUpdateStats in the dependency array
 
   // Display loading state or default values if stats are not yet loaded
   const displayStats = stats || { 

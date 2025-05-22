@@ -34,7 +34,7 @@ export default function QuizComponent({
   pairs,
   allPairs,
   submissionId,
-  userId,
+  // userId, // Not currently used
   numQuestions,
   questionTypes,
 }: QuizComponentProps) {
