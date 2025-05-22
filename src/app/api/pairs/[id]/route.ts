@@ -14,7 +14,8 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const id = params.id;
+    // Ensure params is properly awaited before accessing properties
+    const { id } = params;
     const body = await request.json();
     
     // Get the pair and verify ownership through the submission
