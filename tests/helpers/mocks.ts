@@ -23,6 +23,19 @@
  */
 
 import { vi } from 'vitest';
+import { PrismaClient as OriginalPrismaClient } from '@prisma/client';
+import './prisma-types'; // Import the type extensions
+
+// Define the extended PrismaClient type
+type ExtendedPrismaClient = OriginalPrismaClient & {
+  user: any;
+  subscription: any;
+  noteSubmission: any;
+  pair: any;
+  studyStat: any;
+  humanizerRun: any;
+  monthlyUsage: any;
+};
 
 // Export PrismaClient constructor mock
 export class PrismaClient {
@@ -41,6 +54,7 @@ export const mockPrismaClient = () => {
       update: vi.fn(),
       upsert: vi.fn(),
       delete: vi.fn(),
+      count: vi.fn(),
     },
     subscription: {
       findUnique: vi.fn(),
@@ -76,6 +90,7 @@ export const mockPrismaClient = () => {
       upsert: vi.fn(),
       delete: vi.fn(),
       groupBy: vi.fn(),
+      aggregate: vi.fn(),
     },
     humanizerRun: {
       findUnique: vi.fn(),
@@ -84,12 +99,13 @@ export const mockPrismaClient = () => {
       update: vi.fn(),
       count: vi.fn(),
       delete: vi.fn(),
+      aggregate: vi.fn(),
     },
     $transaction: vi.fn((callback) => callback(prisma)),
     $queryRaw: vi.fn(),
     $connect: vi.fn(),
     $disconnect: vi.fn(),
-  } as unknown as PrismaClient;
+  } as unknown as ExtendedPrismaClient;
   
   return prisma;
 };
@@ -127,6 +143,9 @@ export const mockStripeClient = () => ({
   customers: {
     create: vi.fn(),
     retrieve: vi.fn(),
+  },
+  products: {
+    list: vi.fn(),
   },
   subscriptions: {
     retrieve: vi.fn(),
