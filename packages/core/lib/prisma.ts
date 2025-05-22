@@ -17,6 +17,7 @@ class MockPrismaClient {
   pair = this.createMockModel('Pair');
   studyStat = this.createMockModel('StudyStat');
   humanizerRun = this.createMockModel('HumanizerRun');
+  monthlyUsage = this.createMockModel('MonthlyUsage');
 
   // Add connection methods
   async $connect() { return Promise.resolve(); }

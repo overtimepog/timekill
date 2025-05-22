@@ -28,6 +28,7 @@ model User {
   pairs         Pair[]
   studyStats    StudyStat[]
   humanizerRuns HumanizerRun[]
+  monthlyUsage  MonthlyUsage[]
 }
 
 // Subscription model - connected to Stripe
@@ -115,6 +116,25 @@ model HumanizerRun {
   saplingScore  Float?    // AI detection score from Sapling
   iterations    Int       // Number of iterations to achieve the score
   similarity    Float?    // Semantic similarity score
+  creditsUsed   Int       @default(1) // Number of credits consumed for this run
   
   createdAt     DateTime  @default(now())
+}
+
+// Monthly usage tracking model
+model MonthlyUsage {
+  id                    String    @id @default(cuid())
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  year                  Int       // Year (e.g., 2024)
+  month                 Int       // Month (1-12)
+  
+  documentConversions   Int       @default(0) // Number of document conversions this month
+  humanizerCreditsUsed  Int       @default(0) // Number of humanizer credits used this month
+  
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  
+  @@unique([userId, year, month])
 }

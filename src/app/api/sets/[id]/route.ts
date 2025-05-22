@@ -118,7 +118,17 @@ export async function DELETE(
       });
     });
     
-    return NextResponse.json({ success: true });
+    // Return success with cache invalidation headers to ensure stats update immediately
+    return NextResponse.json(
+      { success: true },
+      {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      }
+    );
   } catch (error) {
     console.error('Error deleting set:', error);
     return NextResponse.json({ error: 'Failed to delete set' }, { status: 500 });

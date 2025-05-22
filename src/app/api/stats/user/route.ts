@@ -2,17 +2,17 @@ import { NextResponse } from 'next/server';
 import { getUserStats } from '../../../../../packages/core/lib/stats';
 import { requireLogin } from '../../../../../packages/core/lib/auth';
 
-// Cache the response for 1 minute (shorter than global stats since user stats change more frequently)
-const CACHE_MAX_AGE = 60; // 1 minute in seconds
+// Cache the response for 30 seconds (reduced from 1 minute for more responsive stats)
+const CACHE_MAX_AGE = 30; // 30 seconds
 
 /**
  * Route handler for GET /api/stats/user
  * Returns statistics for the authenticated user
  */
 export async function GET() {
-  // Set cache headers
+  // Set cache headers - using shorter cache time for user stats that change frequently
   const headers = {
-    'Cache-Control': `private, s-maxage=${CACHE_MAX_AGE}, stale-while-revalidate=${CACHE_MAX_AGE * 2}`,
+    'Cache-Control': `private, s-maxage=${CACHE_MAX_AGE}, stale-while-revalidate=${CACHE_MAX_AGE}`,
   };
   
   try {

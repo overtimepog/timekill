@@ -85,10 +85,19 @@ export async function PUT(
       );
     }
     
-    return NextResponse.json({
-      success: true,
-      message: 'Pairs updated successfully',
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'Pairs updated successfully',
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      }
+    );
   } catch (error) {
     console.error('Error updating pairs:', error);
     const errorMessage = error instanceof Error ? error.message : 'An error occurred while updating pairs';

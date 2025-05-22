@@ -71,15 +71,17 @@ export default async function PricingPage() {
         price: '$0',
         period: 'forever',
         features: [
-          '50 notes conversions per month',
-          '20 pairs per conversion',
+          '20 document conversions per month',
+          'Each conversion creates a study set',
+          'Unlimited pairs per set',
           'Basic flashcards and quizzes',
           '10 humanizer credits',
+          '5,000 character limit per document',
         ],
         limitations: [
-          'Limited to 1000 characters per note',
           'No advanced study modes',
           'No advanced humanizer settings',
+          'Limited monthly usage',
         ],
         priceId: '', // No price ID for free plan
         cta: user ? 'Current Plan' : 'Sign Up',
@@ -89,13 +91,14 @@ export default async function PricingPage() {
         id: 'pro',
         name: 'Pro',
         description: 'For serious students and professionals',
-        price: '$9.99',
+        price: '$2.99',
         period: 'per month',
         features: [
-          'Unlimited notes conversions',
-          'Up to 50 pairs per conversion',
+          'Unlimited document conversions',
+          'Unlimited study sets',
+          'Unlimited pairs per set',
           'All study modes including learn mode',
-          'Unlimited humanizer credits',
+          '50 humanizer credits per month',
           'Advanced humanizer settings',
           'Priority AI processing',
           'No character limits',
@@ -213,9 +216,9 @@ export default async function PricingPage() {
               </div>
               
               <div className="bg-secondary p-6 rounded-lg border border-border">
-                <h3 className="text-lg font-medium mb-2">How do notes conversions work?</h3>
+                <h3 className="text-lg font-medium mb-2">How do conversions and sets work?</h3>
                 <p className="opacity-80">
-                  Each time you paste notes and generate flashcards, that counts as one conversion. Free accounts are limited to 50 conversions per month.
+                  Each time you paste a document and generate flashcards, that counts as one conversion that creates a study set. Free accounts are limited to 20 conversions per month.
                 </p>
               </div>
               

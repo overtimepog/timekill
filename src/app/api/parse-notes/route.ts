@@ -1,8 +1,8 @@
 /**
- * API route for parsing notes and generating term-definition pairs
+ * API route for parsing documents and generating term-definition pairs
  * 
  * This route handles the POST /api/parse-notes request to process
- * user-submitted notes and generate flashcards and quiz items.
+ * user-submitted documents and generate flashcards and quiz items.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -10,12 +10,12 @@ import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '../../../../packages/core/lib/prisma';
 import { extractPairsFromNotes } from '../../../../packages/core/lib/gemini';
 import { trackNewSet } from '../../../../packages/core/lib/stats/tracker';
+import { canUserConvertDocument, trackDocumentConversion, validateDocumentLength } from '../../../../packages/core/lib/usage-tracker';
 
-// Maximum note length for free users
-const FREE_USER_MAX_NOTE_LENGTH = 10000;
+
 
 /**
- * Process notes and generate pairs
+ * Process documents and generate pairs
  */
 export async function POST(request: NextRequest) {
   try {
@@ -33,27 +33,30 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { notes } = body;
     
-    // Validate notes
+    // Validate document content
     if (!notes || typeof notes !== 'string') {
       return NextResponse.json(
-        { error: 'Notes are required and must be a string' },
+        { error: 'Document content is required and must be a string' },
         { status: 400 }
       );
     }
     
-    // Check note length for free users
-    if (notes.length > FREE_USER_MAX_NOTE_LENGTH) {
-      // Check if the user has a pro subscription
-      const subscription = await prisma.subscription.findUnique({
-        where: { userId: user.id },
-      });
-      
-      if (!subscription || subscription.status !== 'active' || subscription.plan !== 'pro') {
-        return NextResponse.json(
-          { error: 'Notes exceed maximum length. Upgrade to Pro for longer notes.' },
-          { status: 403 }
-        );
-      }
+    // Check document length limits
+    const lengthValidation = await validateDocumentLength(user.id, notes.length);
+    if (!lengthValidation.valid) {
+      return NextResponse.json(
+        { error: lengthValidation.reason },
+        { status: 403 }
+      );
+    }
+
+    // Check if user can perform document conversion
+    const conversionCheck = await canUserConvertDocument(user.id);
+    if (!conversionCheck.allowed) {
+      return NextResponse.json(
+        { error: conversionCheck.reason },
+        { status: 403 }
+      );
     }
     
     // Create the submission record
@@ -70,10 +73,11 @@ export async function POST(request: NextRequest) {
       },
     });
     
-    // Track the new set for stats
+    // Track the new set for stats and usage
     await trackNewSet(submission.id, user.id);
+    await trackDocumentConversion(user.id);
     
-    // Extract pairs from the notes
+    // Extract pairs from the document
     const pairs = await extractPairsFromNotes(notes, user.id, {});
     
     // Define the type for term-definition pairs
@@ -113,8 +117,8 @@ export async function POST(request: NextRequest) {
       pairs,
     });
   } catch (error) {
-    console.error('Error parsing notes:', error);
-    const errorMessage = error instanceof Error ? error.message : 'An error occurred while parsing notes';
+    console.error('Error parsing document:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An error occurred while parsing document';
     const errorStatus = (error as { status?: number }).status || 500;
     return NextResponse.json(
       { error: errorMessage },

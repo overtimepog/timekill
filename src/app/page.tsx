@@ -12,10 +12,10 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold mb-4">
-              Transform Your Notes Into Interactive Study Materials
+              Transform Your Documents Into Interactive Study Sets
             </h1>
             <p className="text-xl mb-8 text-gray-600 dark:text-gray-300">
-              Paste your notes, get flashcards, quizzes, and more. Study smarter, not harder.
+              Paste your documents, get flashcards, quizzes, and more. Study smarter, not harder.
             </p>
             <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
               <Link
@@ -51,7 +51,7 @@ export default function Home() {
                   </svg>
                 </span>
               </div>
-              <h3 className="text-xl font-medium mb-2">Paste Your Notes</h3>
+              <h3 className="text-xl font-medium mb-2">Paste Your Documents</h3>
               <p className="text-gray-600 dark:text-gray-300">
                 Simply paste your study materials - paragraphs, bullets, or outlines - and our AI does the rest.
               </p>
@@ -65,9 +65,9 @@ export default function Home() {
                   </svg>
                 </span>
               </div>
-              <h3 className="text-xl font-medium mb-2">Generate Flashcards</h3>
+              <h3 className="text-xl font-medium mb-2">Generate Study Sets</h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Our AI extracts key terms and definitions, creating perfectly formatted flashcards and quiz questions.
+                Our AI extracts key terms and definitions, creating perfectly formatted study pairs and quiz questions.
               </p>
             </div>
             
@@ -146,7 +146,7 @@ export default function Home() {
               Get Started For Free
             </Link>
             <p className="mt-4 text-gray-600 dark:text-gray-300">
-              No credit card required. Free plan includes 50 notes conversions per month.
+              No credit card required. Free plan includes 20 document conversions per month.
             </p>
           </div>
         </div>

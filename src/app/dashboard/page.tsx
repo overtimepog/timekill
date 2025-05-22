@@ -71,7 +71,7 @@ export default async function DashboardPage() {
             <div className="bg-secondary p-6 rounded-lg shadow-sm border border-border">
               <h2 className="text-xl font-medium mb-4">Create Set</h2>
               <p className="text-foreground/70 mb-4">
-                Paste your notes and generate sets with flashcards, quiz questions, and more.
+                Paste your documents and generate sets with flashcards, quiz questions, and more.
               </p>
               <Link
                 href="/create"

@@ -166,7 +166,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
       
       // Ensure we have content to process
       if (!contentContent.trim()) {
-        throw new Error('Please provide notes either by text or file upload');
+        throw new Error('Please provide content either by text or file upload');
       }
       
       // Additional validation for content length
@@ -189,7 +189,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to process notes');
+        throw new Error(data.error || 'Failed to process document');
       }
       
       setPairs(data.pairs);
@@ -279,7 +279,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
               onChange={(e) => setContent(e.target.value)}
               rows={10}
               className="w-full rounded-md border border-input-border shadow-sm px-4 py-2 bg-input-bg text-input-text placeholder-input-placeholder focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/70"
-              placeholder="Paste your notes, lecture slides, or study materials here to create a study set..."
+              placeholder="Paste your documents, lecture slides, or study materials here to create a study set..."
             />
             <p className="mt-1 text-sm text-gray-400">
               {formatNumber(content.length)}/50,000 characters

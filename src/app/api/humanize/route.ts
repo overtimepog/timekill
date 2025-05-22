@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { humanizeText } from '../../../../packages/core/lib/humanizer';
 import { requireLogin, requireSubscription } from '../../../../packages/core/lib/auth';
+import { canUserUseHumanizer, trackHumanizerUsage } from '../../../../packages/core/lib/usage-tracker';
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,6 +20,16 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Check if user can use humanizer credits
+    const creditsNeeded = Math.ceil(text.length / 500); // 1 credit per 500 characters
+    const creditCheck = await canUserUseHumanizer(user.id, creditsNeeded);
+    if (!creditCheck.allowed) {
+      return NextResponse.json(
+        { error: creditCheck.reason },
+        { status: 403 }
+      );
+    }
+
     // Check text length
     if (text.length > 2000) {
       // Check if user has Pro subscription for longer texts
@@ -55,6 +66,9 @@ export async function POST(request: NextRequest) {
     }
     
     const result = await humanizeText(text, user.id, optionsToUse);
+    
+    // Track humanizer credit usage
+    await trackHumanizerUsage(user.id, creditsNeeded);
     
     // Return the humanized text and stats
     return NextResponse.json(result);

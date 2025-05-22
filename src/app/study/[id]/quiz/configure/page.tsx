@@ -20,10 +20,36 @@ interface QuestionTypeOption {
   label: string;
 }
 
+interface TestModeOption {
+  id: 'terms-definitions' | 'questions-answers' | 'both';
+  label: string;
+  description: string;
+}
+
+interface AnswerModeOption {
+  id: 'term' | 'definition' | 'question' | 'answer';
+  label: string;
+  description: string;
+  availableFor: ('terms-definitions' | 'questions-answers')[];
+}
+
 const questionTypeOptions: QuestionTypeOption[] = [
   { id: 'multiple-choice', label: 'Multiple Choice' },
   { id: 'fill-in-blank', label: 'Fill in the Blank' },
   { id: 'true-false', label: 'True/False' },
+];
+
+const testModeOptions: TestModeOption[] = [
+  { id: 'terms-definitions', label: 'Terms & Definitions', description: 'Test on terms and their definitions' },
+  { id: 'questions-answers', label: 'Questions & Answers', description: 'Test on questions and their answers' },
+  { id: 'both', label: 'Mixed Mode', description: 'Test on both terms/definitions and questions/answers' },
+];
+
+const answerModeOptions: AnswerModeOption[] = [
+  { id: 'term', label: 'Answer with Term', description: 'Given definition, answer with term', availableFor: ['terms-definitions'] },
+  { id: 'definition', label: 'Answer with Definition', description: 'Given term, answer with definition', availableFor: ['terms-definitions'] },
+  { id: 'question', label: 'Answer with Question', description: 'Given answer, answer with question', availableFor: ['questions-answers'] },
+  { id: 'answer', label: 'Answer with Answer', description: 'Given question, answer with answer', availableFor: ['questions-answers'] },
 ];
 
 // This page would ideally fetch `maxQuestionsTotal` from a server component or API route
@@ -39,6 +65,8 @@ export default function QuizConfigurePage() {
 
   const [numQuestions, setNumQuestions] = useState<string>('10');
   const [selectedQuestionTypes, setSelectedQuestionTypes] = useState<string[]>(['multiple-choice', 'fill-in-blank', 'true-false']);
+  const [testMode, setTestMode] = useState<string>('terms-definitions');
+  const [answerMode, setAnswerMode] = useState<string>('definition');
   
   useEffect(() => {
     // If you were fetching maxQuestions dynamically:
@@ -73,6 +101,28 @@ export default function QuizConfigurePage() {
     );
   };
 
+  const handleTestModeChange = (mode: string) => {
+    setTestMode(mode);
+    // Reset answer mode to appropriate default for the selected test mode
+    if (mode === 'terms-definitions') {
+      setAnswerMode('definition');
+    } else if (mode === 'questions-answers') {
+      setAnswerMode('answer');
+    } else { // both
+      setAnswerMode('definition'); // Default to definition for mixed mode
+    }
+  };
+
+  // Get available answer modes based on current test mode
+  const getAvailableAnswerModes = () => {
+    if (testMode === 'both') {
+      return answerModeOptions; // All options available for mixed mode
+    }
+    return answerModeOptions.filter(option => 
+      option.availableFor.includes(testMode as 'terms-definitions' | 'questions-answers')
+    );
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedQuestionTypes.length === 0) {
@@ -92,6 +142,8 @@ export default function QuizConfigurePage() {
     const queryParams = new URLSearchParams({
       numQuestions: String(num),
       types: selectedQuestionTypes.join(','),
+      testMode: testMode,
+      answerMode: answerMode,
     });
     router.push(`/study/${setId}/quiz?${queryParams.toString()}`);
   };
@@ -142,6 +194,54 @@ export default function QuizConfigurePage() {
                 className="text-base bg-input border-border focus:ring-primary focus:border-primary"
               />
                <p className="text-sm text-muted-foreground mt-2">Enter the total number of questions for your quiz. Max available for this set: {maxQuestionsTotal}.</p>
+            </div>
+
+            <div>
+              <Label className="text-md sm:text-lg font-medium mb-3 block text-foreground/90">Test Mode</Label>
+              <div className="space-y-3">
+                {testModeOptions.map(mode => (
+                  <div key={mode.id} className="flex items-start space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors bg-card shadow-sm">
+                    <input
+                      type="radio"
+                      id={mode.id}
+                      name="testMode"
+                      checked={testMode === mode.id}
+                      onChange={() => handleTestModeChange(mode.id)}
+                      className="mt-1 h-4 w-4 text-primary border-primary-focus focus:ring-primary"
+                    />
+                    <div className="flex-1">
+                      <Label htmlFor={mode.id} className="font-medium text-base cursor-pointer text-foreground/90 block">
+                        {mode.label}
+                      </Label>
+                      <p className="text-sm text-muted-foreground mt-1">{mode.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-md sm:text-lg font-medium mb-3 block text-foreground/90">Answer Mode</Label>
+              <div className="space-y-3">
+                {getAvailableAnswerModes().map(mode => (
+                  <div key={mode.id} className="flex items-start space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors bg-card shadow-sm">
+                    <input
+                      type="radio"
+                      id={mode.id}
+                      name="answerMode"
+                      checked={answerMode === mode.id}
+                      onChange={() => setAnswerMode(mode.id)}
+                      className="mt-1 h-4 w-4 text-primary border-primary-focus focus:ring-primary"
+                    />
+                    <div className="flex-1">
+                      <Label htmlFor={mode.id} className="font-medium text-base cursor-pointer text-foreground/90 block">
+                        {mode.label}
+                      </Label>
+                      <p className="text-sm text-muted-foreground mt-1">{mode.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div>

@@ -25,9 +25,13 @@ export default async function QuizPage({
   const resolvedSearchParams = await searchParams || {};
   const numQuestionsParam = resolvedSearchParams?.numQuestions;
   const typesParam = resolvedSearchParams?.types;
+  const testModeParam = resolvedSearchParams?.testMode;
+  const answerModeParam = resolvedSearchParams?.answerMode;
 
   const numQuestions = numQuestionsParam ? parseInt(Array.isArray(numQuestionsParam) ? numQuestionsParam[0] : numQuestionsParam, 10) : 10; 
-  const questionTypes = typesParam ? (Array.isArray(typesParam) ? typesParam[0] : typesParam).split(',') : ['multiple-choice', 'fill-in-blank', 'true-false']; 
+  const questionTypes = typesParam ? (Array.isArray(typesParam) ? typesParam[0] : typesParam).split(',') : ['multiple-choice', 'fill-in-blank', 'true-false'];
+  const testMode = testModeParam ? (Array.isArray(testModeParam) ? testModeParam[0] : testModeParam) : 'terms-definitions';
+  const answerMode = answerModeParam ? (Array.isArray(answerModeParam) ? answerModeParam[0] : answerModeParam) : 'definition'; 
 
   // Get the submission and its pairs
   const submission = await prisma.noteSubmission.findUnique({
@@ -109,7 +113,9 @@ export default async function QuizPage({
               submissionId={id}
               userId={user.id}
               numQuestions={numQuestions} 
-              questionTypes={questionTypes} 
+              questionTypes={questionTypes}
+              testMode={testMode}
+              answerMode={answerMode}
             />
           ) : (
             <div className="text-center py-12">

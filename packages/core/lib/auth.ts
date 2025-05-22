@@ -93,15 +93,89 @@ export const syncUserWithClerk = async (clerkUser: any) => {
     // Check if a user with this email already exists
     const userWithEmail = await prisma.user.findUnique({
       where: { email },
+      include: {
+        submissions: true,
+        pairs: true,
+        studyStats: true,
+        subscription: true,
+        humanizerRuns: true,
+      },
     });
     
     if (userWithEmail) {
       // If a user with this email exists but has a different ID,
-      // we need to handle this conflict
-      throw new AuthError(
-        `Email ${email} is already associated with another account`,
-        'duplicate_email'
-      );
+      // we'll merge the accounts automatically
+      console.log(`[syncUserWithClerk] Merging accounts: existing user ${userWithEmail.id} with new Clerk user ${clerkUser.id}`);
+      
+      try {
+        // Use a transaction to ensure data consistency
+        const mergedUser = await prisma.$transaction(async (tx) => {
+          // Create the new user with the Clerk ID
+          const newUser = await tx.user.create({
+            data: {
+              id: clerkUser.id,
+              email,
+            },
+          });
+          
+          // Transfer all data from the old user to the new user
+          if (userWithEmail.submissions.length > 0) {
+            await tx.noteSubmission.updateMany({
+              where: { userId: userWithEmail.id },
+              data: { userId: clerkUser.id },
+            });
+          }
+          
+          if (userWithEmail.pairs.length > 0) {
+            await tx.pair.updateMany({
+              where: { userId: userWithEmail.id },
+              data: { userId: clerkUser.id },
+            });
+          }
+          
+          if (userWithEmail.studyStats.length > 0) {
+            await tx.studyStat.updateMany({
+              where: { userId: userWithEmail.id },
+              data: { userId: clerkUser.id },
+            });
+          }
+          
+          if (userWithEmail.humanizerRuns.length > 0) {
+            await tx.humanizerRun.updateMany({
+              where: { userId: userWithEmail.id },
+              data: { userId: clerkUser.id },
+            });
+          }
+          
+          // Transfer subscription if it exists
+          if (userWithEmail.subscription) {
+            await tx.subscription.update({
+              where: { userId: userWithEmail.id },
+              data: { userId: clerkUser.id },
+            });
+          }
+          
+          // Delete the old user (cascade will handle dependent records)
+          await tx.user.delete({
+            where: { id: userWithEmail.id },
+          });
+          
+          console.log(`[syncUserWithClerk] Successfully merged user ${userWithEmail.id} into ${clerkUser.id}`);
+          return newUser;
+        });
+        
+        // Track the new user for stats (if they didn't have an account before)
+        await trackNewUser(clerkUser.id);
+        
+        return mergedUser;
+      } catch (mergeError) {
+        console.error(`[syncUserWithClerk] Failed to merge accounts:`, mergeError);
+        // If merging fails, create a helpful error message
+        throw new AuthError(
+          `Unable to merge accounts automatically. Please contact support for assistance.`,
+          'merge_failed'
+        );
+      }
     }
     
     // Create a new user if no conflicts

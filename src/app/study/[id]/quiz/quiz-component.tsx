@@ -18,6 +18,8 @@ type QuizComponentProps = {
   userId: string;
   numQuestions: number;
   questionTypes: string[];
+  testMode: string;
+  answerMode: string;
 };
 
 type QuizQuestion = {
@@ -37,6 +39,8 @@ export default function QuizComponent({
   // userId, // Not currently used
   numQuestions,
   questionTypes,
+  testMode,
+  answerMode,
 }: QuizComponentProps) {
   const router = useRouter();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
@@ -46,9 +50,9 @@ export default function QuizComponent({
 
   // Generate questions on component mount
   useEffect(() => {
-    const generatedQuestions = generateQuiz(pairs, allPairs, numQuestions, questionTypes);
+    const generatedQuestions = generateQuiz(pairs, allPairs, numQuestions, questionTypes, testMode, answerMode);
     setQuestions(generatedQuestions);
-  }, [pairs, allPairs, numQuestions, questionTypes]);
+  }, [pairs, allPairs, numQuestions, questionTypes, testMode, answerMode]);
 
   // Current question
   const currentQuestion = questions[currentIndex];
@@ -131,7 +135,7 @@ export default function QuizComponent({
 
   // Handle restarting the quiz
   const handleRestart = () => {
-    const generatedQuestions = generateQuiz(pairs, allPairs, numQuestions, questionTypes);
+    const generatedQuestions = generateQuiz(pairs, allPairs, numQuestions, questionTypes, testMode, answerMode);
     setQuestions(generatedQuestions);
     setCurrentIndex(0);
     setQuizComplete(false);
@@ -331,7 +335,9 @@ function generateQuiz(
   pairs: Pair[],
   allPairs: { term: string; definition: string }[],
   numQuestions: number,
-  questionTypes: string[]
+  questionTypes: string[],
+  testMode: string,
+  answerMode: string
 ): QuizQuestion[] {
   const questions: QuizQuestion[] = [];
   const availablePairs = [...pairs]; // Create a mutable copy
@@ -356,14 +362,43 @@ function generateQuiz(
       const pair = availablePairs[i];
       if (!pair || !pair.term || !pair.definition) continue;
 
-      const options = generateMultipleChoiceOptions(pair.definition, allDefinitions);
+      let questionText = '';
+      let correctAnswer = '';
+      let options: string[] = [];
+
+      // Determine question based on test mode and answer mode
+      if (testMode === 'terms-definitions' || (testMode === 'both' && Math.random() > 0.5)) {
+        if (answerMode === 'definition' || (testMode === 'both' && Math.random() > 0.5)) {
+          questionText = `What is the definition of "${pair.term}"?`;
+          correctAnswer = pair.definition;
+          options = generateMultipleChoiceOptions(pair.definition, allDefinitions);
+        } else { // answerMode === 'term'
+          questionText = `Which term is defined as "${pair.definition}"?`;
+          correctAnswer = pair.term;
+          const allTerms = Array.from(new Set(allPairs.map(p => p.term).concat(pairs.map(p => p.term))));
+          options = generateMultipleChoiceOptions(pair.term, allTerms);
+        }
+      } else { // questions-answers mode
+        if (answerMode === 'answer' || (testMode === 'both' && Math.random() > 0.5)) {
+          questionText = pair.question;
+          correctAnswer = pair.answer;
+          const allAnswers = Array.from(new Set(pairs.map(p => p.answer)));
+          options = generateMultipleChoiceOptions(pair.answer, allAnswers);
+        } else { // answerMode === 'question'
+          questionText = `What question has the answer: "${pair.answer}"?`;
+          correctAnswer = pair.question;
+          const allQuestions = Array.from(new Set(pairs.map(p => p.question)));
+          options = generateMultipleChoiceOptions(pair.question, allQuestions);
+        }
+      }
+
       if (options.length < 2) continue; // Need at least one distractor
 
       questions.push({
         id: `mc-${pair.id}`,
-        question: `What is the definition of "${pair.term}"?`,
+        question: questionText,
         type: 'multiple-choice',
-        correctAnswer: pair.definition,
+        correctAnswer: correctAnswer,
         options: options,
       });
       count++;
@@ -374,57 +409,50 @@ function generateQuiz(
   // Generate Fill in the Blank questions
   if (questionTypes.includes('fill-in-blank') && remainingQuestions > 0) {
     let count = 0;
-    // Use a different set of pairs or ensure pairs are not reused if possible
     const fillInBlankPairs = [...availablePairs].sort(() => Math.random() - 0.5);
     for (let i = 0; i < fillInBlankPairs.length && count < questionsPerType && remainingQuestions > 0; i++) {
       const pair = fillInBlankPairs[i];
       if (!pair || !pair.term || !pair.definition) continue;
       
-      // Create a fill-in-blank question from the term and definition
       let blankedQuestion = '';
-      
-      // Randomly decide whether to blank out part of the term or definition
-      const blankTerm = Math.random() > 0.5;
-      
-      if (blankTerm) {
-        // Extract a significant word from the term
-        const words = pair.term.split(' ');
-        if (words.length <= 1) {
-          // If term is only one word, use the entire term
-          blankedQuestion = `Complete: ___ is defined as "${pair.definition}"`;
-          pair.answer = pair.term;
-        } else {
-          // Find a word to blank out (preferably not a stop word)
-          const wordIndex = Math.floor(Math.random() * words.length);
-          pair.answer = words[wordIndex];
-          words[wordIndex] = '___';
-          blankedQuestion = `Complete: "${words.join(' ')}" is defined as "${pair.definition}"`;
-        }
-      } else {
-        // Extract a significant word from the definition
-        const words = pair.definition.split(' ');
-        if (words.length <= 1) {
-          // If definition is only one word, use the entire definition
+      let correctAnswer = '';
+
+      // Determine question based on test mode and answer mode
+      if (testMode === 'terms-definitions' || (testMode === 'both' && Math.random() > 0.5)) {
+        if (answerMode === 'definition' || (testMode === 'both' && Math.random() > 0.5)) {
           blankedQuestion = `Complete: "${pair.term}" is defined as ___`;
-          // For single words, use the definition as answer
-          pair.answer = pair.definition;
-        } else {
-          // Find a word to blank out (preferably not a stop word)
-          const wordIndex = Math.floor(Math.random() * words.length);
-          // Save the selected word as the answer
-          pair.answer = words[wordIndex];
-          words[wordIndex] = '___';
-          blankedQuestion = `Complete: "${pair.term}" is defined as "${words.join(' ')}"`;
+          correctAnswer = pair.definition;
+        } else { // answerMode === 'term'
+          blankedQuestion = `Complete: ___ is defined as "${pair.definition}"`;
+          correctAnswer = pair.term;
+        }
+      } else { // questions-answers mode
+        if (answerMode === 'answer' || (testMode === 'both' && Math.random() > 0.5)) {
+          // Create a fill-in-blank from the question
+          const words = pair.question.split(' ');
+          if (words.length > 1) {
+            const wordIndex = Math.floor(Math.random() * words.length);
+            const wordToBlank = words[wordIndex];
+            words[wordIndex] = '___';
+            blankedQuestion = `Complete the question: "${words.join(' ')}"`;
+            correctAnswer = wordToBlank;
+          } else {
+            blankedQuestion = `Complete: ___`;
+            correctAnswer = pair.question;
+          }
+        } else { // answerMode === 'question'
+          blankedQuestion = `What question has the answer: "${pair.answer}"? Answer: ___`;
+          correctAnswer = pair.question;
         }
       }
       
-      if (!blankedQuestion.includes('___')) continue; // Skip if we can't make a blank
+      if (!blankedQuestion.includes('___')) continue;
 
       questions.push({
         id: `fib-${pair.id}`,
         question: blankedQuestion,
         type: 'fill-in-blank',
-        correctAnswer: pair.answer,
+        correctAnswer: correctAnswer,
       });
       count++;
       remainingQuestions--;
@@ -443,17 +471,34 @@ function generateQuiz(
       let statement = '';
       let correctAnswer = '';
 
-      if (isTrue) {
-        statement = `True or False: "${pair.term}" means "${pair.definition}".`;
-        correctAnswer = 'True';
-      } else {
-        // Find a different definition for a false statement
-        let falseDefinition = pair.definition;
-        const otherDefinitions = allDefinitions.filter((def) => def !== pair.definition);
-        if (otherDefinitions.length > 0) falseDefinition = otherDefinitions[Math.floor(Math.random() * otherDefinitions.length)];
-        statement = `True or False: "${pair.term}" means "${falseDefinition !== pair.definition ? falseDefinition : 'Not ' + pair.definition}".`;
-        correctAnswer = 'False';
+      // Determine statement based on test mode and answer mode
+      if (testMode === 'terms-definitions' || (testMode === 'both' && Math.random() > 0.5)) {
+        if (isTrue) {
+          statement = `True or False: "${pair.term}" means "${pair.definition}".`;
+          correctAnswer = 'True';
+        } else {
+          const otherDefinitions = allDefinitions.filter((def) => def !== pair.definition);
+          const falseDefinition = otherDefinitions.length > 0 ? 
+            otherDefinitions[Math.floor(Math.random() * otherDefinitions.length)] : 
+            'Not ' + pair.definition;
+          statement = `True or False: "${pair.term}" means "${falseDefinition}".`;
+          correctAnswer = 'False';
+        }
+      } else { // questions-answers mode
+        if (isTrue) {
+          statement = `True or False: The question "${pair.question}" has the answer "${pair.answer}".`;
+          correctAnswer = 'True';
+        } else {
+          const allAnswers = Array.from(new Set(pairs.map(p => p.answer)));
+          const otherAnswers = allAnswers.filter((ans) => ans !== pair.answer);
+          const falseAnswer = otherAnswers.length > 0 ? 
+            otherAnswers[Math.floor(Math.random() * otherAnswers.length)] : 
+            'Not ' + pair.answer;
+          statement = `True or False: The question "${pair.question}" has the answer "${falseAnswer}".`;
+          correctAnswer = 'False';
+        }
       }
+
       questions.push({
         id: `tf-${pair.id}-${i}`,
         question: statement,
