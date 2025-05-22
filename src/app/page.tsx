@@ -1,5 +1,7 @@
 import { Navbar } from './components/navbar';
 import Link from 'next/link';
+import { Suspense } from 'react';
+import { StatsDisplay } from '@/app/components/stats-display';
 
 export default function Home() {
   return (
@@ -29,6 +31,15 @@ export default function Home() {
                 How It Works
               </Link>
             </div>
+          </div>
+          
+          {/* Stats Section */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800 p-6 rounded-xl mb-16 border border-blue-100 dark:border-slate-700 shadow-sm">
+            <h2 className="text-2xl font-bold mb-4 text-center bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">TimeKill by the Numbers</h2>
+            <p className="text-center text-gray-600 dark:text-gray-400 mb-6">Join thousands of students already improving their study experience</p>
+            <Suspense fallback={<div className="flex justify-center py-8"><div className="animate-pulse flex space-x-4"><div className="rounded-full bg-slate-200 dark:bg-slate-700 h-10 w-10"></div><div className="flex-1 space-y-6 py-1"><div className="h-2 bg-slate-200 dark:bg-slate-700 rounded"></div><div className="space-y-3"><div className="grid grid-cols-3 gap-4"><div className="h-2 bg-slate-200 dark:bg-slate-700 rounded col-span-2"></div><div className="h-2 bg-slate-200 dark:bg-slate-700 rounded col-span-1"></div></div></div></div></div></div>}>
+              <StatsDisplay />
+            </Suspense>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">

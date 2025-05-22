@@ -67,7 +67,7 @@ export default async function DashboardPage() {
               </p>
               <Link
                 href="/create"
-                className="px-4 py-2 bg-primary text-[var(--button-text)] rounded-lg hover:bg-primary-hover text-sm font-medium inline-block"
+                className="px-4 py-2 bg-primary text-[var(--button-text)] rounded-lg hover:bg-primary-hover text-sm font-medium inline-block shadow-sm transition-colors duration-200"
               >
                 Create Now
               </Link>
@@ -81,14 +81,14 @@ export default async function DashboardPage() {
               {submissions.length > 0 ? (
                 <Link
                   href={`/study/${submissions[0].id}/flashcards`}
-                  className="px-4 py-2 bg-[var(--green-button)] text-[var(--button-text)] rounded-lg hover:bg-[var(--green-button-hover)] text-sm font-medium inline-block"
+                  className="px-4 py-2 bg-[var(--green-button)] text-[var(--button-text)] rounded-lg hover:bg-[var(--green-button-hover)] text-sm font-medium inline-block shadow-sm transition-colors duration-200"
                 >
                   Study Now
                 </Link>
               ) : (
                 <Link
                   href="/create"
-                  className="px-4 py-2 bg-[var(--green-button)] text-[var(--button-text)] rounded-lg hover:bg-[var(--green-button-hover)] text-sm font-medium inline-block"
+                  className="px-4 py-2 bg-[var(--green-button)] text-[var(--button-text)] rounded-lg hover:bg-[var(--green-button-hover)] text-sm font-medium inline-block shadow-sm transition-colors duration-200"
                 >
                   Create First
                 </Link>
@@ -103,14 +103,14 @@ export default async function DashboardPage() {
               {submissions.length > 0 ? (
                 <Link
                   href={`/study/${submissions[0].id}/quiz`}
-                  className="px-4 py-2 bg-[var(--purple-button)] text-[var(--button-text)] rounded-lg hover:bg-[var(--purple-button-hover)] text-sm font-medium inline-block"
+                  className="px-4 py-2 bg-[var(--purple-button)] text-[var(--button-text)] rounded-lg hover:bg-[var(--purple-button-hover)] text-sm font-medium inline-block shadow-sm transition-colors duration-200"
                 >
                   Quiz Yourself
                 </Link>
               ) : (
                 <Link
                   href="/create"
-                  className="px-4 py-2 bg-[var(--purple-button)] text-[var(--button-text)] rounded-lg hover:bg-[var(--purple-button-hover)] text-sm font-medium inline-block"
+                  className="px-4 py-2 bg-[var(--purple-button)] text-[var(--button-text)] rounded-lg hover:bg-[var(--purple-button-hover)] text-sm font-medium inline-block shadow-sm transition-colors duration-200"
                 >
                   Create First
                 </Link>
@@ -192,7 +192,7 @@ export default async function DashboardPage() {
                 <p className="text-foreground/70 mb-4">You haven&apos;t created any notes yet.</p>
                 <Link
                   href="/create"
-                  className="px-4 py-2 bg-primary text-[var(--button-text)] rounded-lg hover:bg-primary-hover text-sm font-medium inline-block"
+                  className="px-4 py-2 bg-primary text-[var(--button-text)] rounded-lg hover:bg-primary-hover text-sm font-medium inline-block shadow-sm transition-colors duration-200"
                 >
                   Create Your First Note
                 </Link>

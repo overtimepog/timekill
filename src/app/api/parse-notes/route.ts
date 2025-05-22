@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '../../../../packages/core/lib/prisma';
 import { extractPairsFromNotes } from '../../../../packages/core/lib/gemini';
+import { trackNewSet } from '../../../../packages/core/lib/stats/tracker';
 
 // Maximum note length for free users
 const FREE_USER_MAX_NOTE_LENGTH = 10000;
@@ -67,6 +68,9 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+    
+    // Track the new set for stats
+    await trackNewSet(submission.id, user.id);
     
     // Extract pairs from the notes
     const pairs = await extractPairsFromNotes(notes, user.id, {

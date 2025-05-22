@@ -7,6 +7,7 @@
 
 import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from './prisma';
+import { trackNewUser } from './stats/tracker';
 
 /**
  * Require the user to be logged in to access a resource
@@ -88,12 +89,17 @@ export const syncUserWithClerk = async (clerkUser: any) => {
     }
     
     // Create a new user if no conflicts
-    return await prisma.user.create({
+    const newUser = await prisma.user.create({
       data: {
         id: clerkUser.id,
         email,
       },
     });
+    
+    // Track the new user for stats
+    await trackNewUser(newUser.id);
+    
+    return newUser;
   } catch (error: unknown) {
     // If it's a unique constraint error, provide a more helpful message
     if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002' && 

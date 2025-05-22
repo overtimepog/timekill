@@ -18,10 +18,10 @@
   --tips-border: #1e293b;     /* slate-800 - darker tips border */
   --tips-text: #e0f2fe;       /* sky-100 - much brighter blue text for tips */
   --button-text: #ffffff;     /* white - for button text */
-  --green-button: #22c55e;    /* green-500 - brighter green for better contrast */
-  --green-button-hover: #16a34a; /* green-600 */
-  --purple-button: #a855f7;   /* purple-500 - brighter purple for better contrast */
-  --purple-button-hover: #9333ea; /* purple-600 */
+  --green-button: #15803d;    /* green-700 - darker green for better contrast with white text */
+  --green-button-hover: #166534; /* green-800 */
+  --purple-button: #7e22ce;   /* purple-700 - darker purple for better contrast with white text */
+  --purple-button-hover: #6b21a8; /* purple-800 */
   --secondary-button-text: #f1f5f9; /* slate-100 - brighter text for secondary buttons */
 }
 

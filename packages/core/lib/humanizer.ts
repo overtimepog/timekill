@@ -7,6 +7,7 @@
 
 // Import prisma client from local file
 import { prisma } from './prisma';
+import { trackHumanization } from './stats/tracker';
 
 // Mock Redis client - would be replaced with real Redis in production
 const mockRedisClient = {
@@ -80,6 +81,9 @@ export const humanizeText = async (
         similarity: 0.95,
       },
     });
+    
+    // Track the humanization for stats
+    await trackHumanization(run.id, userId, text);
   } catch (error) {
     console.error('Error storing humanizer run (continuing anyway):', error);
   }
