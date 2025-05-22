@@ -74,11 +74,14 @@ async function simulateGetUserSubscription(userId: string) {
       where: { userId }
     });
 
+    const plan = subscription?.plan || 'free';
+    const status = subscription?.status || 'active';
+    
     return {
-      plan: subscription?.plan || 'free',
-      status: subscription?.status || 'active',
-      isPro: subscription?.plan === 'pro',
-      isActive: subscription?.status === 'active',
+      plan,
+      status,
+      isPro: plan === 'pro',
+      isActive: status === 'active',
     };
   } catch (error) {
     return {
