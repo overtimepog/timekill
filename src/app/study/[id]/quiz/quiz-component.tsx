@@ -382,7 +382,6 @@ function generateQuiz(
       
       // Create a fill-in-blank question from the term and definition
       let blankedQuestion = '';
-      let answer = '';
       
       // Randomly decide whether to blank out part of the term or definition
       const blankTerm = Math.random() > 0.5;
