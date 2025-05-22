@@ -6,7 +6,7 @@ import { prisma } from '../../../../packages/core/lib/prisma';
 import { syncUserWithClerk } from '../../../../packages/core/lib/auth';
 import SetDetails, { SetWithPairs } from './set-details';
 
-export default async function SetDetailPage({ params }: { params: { id: string } }) {
+export default async function SetDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await currentUser();
   
   if (!user) {
