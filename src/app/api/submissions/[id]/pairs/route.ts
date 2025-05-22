@@ -43,29 +43,44 @@ export async function PUT(
       );
     }
     
+    // Use transaction to ensure atomicity
     try {
-      // Delete existing pairs for this submission
-      await prisma.pair.deleteMany({
-        where: {
-          submissionId,
-          userId: user.id,
-        },
-      });
-      
-      // Create new pairs
-      for (const pair of pairs) {
-        await prisma.pair.create({
-          data: {
-            ...pair,
-            userId: user.id,
+      await prisma.$transaction(async (tx) => {
+        // Delete existing pairs for this submission
+        await tx.pair.deleteMany({
+          where: {
             submissionId,
+            userId: user.id,
           },
         });
-      }
+        
+        // Validate pairs before creating
+        for (const pair of pairs) {
+          if (!pair.term || !pair.definition || !pair.question || !pair.answer) {
+            throw new Error('Invalid pair data: missing required fields');
+          }
+          if (typeof pair.term !== 'string' || typeof pair.definition !== 'string' || 
+              typeof pair.question !== 'string' || typeof pair.answer !== 'string') {
+            throw new Error('Invalid pair data: fields must be strings');
+          }
+        }
+        
+        // Create new pairs
+        await tx.pair.createMany({
+          data: pairs.map(pair => ({
+            term: pair.term.trim(),
+            definition: pair.definition.trim(),
+            question: pair.question.trim(),
+            answer: pair.answer.trim(),
+            userId: user.id,
+            submissionId,
+          })),
+        });
+      });
     } catch (error) {
-      console.error('Error updating pairs:', error);
+      console.error('Error updating pairs:', error instanceof Error ? error.message : 'Unknown error');
       return NextResponse.json(
-        { error: 'Failed to update pairs' },
+        { error: error instanceof Error ? error.message : 'Failed to update pairs' },
         { status: 500 }
       );
     }

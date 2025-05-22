@@ -27,6 +27,30 @@ export async function PATCH(
     // Parse the request body
     const body = await request.json();
     
+    // Validate and sanitize input
+    const updates: Record<string, string> = {};
+    const allowedFields = ['term', 'definition', 'question', 'answer'];
+    
+    for (const field of allowedFields) {
+      if (body[field] !== undefined) {
+        if (typeof body[field] !== 'string') {
+          return NextResponse.json({ error: `${field} must be a string` }, { status: 400 });
+        }
+        const sanitized = body[field].trim();
+        if (sanitized.length === 0) {
+          return NextResponse.json({ error: `${field} cannot be empty` }, { status: 400 });
+        }
+        if (sanitized.length > 2000) {
+          return NextResponse.json({ error: `${field} too long (max 2000 characters)` }, { status: 400 });
+        }
+        updates[field] = sanitized;
+      }
+    }
+    
+    if (Object.keys(updates).length === 0) {
+      return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
+    }
+    
     // Get the pair and verify ownership through the submission
     const existingPair = await prisma.pair.findUnique({
       where: {
@@ -46,17 +70,12 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    // Update the pair with the provided fields
+    // Update the pair with the validated fields
     const updatedPair = await prisma.pair.update({
       where: {
         id: pairId,
       },
-      data: {
-        term: body.term ?? existingPair.term,
-        definition: body.definition ?? existingPair.definition,
-        question: body.question ?? existingPair.question,
-        answer: body.answer ?? existingPair.answer,
-      },
+      data: updates,
     });
     
     return NextResponse.json(updatedPair);

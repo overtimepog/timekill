@@ -8,9 +8,12 @@ export async function GET() {
     
     return NextResponse.json({ status: 'ok' });
   } catch (error) {
-    console.error('Health check failed:', error);
+    // Log detailed error server-side only
+    console.error('Health check failed:', error instanceof Error ? error.message : 'Unknown error');
+    
+    // Return generic error message to client
     return NextResponse.json(
-      { status: 'error', message: 'Database connection failed' },
+      { status: 'error' },
       { status: 500 }
     );
   }

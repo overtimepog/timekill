@@ -67,7 +67,7 @@ export default async function SetDetailPage({ params }: { params: Promise<{ id: 
             </Link>
             <span className="mx-2 text-foreground/50">/</span>
             <span className="text-foreground font-medium">
-              {(set.metadata as Record<string, unknown>)?.setName || `Set ${new Date(set.createdAt).toLocaleDateString()}`}
+              {String((set.metadata as Record<string, unknown>)?.setName) || `Set ${new Date(set.createdAt).toLocaleDateString()}`}
             </span>
           </div>
         </div>

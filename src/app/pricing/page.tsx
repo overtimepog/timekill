@@ -10,23 +10,33 @@ export default async function PricingPage() {
   
   // Get the user's subscription if they're logged in
   let subscription = null;
-  if (user) {
-    subscription = await prisma.subscription.findUnique({
-      where: {
-        userId: user.id,
-      },
+  let stripeProducts: { data: unknown[] } = { data: [] };
+  
+  try {
+    if (user) {
+      subscription = await prisma.subscription.findUnique({
+        where: {
+          userId: user.id,
+        },
+      });
+    }
+    
+    // Fetch products from Stripe
+    const products = await stripe.products.list({
+      active: true,
+      expand: ['data.default_price'],
     });
+    stripeProducts = products;
+  } catch (error) {
+    console.error('Error fetching pricing data:', error);
+    // Continue with fallback plans
   }
   
-  // Fetch products from Stripe
-  const stripeProducts = await stripe.products.list({
-    active: true,
-    expand: ['data.default_price'],
-  });
-  
   // Format the products for display
-  const plans = stripeProducts.data.map(product => {
-    const price = product.default_price as {
+  const plans = stripeProducts.data.map((product: unknown) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const typedProduct = product as any;
+    const price = typedProduct.default_price as {
       id?: string;
       unit_amount?: number;
       recurring?: {
@@ -37,17 +47,17 @@ export default async function PricingPage() {
     const interval = price?.recurring?.interval;
     
     return {
-      id: product.id,
-      name: product.name,
-      description: product.description || '',
+      id: typedProduct.id,
+      name: typedProduct.name,
+      description: typedProduct.description || '',
       price: price ? `$${amount}` : 'Free',
       period: price?.recurring ? `per ${interval}` : 'forever',
-      features: product.metadata.features ? JSON.parse(product.metadata.features) : [],
-      limitations: product.metadata.limitations ? JSON.parse(product.metadata.limitations) : [],
+      features: typedProduct.metadata?.features ? JSON.parse(typedProduct.metadata.features) : [],
+      limitations: typedProduct.metadata?.limitations ? JSON.parse(typedProduct.metadata.limitations) : [],
       priceId: price?.id || '',
-      cta: product.name.toLowerCase() === (subscription?.plan || 'free') ? 'Current Plan' : 
-           product.name === 'Free' ? (user ? 'Current Plan' : 'Sign Up') : 'Upgrade Now',
-      highlight: product.metadata.highlight === 'true',
+      cta: typedProduct.name?.toLowerCase() === (subscription?.plan || 'free') ? 'Current Plan' : 
+           typedProduct.name === 'Free' ? (user ? 'Current Plan' : 'Sign Up') : 'Upgrade Now',
+      highlight: typedProduct.metadata?.highlight === 'true',
     };
   });
   

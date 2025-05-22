@@ -43,20 +43,24 @@ export default function DashboardError({
                 This can happen if you&apos;ve previously signed up with a different authentication method
                 (like Google, GitHub, or email/password).
               </p>
-              <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-4 rounded-md text-amber-800 dark:text-amber-200 mb-6">
-                <p className="font-medium">Error details:</p>
-                <p className="text-sm">{error.message}</p>
-              </div>
+              {process.env.NODE_ENV === 'development' && (
+                <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-4 rounded-md text-amber-800 dark:text-amber-200 mb-6">
+                  <p className="font-medium">Error details (dev only):</p>
+                  <p className="text-sm">{error.message}</p>
+                </div>
+              )}
             </div>
           ) : (
             <div className="mb-6">
               <p className="text-foreground/80 mb-4">
                 An unexpected error occurred while loading your dashboard.
               </p>
-              <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 p-4 rounded-md text-red-800 dark:text-red-200">
-                <p className="font-medium">Error details:</p>
-                <p className="text-sm">{error.message}</p>
-              </div>
+              {process.env.NODE_ENV === 'development' && (
+                <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 p-4 rounded-md text-red-800 dark:text-red-200">
+                  <p className="font-medium">Error details (dev only):</p>
+                  <p className="text-sm">{error.message}</p>
+                </div>
+              )}
             </div>
           )}
 

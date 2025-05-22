@@ -18,6 +18,33 @@ export async function PATCH(
     const id = resolvedParams.id;
     const body = await request.json();
     
+    // Validate input
+    if (!body.metadata || typeof body.metadata !== 'object') {
+      return NextResponse.json({ error: 'Invalid metadata' }, { status: 400 });
+    }
+    
+    // Only allow specific metadata fields to be updated
+    const allowedFields = ['name', 'description', 'tags', 'difficulty'];
+    const sanitizedMetadata: Record<string, string | number | string[]> = {};
+    
+    for (const [key, value] of Object.entries(body.metadata)) {
+      if (allowedFields.includes(key)) {
+        if (typeof value === 'string') {
+          // Sanitize string values
+          sanitizedMetadata[key] = value.trim().slice(0, 500); // Limit length
+        } else if (Array.isArray(value) && key === 'tags') {
+          // Handle tags array
+          sanitizedMetadata[key] = value
+            .filter(tag => typeof tag === 'string')
+            .map(tag => tag.trim().slice(0, 50))
+            .slice(0, 10); // Max 10 tags
+        } else if (typeof value === 'number' && key === 'difficulty') {
+          // Handle difficulty level
+          sanitizedMetadata[key] = Math.max(1, Math.min(5, Math.floor(value)));
+        }
+      }
+    }
+    
     // Verify the set belongs to the user
     const existingSet = await prisma.noteSubmission.findUnique({
       where: {
@@ -36,7 +63,7 @@ export async function PATCH(
         id,
       },
       data: {
-        metadata: body.metadata,
+        metadata: sanitizedMetadata,
       },
     });
     
@@ -74,18 +101,21 @@ export async function DELETE(
       return NextResponse.json({ error: 'Set not found' }, { status: 404 });
     }
     
-    // Delete all pairs associated with the set
-    await prisma.pair.deleteMany({
-      where: {
-        submissionId: id,
-      },
-    });
-    
-    // Delete the set
-    await prisma.noteSubmission.delete({
-      where: {
-        id,
-      },
+    // Use transaction to ensure atomicity
+    await prisma.$transaction(async (tx) => {
+      // Delete all pairs associated with the set
+      await tx.pair.deleteMany({
+        where: {
+          submissionId: id,
+        },
+      });
+      
+      // Delete the set
+      await tx.noteSubmission.delete({
+        where: {
+          id,
+        },
+      });
     });
     
     return NextResponse.json({ success: true });

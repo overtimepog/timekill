@@ -152,7 +152,7 @@ export default function QuizConfigurePage() {
                     <Checkbox
                       id={type.id}
                       checked={selectedQuestionTypes.includes(type.id)}
-                      onCheckedChange={() => handleQuestionTypeChange(type.id)}
+                      onChange={() => handleQuestionTypeChange(type.id)}
                       className="form-checkbox h-5 w-5 text-primary border-primary-focus focus:ring-primary"
                     />
                     <Label htmlFor={type.id} className="font-normal text-base cursor-pointer flex-1 text-foreground/90">
@@ -167,7 +167,7 @@ export default function QuizConfigurePage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
-                <Button type="button" variant="outline" onClick={() => router.back()} className="w-full sm:w-auto py-2.5 px-5 text-base border-border hover:bg-muted">
+                <Button type="button" onClick={() => router.back()} className="w-full sm:w-auto py-2.5 px-5 text-base border border-border hover:bg-muted">
                     Cancel
                 </Button>
                 <Button type="submit" className="w-full sm:w-auto flex-grow bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 px-5 text-base" disabled={selectedQuestionTypes.length === 0 || parseInt(numQuestions) <=0 || parseInt(numQuestions) > maxQuestionsTotal}>

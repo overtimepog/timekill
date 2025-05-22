@@ -27,7 +27,7 @@
  * Tests the auth helper functions from core/lib/auth.ts
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type MockInstance } from 'vitest';
 import { mockPrismaClient, mockClerkUser } from '../helpers/mocks';
 import { requireLogin, requireSubscription, syncUserWithClerk } from '../../packages/core/lib/auth';
 
@@ -54,7 +54,7 @@ describe('Authentication Utilities', () => {
     it('should return the user when authenticated', async () => {
       // Mock authenticated user
       const mockUser = mockClerkUser();
-      (currentUser as unknown as vi.Mock).mockResolvedValue(mockUser);
+      (currentUser as unknown as MockInstance).mockResolvedValue(mockUser);
       
       // Call the function
       const result = await requireLogin();
@@ -66,7 +66,7 @@ describe('Authentication Utilities', () => {
     
     it('should throw an error when not authenticated', async () => {
       // Mock unauthenticated user
-      (currentUser as unknown as vi.Mock).mockResolvedValue(null);
+      (currentUser as unknown as MockInstance).mockResolvedValue(null);
       
       // Call the function and expect it to throw
       await expect(requireLogin()).rejects.toThrow('Authentication required');
@@ -78,10 +78,10 @@ describe('Authentication Utilities', () => {
     it('should return the user when authenticated with active subscription', async () => {
       // Mock authenticated user
       const mockUser = mockClerkUser();
-      (currentUser as unknown as vi.Mock).mockResolvedValue(mockUser);
+      (currentUser as unknown as MockInstance).mockResolvedValue(mockUser);
       
       // Mock active pro subscription
-      (prisma.subscription.findUnique as unknown as vi.Mock).mockResolvedValue({
+      (prisma.subscription.findUnique as unknown as MockInstance).mockResolvedValue({
         userId: mockUser.id,
         status: 'active',
         plan: 'pro',
@@ -100,7 +100,7 @@ describe('Authentication Utilities', () => {
     
     it('should throw an error when not authenticated', async () => {
       // Mock unauthenticated user
-      (currentUser as unknown as vi.Mock).mockResolvedValue(null);
+      (currentUser as unknown as MockInstance).mockResolvedValue(null);
       
       // Call the function and expect it to throw
       await expect(requireSubscription('pro')).rejects.toThrow('Authentication required');
@@ -111,10 +111,10 @@ describe('Authentication Utilities', () => {
     it('should throw an error when no subscription exists', async () => {
       // Mock authenticated user
       const mockUser = mockClerkUser();
-      (currentUser as unknown as vi.Mock).mockResolvedValue(mockUser);
+      (currentUser as unknown as MockInstance).mockResolvedValue(mockUser);
       
       // Mock no subscription
-      (prisma.subscription.findUnique as unknown as vi.Mock).mockResolvedValue(null);
+      (prisma.subscription.findUnique as unknown as MockInstance).mockResolvedValue(null);
       
       // Call the function and expect it to throw
       await expect(requireSubscription('pro')).rejects.toThrow('Pro subscription required');
@@ -127,10 +127,10 @@ describe('Authentication Utilities', () => {
     it('should throw an error when subscription is inactive', async () => {
       // Mock authenticated user
       const mockUser = mockClerkUser();
-      (currentUser as unknown as vi.Mock).mockResolvedValue(mockUser);
+      (currentUser as unknown as MockInstance).mockResolvedValue(mockUser);
       
       // Mock inactive subscription
-      (prisma.subscription.findUnique as unknown as vi.Mock).mockResolvedValue({
+      (prisma.subscription.findUnique as unknown as MockInstance).mockResolvedValue({
         userId: mockUser.id,
         status: 'canceled',
         plan: 'pro',
@@ -147,10 +147,10 @@ describe('Authentication Utilities', () => {
     it('should throw an error when subscription plan does not match', async () => {
       // Mock authenticated user
       const mockUser = mockClerkUser();
-      (currentUser as unknown as vi.Mock).mockResolvedValue(mockUser);
+      (currentUser as unknown as MockInstance).mockResolvedValue(mockUser);
       
       // Mock wrong plan
-      (prisma.subscription.findUnique as unknown as vi.Mock).mockResolvedValue({
+      (prisma.subscription.findUnique as unknown as MockInstance).mockResolvedValue({
         userId: mockUser.id,
         status: 'active',
         plan: 'free',
@@ -170,8 +170,13 @@ describe('Authentication Utilities', () => {
       // Mock Clerk user
       const mockUser = mockClerkUser();
       
-      // Mock user not found
-      (prisma.user.upsert as unknown as vi.Mock).mockResolvedValue({
+      // Mock user not found first, then email not found
+      (prisma.user.findUnique as unknown as MockInstance)
+        .mockResolvedValueOnce(null) // First call for user ID
+        .mockResolvedValueOnce(null); // Second call for email
+      
+      // Mock user creation
+      (prisma.user.create as unknown as MockInstance).mockResolvedValue({
         id: mockUser.id,
         email: mockUser.emailAddresses[0].emailAddress,
       });
@@ -185,11 +190,9 @@ describe('Authentication Utilities', () => {
         email: mockUser.emailAddresses[0].emailAddress,
       });
       
-      // Verify upsert was called correctly
-      expect(prisma.user.upsert).toHaveBeenCalledWith({
-        where: { id: mockUser.id },
-        update: { email: mockUser.emailAddresses[0].emailAddress },
-        create: {
+      // Verify create was called correctly
+      expect(prisma.user.create).toHaveBeenCalledWith({
+        data: {
           id: mockUser.id,
           email: mockUser.emailAddresses[0].emailAddress,
         },

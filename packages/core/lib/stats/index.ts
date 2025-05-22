@@ -12,13 +12,13 @@ import { prisma } from '../prisma';
 export async function getGlobalStats() {
   try {
     // Get total users count
-    const totalUsers = await prisma.user.count();
+    const totalUsers = await prisma.user.count({});
     
     // Get total sets (note submissions) created
-    const totalSets = await prisma.noteSubmission.count();
+    const totalSets = await prisma.noteSubmission.count({});
     
     // Get total pairs created
-    const totalPairs = await prisma.pair.count();
+    const totalPairs = await prisma.pair.count({});
     
     // Calculate total characters humanized
     const humanizerStats = await prisma.$queryRaw`
@@ -90,21 +90,24 @@ export async function getUserStats(userId: string) {
         : 0;
     
     // Get study stats
-    const studyStats = await prisma.studyStat.aggregate({
+    const studyStats = await prisma.studyStat.findMany({
       where: { userId },
-      _sum: {
+      select: {
         correctCount: true,
         incorrectCount: true,
       },
     });
+    
+    const totalCorrect = studyStats.reduce((sum, stat) => sum + (stat.correctCount || 0), 0);
+    const totalIncorrect = studyStats.reduce((sum, stat) => sum + (stat.incorrectCount || 0), 0);
     
     return {
       sets: userSets,
       pairs: userPairs,
       humanizerRuns: userHumanizerRuns,
       charactersHumanized: userCharactersHumanized,
-      correctAnswers: studyStats._sum.correctCount || 0,
-      incorrectAnswers: studyStats._sum.incorrectCount || 0,
+      correctAnswers: totalCorrect,
+      incorrectAnswers: totalIncorrect,
       timestamp: new Date().toISOString(),
     };
   } catch (error) {

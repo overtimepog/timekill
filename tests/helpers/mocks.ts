@@ -23,7 +23,13 @@
  */
 
 import { vi } from 'vitest';
-import { PrismaClient } from '@prisma/client';
+
+// Export PrismaClient constructor mock
+export class PrismaClient {
+  constructor() {
+    return mockPrismaClient();
+  }
+}
 
 // Mock PrismaClient
 export const mockPrismaClient = () => {

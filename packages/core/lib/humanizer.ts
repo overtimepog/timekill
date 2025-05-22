@@ -21,12 +21,16 @@ const mockRedisClient = {
 // This class mirrors the MockPrismaClient in prisma.ts
 class MockHumanizerPrismaClient {
   constructor() {
-    console.log('Using mock PrismaClient for humanizer');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Using mock PrismaClient for humanizer');
+    }
   }
 
   humanizerRun = {
     create: async (params: any) => {
-      console.log(`MOCK DB: HumanizerRun.create`, params);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`MOCK DB: HumanizerRun.create`);
+      }
       return {
         id: 'mock_humanizer_run_1',
         createdAt: new Date(),

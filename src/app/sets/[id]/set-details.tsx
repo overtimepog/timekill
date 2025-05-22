@@ -42,11 +42,19 @@ export default function SetDetails({ set: initialSet }: SetDetailsProps) {
   const [selectedSort, setSelectedSort] = useState<string>('original');
   
   // Handle updating a pair
-  const handlePairUpdated = (updatedPair: Pair) => {
+  const handlePairUpdated = (updatedPair: {
+    term: string;
+    definition: string;
+    question: string;
+    answer: string;
+    id: string;
+  }) => {
     setSet(prevSet => ({
       ...prevSet,
       pairs: prevSet.pairs.map(pair => 
-        pair.id === updatedPair.id ? updatedPair : pair
+        pair.id === updatedPair.id 
+          ? { ...pair, ...updatedPair }
+          : pair
       ),
     }));
     
@@ -71,7 +79,7 @@ export default function SetDetails({ set: initialSet }: SetDetailsProps) {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold">{(set.metadata as Record<string, unknown>)?.setName || `Set ${new Date(set.createdAt).toLocaleDateString()}`}</h1>
+            <h1 className="text-3xl font-bold">{String((set.metadata as Record<string, unknown>)?.setName) || `Set ${new Date(set.createdAt).toLocaleDateString()}`}</h1>
             <EditSetButton setId={set.id} currentName={(set.metadata as Record<string, unknown>)?.setName as string || ''} />
           </div>
           <div className="flex items-center mt-2 text-sm text-foreground/70">

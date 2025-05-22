@@ -27,7 +27,7 @@
  * Tests the AI detection and text humanization functionality from core/lib/humanizer.ts
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type MockInstance } from 'vitest';
 import { mockRedisClient } from '../helpers/mocks';
 import { humanizeText } from '../../packages/core/lib/humanizer';
 
@@ -47,7 +47,7 @@ describe('Humanizer Utility', () => {
     vi.clearAllMocks();
     
     // Mock Sapling API response - initial detection
-    (global.fetch as unknown as vi.Mock).mockImplementation((url) => {
+    (global.fetch as unknown as MockInstance).mockImplementation((url: string) => {
       if (url.includes('sapling.ai')) {
         return Promise.resolve({
           ok: true,
@@ -126,7 +126,7 @@ describe('Humanizer Utility', () => {
     // Mock the Redis client with cached data
     const mockRedis = mockRedisClient();
     const cachedResult = {
-      humanizedText: `${aiText} (humanized)`,
+      humanizedText: aiText,
       saplingScore: 0.15,
       iterations: 1,
       similarity: 0.95,

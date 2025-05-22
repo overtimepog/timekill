@@ -57,7 +57,6 @@ export async function POST(request: NextRequest) {
     }
     
     // Create the submission record
-    console.log(`[parse-notes] About to create NoteSubmission for user ${user.id}`);
     const submission = await prisma.noteSubmission.create({
       data: {
         userId: user.id,
@@ -70,7 +69,6 @@ export async function POST(request: NextRequest) {
         },
       },
     });
-    console.log(`[parse-notes] Successfully created NoteSubmission ${submission.id} for user ${user.id}`);
     
     // Track the new set for stats
     await trackNewSet(submission.id, user.id);

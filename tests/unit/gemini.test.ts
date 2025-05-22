@@ -27,7 +27,7 @@
  * Tests the pair extraction functionality from the core/lib/gemini.ts file
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type MockInstance } from 'vitest';
 import { sampleNotes, samplePairs, mockRedisClient } from '../helpers/mocks';
 import { extractPairsFromNotes } from '../../packages/core/lib/gemini';
 
@@ -54,7 +54,7 @@ describe('Gemini API Integration', () => {
     vi.clearAllMocks();
     
     // Mock successful API response
-    (global.fetch as unknown as vi.Mock).mockResolvedValue({
+    (global.fetch as unknown as MockInstance).mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({
         candidates: [
@@ -84,8 +84,6 @@ ${JSON.stringify(samplePairs)}
     
     // Call the function with our mocked Redis client
     const pairs = await extractPairsFromNotes(sampleNotes, 'user_123', {
-      language: 'English',
-      maxPairs: 10,
       _mockRedisClient: mockRedis
     });
     

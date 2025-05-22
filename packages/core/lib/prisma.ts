@@ -22,14 +22,27 @@ class MockPrismaClient {
   async $connect() { return Promise.resolve(); }
   async $disconnect() { return Promise.resolve(); }
   
+  // Add transaction method
+  async $transaction(callback: (client: any) => Promise<any>) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('MOCK DB: $transaction');
+    }
+    // Mock transaction - just call the callback with this instance
+    return callback(this);
+  }
+  
   // Add raw query methods
   async $queryRaw(...args: any[]) { 
-    console.log('MOCK DB: $queryRaw', args);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('MOCK DB: $queryRaw');
+    }
     return Promise.resolve([{ 1: 1 }]); 
   }
   
   async $executeRaw(...args: any[]) { 
-    console.log('MOCK DB: $executeRaw', args);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('MOCK DB: $executeRaw');
+    }
     return Promise.resolve(1); 
   }
 
@@ -39,7 +52,9 @@ class MockPrismaClient {
 
     return {
       findUnique: async (params: any) => {
-        console.log(`MOCK DB: ${name}.findUnique`, params);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`MOCK DB: ${name}.findUnique`);
+        }
         
         if (params?.where?.id) {
           return mockData.find(item => item.id === params.where.id) || null;
@@ -53,17 +68,23 @@ class MockPrismaClient {
       },
       
       findMany: async (params: any) => {
-        console.log(`MOCK DB: ${name}.findMany`, params);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`MOCK DB: ${name}.findMany`);
+        }
         return [];
       },
       
       findFirst: async (params: any) => {
-        console.log(`MOCK DB: ${name}.findFirst`, params);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`MOCK DB: ${name}.findFirst`);
+        }
         return null;
       },
       
       create: async (params: any) => {
-        console.log(`MOCK DB: ${name}.create`, params);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`MOCK DB: ${name}.create`);
+        }
         const newItem = {
           id: params.data.id || `mock_${name.toLowerCase()}_${idCounter++}`,
           createdAt: new Date(),
@@ -75,17 +96,23 @@ class MockPrismaClient {
       },
       
       createMany: async (params: any) => {
-        console.log(`MOCK DB: ${name}.createMany`, params);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`MOCK DB: ${name}.createMany`);
+        }
         return { count: params.data.length };
       },
       
       update: async (params: any) => {
-        console.log(`MOCK DB: ${name}.update`, params);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`MOCK DB: ${name}.update`);
+        }
         return { ...params.data, id: params.where.id };
       },
       
       upsert: async (params: any) => {
-        console.log(`MOCK DB: ${name}.upsert`, params);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`MOCK DB: ${name}.upsert`);
+        }
         // For upsert, just return the create data
         const newItem = {
           id: params.where.id || params.create.id || `mock_${name.toLowerCase()}_${idCounter++}`,
@@ -97,22 +124,30 @@ class MockPrismaClient {
       },
       
       delete: async (params: any) => {
-        console.log(`MOCK DB: ${name}.delete`, params);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`MOCK DB: ${name}.delete`);
+        }
         return { id: params.where.id };
       },
       
       deleteMany: async (params: any) => {
-        console.log(`MOCK DB: ${name}.deleteMany`, params);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`MOCK DB: ${name}.deleteMany`);
+        }
         return { count: 0 };
       },
       
       count: async (params: any) => {
-        console.log(`MOCK DB: ${name}.count`, params);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`MOCK DB: ${name}.count`);
+        }
         return 0;
       },
       
       groupBy: async (params: any) => {
-        console.log(`MOCK DB: ${name}.groupBy`, params);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`MOCK DB: ${name}.groupBy`);
+        }
         return [];
       }
     };

@@ -31,10 +31,45 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
+  // File validation constants
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+  const ALLOWED_TYPES = [
+    'text/plain',
+    'text/markdown',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/pdf',
+    'application/rtf',
+    'text/rtf'
+  ];
+
+  // Validate file
+  const validateFile = (file: File): string | null => {
+    if (file.size > MAX_FILE_SIZE) {
+      return 'File size must be less than 10MB';
+    }
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return 'Invalid file type. Only .txt, .md, .doc, .docx, .pdf, and .rtf files are allowed';
+    }
+    return null;
+  };
+
   // Handle file upload
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      const validationError = validateFile(selectedFile);
+      
+      if (validationError) {
+        setError(validationError);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        return;
+      }
+      
+      setFile(selectedFile);
+      setError(null);
     }
   };
   
@@ -54,9 +89,31 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
     e.stopPropagation();
     
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      setFile(e.dataTransfer.files[0]);
+      const droppedFile = e.dataTransfer.files[0];
+      const validationError = validateFile(droppedFile);
+      
+      if (validationError) {
+        setError(validationError);
+        e.dataTransfer.clearData();
+        return;
+      }
+      
+      setFile(droppedFile);
+      setError(null);
       e.dataTransfer.clearData();
     }
+  };
+
+  // Sanitize content to prevent XSS
+  const sanitizeContent = (content: string): string => {
+    // Remove potential script tags and other dangerous HTML
+    return content
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+      .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
+      .replace(/<embed\b[^>]*>/gi, '')
+      .replace(/javascript:/gi, '')
+      .replace(/on\w+\s*=/gi, '');
   };
 
   // Handle file reading
@@ -65,7 +122,16 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
-          resolve(event.target.result as string);
+          const rawContent = event.target.result as string;
+          const sanitizedContent = sanitizeContent(rawContent);
+          
+          // Additional content length validation
+          if (sanitizedContent.length > 50000) {
+            reject(new Error('File content too large. Maximum 50,000 characters allowed.'));
+            return;
+          }
+          
+          resolve(sanitizedContent);
         } else {
           reject(new Error('Failed to read file'));
         }
@@ -93,9 +159,19 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
         }
       }
       
+      // Sanitize text input as well
+      if (!file) {
+        contentContent = sanitizeContent(contentContent);
+      }
+      
       // Ensure we have content to process
       if (!contentContent.trim()) {
         throw new Error('Please provide notes either by text or file upload');
+      }
+      
+      // Additional validation for content length
+      if (contentContent.length > 50000) {
+        throw new Error('Content too large. Maximum 50,000 characters allowed.');
       }
       
       const response = await fetch('/api/parse-content', {
@@ -206,7 +282,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
               placeholder="Paste your notes, lecture slides, or study materials here to create a study set..."
             />
             <p className="mt-1 text-sm text-gray-400">
-              {formatNumber(content.length)}/10,000 characters
+              {formatNumber(content.length)}/50,000 characters
             </p>
           </div>
           
@@ -237,7 +313,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
                   {file ? file.name : 'Drag and drop your file here, or click to browse'}
                 </p>
                 <p className="text-xs text-gray-400">
-                  Supported formats: .txt, .md, .doc, .docx, .pdf, .rtf
+                  Supported formats: .txt, .md, .doc, .docx, .pdf, .rtf (max 10MB)
                 </p>
               </div>
             </div>

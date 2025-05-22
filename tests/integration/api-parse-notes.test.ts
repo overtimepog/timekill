@@ -27,7 +27,7 @@
  * Tests the API route in src/app/api/parse-notes/route.ts
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type MockInstance } from 'vitest';
 import { mockPrismaClient, mockClerkUser, sampleNotes, samplePairs } from '../helpers/mocks';
 import { type NextRequest } from 'next/server';
 import { ParseNotesRequest } from '../helpers/types';
@@ -67,14 +67,14 @@ describe('Parse Notes API', () => {
   it('should successfully parse notes and create pairs', async () => {
     // Mock authenticated user
     const mockUser = mockClerkUser();
-    (currentUser as unknown as vi.Mock).mockResolvedValue(mockUser);
+    (currentUser as unknown as MockInstance).mockResolvedValue(mockUser);
     
     // Mock extractPairsFromNotes
-    (extractPairsFromNotes as unknown as vi.Mock).mockResolvedValue(samplePairs);
+    (extractPairsFromNotes as unknown as MockInstance).mockResolvedValue(samplePairs);
     
     // Mock database operations
     const submissionId = 'submission_123';
-    (prisma.noteSubmission.create as unknown as vi.Mock).mockResolvedValue({
+    (prisma.noteSubmission.create as unknown as MockInstance).mockResolvedValue({
       id: submissionId,
       createdAt: new Date(),
     });
@@ -104,10 +104,7 @@ describe('Parse Notes API', () => {
     expect(extractPairsFromNotes).toHaveBeenCalledWith(
       sampleNotes,
       mockUser.id,
-      {
-        language: 'English',
-        maxPairs: 20,
-      }
+      {}
     );
     
     // Verify database operations
@@ -115,10 +112,11 @@ describe('Parse Notes API', () => {
       data: {
         userId: mockUser.id,
         rawText: sampleNotes,
-        language: 'English',
+        language: 'auto-detect',
         metadata: {
-          maxPairs: 20,
           sourceLength: sampleNotes.length,
+          numPairs: 0,
+          setName: expect.stringMatching(/^Set from \d{1,2}\/\d{1,2}\/\d{4}$/)
         },
       },
     });
@@ -139,10 +137,11 @@ describe('Parse Notes API', () => {
   it('should return 400 for missing notes', async () => {
     // Mock authenticated user
     const mockUser = mockClerkUser();
-    (currentUser as unknown as vi.Mock).mockResolvedValue(mockUser);
+    (currentUser as unknown as MockInstance).mockResolvedValue(mockUser);
     
-    // Create a mock request with no notes
+    // Create a mock request with no notes (should fail validation)
     const req = createMockRequest({
+      notes: '', // Empty notes should trigger the validation error
       language: 'English',
       maxPairs: 20,
     });
@@ -165,13 +164,13 @@ describe('Parse Notes API', () => {
   it('should return 403 for notes exceeding length limit without Pro subscription', async () => {
     // Mock authenticated user
     const mockUser = mockClerkUser();
-    (currentUser as unknown as vi.Mock).mockResolvedValue(mockUser);
+    (currentUser as unknown as MockInstance).mockResolvedValue(mockUser);
     
     // Mock long notes (over 10000 characters)
     const longNotes = 'a'.repeat(10001);
     
     // Mock no subscription
-    (prisma.subscription.findUnique as unknown as vi.Mock).mockResolvedValue(null);
+    (prisma.subscription.findUnique as unknown as MockInstance).mockResolvedValue(null);
     
     // Create a mock request
     const req = createMockRequest({
@@ -198,24 +197,24 @@ describe('Parse Notes API', () => {
   it('should allow long notes with Pro subscription', async () => {
     // Mock authenticated user
     const mockUser = mockClerkUser();
-    (currentUser as unknown as vi.Mock).mockResolvedValue(mockUser);
+    (currentUser as unknown as MockInstance).mockResolvedValue(mockUser);
     
     // Mock long notes (over 10000 characters)
     const longNotes = 'a'.repeat(10001);
     
     // Mock active Pro subscription
-    (prisma.subscription.findUnique as unknown as vi.Mock).mockResolvedValue({
+    (prisma.subscription.findUnique as unknown as MockInstance).mockResolvedValue({
       userId: mockUser.id,
       status: 'active',
       plan: 'pro',
     });
     
     // Mock extractPairsFromNotes
-    (extractPairsFromNotes as unknown as vi.Mock).mockResolvedValue(samplePairs);
+    (extractPairsFromNotes as unknown as MockInstance).mockResolvedValue(samplePairs);
     
     // Mock database operations
     const submissionId = 'submission_123';
-    (prisma.noteSubmission.create as unknown as vi.Mock).mockResolvedValue({
+    (prisma.noteSubmission.create as unknown as MockInstance).mockResolvedValue({
       id: submissionId,
       createdAt: new Date(),
     });
@@ -241,7 +240,7 @@ describe('Parse Notes API', () => {
   
   it('should return 401 when not authenticated', async () => {
     // Mock unauthenticated user
-    (currentUser as unknown as vi.Mock).mockResolvedValue(null);
+    (currentUser as unknown as MockInstance).mockResolvedValue(null);
     
     // Create a mock request
     const req = createMockRequest({

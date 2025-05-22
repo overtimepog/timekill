@@ -18,6 +18,10 @@ type PairWithStats = {
   };
 };
 
+type StudyPair = PairWithStats & {
+  priorityScore: number;
+};
+
 type LearnComponentProps = {
   pairs: PairWithStats[];
   submissionId: string;

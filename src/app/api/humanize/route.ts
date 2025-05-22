@@ -59,7 +59,17 @@ export async function POST(request: NextRequest) {
     // Return the humanized text and stats
     return NextResponse.json(result);
   } catch (error) {
-    console.error('Error humanizing text:', error);
+    console.error('Error humanizing text:', error instanceof Error ? error.message : 'Unknown error');
+    
+    // Don't leak error details to client in production
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.json(
+        { error: 'Failed to process text' },
+        { status: 500 }
+      );
+    }
+    
+    // In development, provide more details
     const errorMessage = error instanceof Error ? error.message : 'An error occurred while humanizing text';
     const errorStatus = (error as { status?: number }).status || 500;
     return NextResponse.json(
