@@ -5,23 +5,26 @@ import { prisma } from '../../../../../packages/core/lib/prisma';
 // PATCH /api/pairs/[id] - Update a pair
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
+    // Get the current user
     const user = await currentUser();
     
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    // Ensure params is properly awaited before accessing properties
-    const { id } = params;
+    // Safely extract the ID from params
+    const { id: pairId } = await context.params;
+    
+    // Parse the request body
     const body = await request.json();
     
     // Get the pair and verify ownership through the submission
     const existingPair = await prisma.pair.findUnique({
       where: {
-        id,
+        id: pairId,
       },
       include: {
         submission: true,
@@ -40,7 +43,7 @@ export async function PATCH(
     // Update the pair with the provided fields
     const updatedPair = await prisma.pair.update({
       where: {
-        id,
+        id: pairId,
       },
       data: {
         term: body.term ?? existingPair.term,
