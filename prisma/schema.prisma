@@ -17,18 +17,19 @@ datasource db {
 
 // User model - synced with Clerk user.id
 model User {
-  id            String            @id
-  email         String            @unique
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
+  id                String            @id
+  email             String            @unique
+  humanizerCredits  Int               @default(10) // Free tier gets 10 credits per month
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
   
   // Relations
-  subscription  Subscription?
-  submissions   NoteSubmission[]
-  pairs         Pair[]
-  studyStats    StudyStat[]
-  humanizerRuns HumanizerRun[]
-  monthlyUsage  MonthlyUsage[]
+  subscription      Subscription?
+  submissions       NoteSubmission[]
+  pairs             Pair[]
+  studyStats        StudyStat[]
+  humanizerRuns     HumanizerRun[]
+  monthlyUsage      MonthlyUsage[]
 }
 
 // Subscription model - connected to Stripe

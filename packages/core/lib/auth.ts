@@ -125,41 +125,44 @@ export const syncUserWithClerk = async (clerkUser: any) => {
           // Note: We can't directly update the ID, so we need to create a new record
           // and transfer all data, then delete the old one
           
-          // Create new user with Clerk ID
+          // First, temporarily change the old user's email to avoid constraint conflicts
+          const tempEmail = `temp_${Date.now()}_${userWithEmail.id}@timekill.temp`;
+          await tx.user.update({
+            where: { id: userWithEmail.id },
+            data: { email: tempEmail },
+          });
+          
+          // Create new user with Clerk ID and original email
           const newUser = await tx.user.create({
             data: {
               id: clerkUser.id,
               email,
+              humanizerCredits: userWithEmail.humanizerCredits, // Preserve credits
+              createdAt: userWithEmail.createdAt, // Preserve original creation date
             },
           });
           
-          // Transfer all related data
+          // Transfer all related data by updating foreign keys
           await Promise.all([
             // Update submissions
-            userWithEmail.submissions.length > 0 ? tx.noteSubmission.updateMany({
+            tx.noteSubmission.updateMany({
               where: { userId: userWithEmail.id },
               data: { userId: clerkUser.id },
-            }) : Promise.resolve(),
-            
-            // Update pairs
-            userWithEmail.pairs.length > 0 ? tx.pair.updateMany({
-              where: { userId: userWithEmail.id },
-              data: { userId: clerkUser.id },
-            }) : Promise.resolve(),
+            }),
             
             // Update study stats
-            userWithEmail.studyStats.length > 0 ? tx.studyStat.updateMany({
+            tx.studyStat.updateMany({
               where: { userId: userWithEmail.id },
               data: { userId: clerkUser.id },
-            }) : Promise.resolve(),
+            }),
             
             // Update humanizer runs
-            userWithEmail.humanizerRuns.length > 0 ? tx.humanizerRun.updateMany({
+            tx.humanizerRun.updateMany({
               where: { userId: userWithEmail.id },
               data: { userId: clerkUser.id },
-            }) : Promise.resolve(),
+            }),
             
-            // Update subscription
+            // Update subscription (if exists)
             userWithEmail.subscription ? tx.subscription.update({
               where: { userId: userWithEmail.id },
               data: { userId: clerkUser.id },
