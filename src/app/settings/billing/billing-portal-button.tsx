@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Button } from '../../components/ui/button';
 
 export default function BillingPortalButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,12 +32,13 @@ export default function BillingPortalButton() {
   };
   
   return (
-    <button
+    <Button
+      variant="primary"
       onClick={handleClick}
+      isLoading={isLoading}
       disabled={isLoading}
-      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400"
     >
-      {isLoading ? 'Loading...' : 'Manage Subscription'}
-    </button>
+      Manage Subscription
+    </Button>
   );
 }

@@ -133,17 +133,17 @@ export default function FlashcardDeck({
     };
     
     return (
-      <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
+      <div className="bg-card-bg p-8 rounded-lg shadow-card border border-card-border text-center">
         <h2 className="text-2xl font-bold mb-4">Study Session Complete!</h2>
         
         <div className="mb-8">
-          <p className="text-gray-700 mb-2">
+          <p className="text-foreground mb-2">
             You studied {results.totalCards} flashcards.
           </p>
-          <p className="text-green-600 font-medium mb-2">
+          <p className="text-status-success font-medium mb-2">
             Correct: {results.correct} ({Math.round((results.correct / results.totalCards) * 100)}%)
           </p>
-          <p className="text-orange-600 font-medium">
+          <p className="text-warning font-medium">
             Need Review: {results.needReview} ({Math.round((results.needReview / results.totalCards) * 100)}%)
           </p>
         </div>
@@ -151,13 +151,13 @@ export default function FlashcardDeck({
         <div className="flex justify-center space-x-4">
           <button
             onClick={handleRestart}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="px-6 py-3 bg-primary text-button-text rounded-lg hover:bg-primary-hover"
           >
             Study Again
           </button>
           <button
             onClick={handleFinish}
-            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+            className="px-6 py-3 border border-control-border bg-control-bg text-foreground rounded-lg hover:bg-control-hover"
           >
             Back to Dashboard
           </button>
@@ -172,23 +172,23 @@ export default function FlashcardDeck({
   return (
     <div className="flex flex-col h-full">
       <div className="flex justify-between items-center mb-4">
-        <div className="text-gray-700">
+        <div className="text-foreground">
           Card {currentIndex + 1} of {pairs.length}
         </div>
-        <div className="text-gray-700">
-          Press <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">Space</kbd> to flip
+        <div className="text-foreground">
+          Press <kbd className="px-2 py-1 bg-control-bg border border-control-border rounded text-xs">Space</kbd> to flip
         </div>
       </div>
       
-      <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
+      <div className="w-full bg-control-bg rounded-full h-2 mb-8">
         <div
-          className="bg-blue-600 h-2 rounded-full"
+          className="bg-primary h-2 rounded-full"
           style={{ width: `${progress}%` }}
         ></div>
       </div>
       
       <div
-        className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-8 flex items-center justify-center cursor-pointer transition-transform duration-300 ease-in-out transform hover:scale-[1.01]"
+        className="flex-1 bg-card-bg rounded-lg shadow-card border border-card-border p-8 mb-8 flex items-center justify-center cursor-pointer transition-transform duration-300 ease-in-out transform hover:scale-[1.01]"
         onClick={handleFlip}
         style={{ minHeight: '300px' }}
       >
@@ -196,51 +196,51 @@ export default function FlashcardDeck({
           <h2 className="text-2xl font-bold mb-3">
             {showAnswer ? 'Answer' : 'Term'}
           </h2>
-          <p className="text-xl">
+          <p className="text-xl text-foreground">
             {showAnswer ? currentCard.definition : currentCard.term}
           </p>
         </div>
       </div>
       
       {showAnswer && (
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-4">
+        <div className="bg-card-bg p-6 rounded-lg shadow-card border border-card-border mb-4">
           <h3 className="text-lg font-medium mb-3 text-center">
             How well did you know this?
           </h3>
           <div className="flex justify-between">
             <button
               onClick={() => handleRate(1)}
-              className="flex-1 py-3 mx-1 rounded-lg border border-red-300 text-red-700 hover:bg-red-50"
+              className="flex-1 py-3 mx-1 rounded-lg border border-status-error text-status-error hover:bg-status-error-bg"
             >
               1<br />Not at all
             </button>
             <button
               onClick={() => handleRate(2)}
-              className="flex-1 py-3 mx-1 rounded-lg border border-orange-300 text-orange-700 hover:bg-orange-50"
+              className="flex-1 py-3 mx-1 rounded-lg border border-warning text-warning hover:bg-status-warning-bg"
             >
               2<br />Barely
             </button>
             <button
               onClick={() => handleRate(3)}
-              className="flex-1 py-3 mx-1 rounded-lg border border-yellow-300 text-yellow-700 hover:bg-yellow-50"
+              className="flex-1 py-3 mx-1 rounded-lg border border-accent text-accent hover:bg-[rgba(251,191,36,0.1)]"
             >
               3<br />Somewhat
             </button>
             <button
               onClick={() => handleRate(4)}
-              className="flex-1 py-3 mx-1 rounded-lg border border-green-300 text-green-700 hover:bg-green-50"
+              className="flex-1 py-3 mx-1 rounded-lg border border-status-success text-status-success hover:bg-status-success-bg"
             >
               4<br />Mostly
             </button>
             <button
               onClick={() => handleRate(5)}
-              className="flex-1 py-3 mx-1 rounded-lg border border-green-500 text-green-700 hover:bg-green-50"
+              className="flex-1 py-3 mx-1 rounded-lg border border-status-success text-status-success hover:bg-status-success-bg font-bold"
             >
               5<br />Perfectly
             </button>
           </div>
-          <div className="text-center text-gray-500 text-sm mt-3">
-            Or use keys <kbd className="px-1 border border-gray-300 rounded">1</kbd> through <kbd className="px-1 border border-gray-300 rounded">5</kbd> to rate
+          <div className="text-center text-text-muted text-sm mt-3">
+            Or use keys <kbd className="px-1 border border-control-border rounded">1</kbd> through <kbd className="px-1 border border-control-border rounded">5</kbd> to rate
           </div>
         </div>
       )}
@@ -254,7 +254,7 @@ export default function FlashcardDeck({
             }
           }}
           disabled={currentIndex === 0}
-          className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 border border-control-border bg-control-bg rounded-lg text-foreground hover:bg-control-hover disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Previous
         </button>
@@ -267,7 +267,7 @@ export default function FlashcardDeck({
               }
             }}
             disabled={currentIndex === pairs.length - 1}
-            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 border border-control-border bg-control-bg rounded-lg text-foreground hover:bg-control-hover disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next
           </button>

@@ -215,7 +215,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
               Or Upload a File
             </label>
             <div
-              className="border-2 border-dashed border-input-border rounded-lg p-6 flex flex-col items-center justify-center bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer"
+              className="border-2 border-dashed border-input-border rounded-lg p-6 flex flex-col items-center justify-center bg-secondary/30 hover:bg-secondary/50 hover:border-primary/50 transition-all duration-200 cursor-pointer hover:shadow-md"
               onClick={() => fileInputRef.current?.click()}
               onDragOver={handleDragOver}
               onDragEnter={handleDragEnter}
@@ -280,7 +280,7 @@ export default function SetSubmissionForm({ userId }: SetSubmissionFormProps) {
           
           <div className="space-y-4">
             {pairs.map((pair, index) => (
-              <div key={index} className="bg-secondary p-6 rounded-lg shadow-sm border border-border">
+              <div key={index} className="bg-secondary p-6 rounded-lg shadow-md border border-border hover:border-primary/30 transition-all duration-200">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-1">

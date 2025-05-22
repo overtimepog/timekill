@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button } from '../components/ui/button';
 
 type PricingButtonProps = {
   planName: string;
@@ -71,19 +72,23 @@ export default function PricingButton({
     }
   };
   
+  // Determine the button variant based on the plan status
+  let variant: 'primary' | 'secondary' | 'green' = isCurrentPlan 
+    ? 'green' 
+    : highlight 
+      ? 'primary' 
+      : 'secondary';
+      
   return (
-    <button
+    <Button 
+      variant={variant}
       onClick={handleClick}
+      isLoading={isLoading}
+      fullWidth
       disabled={isLoading}
-      className={`w-full py-3 px-4 rounded-md shadow-sm text-sm font-medium ${
-        isCurrentPlan
-          ? 'bg-green-900/20 text-green-400 border border-green-900/30'
-          : highlight
-          ? 'bg-primary text-white hover:bg-primary-hover'
-          : 'bg-secondary text-foreground border border-border hover:bg-slate-700'
-      } transition-colors duration-200`}
+      className={isCurrentPlan ? 'bg-green-900/20 text-green-400 border border-green-900/30 hover:bg-green-900/30' : ''}
     >
       {isLoading ? 'Processing...' : cta}
-    </button>
+    </Button>
   );
 }

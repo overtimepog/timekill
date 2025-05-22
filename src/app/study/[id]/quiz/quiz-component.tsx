@@ -137,12 +137,12 @@ export default function QuizComponent({
     };
     
     return (
-      <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
+      <div className="bg-card-bg p-8 rounded-lg shadow-card border border-card-border text-center">
         <h2 className="text-2xl font-bold mb-4">Quiz Complete!</h2>
         
         <div className="mb-8">
-          <div className="text-5xl font-bold text-blue-600 mb-4">{results.score}%</div>
-          <p className="text-gray-700 mb-2">
+          <div className="text-5xl font-bold text-primary mb-4">{results.score}%</div>
+          <p className="text-foreground mb-2">
             You answered {results.correct} out of {results.totalQuestions} questions correctly.
           </p>
         </div>
@@ -150,25 +150,25 @@ export default function QuizComponent({
         <div className="flex justify-center space-x-4">
           <button
             onClick={handleRestart}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="px-6 py-3 bg-primary text-button-text rounded-lg hover:bg-primary-hover"
           >
             Try Again
           </button>
           <button
             onClick={handleFinish}
-            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+            className="px-6 py-3 border border-control-border bg-control-bg text-foreground rounded-lg hover:bg-control-hover"
           >
             Back to Study
           </button>
         </div>
         
-        <div className="mt-12 border-t border-gray-200 pt-8">
+        <div className="mt-12 border-t border-border pt-8">
           <h3 className="text-xl font-bold mb-6">Question Review</h3>
           <div className="space-y-6">
             {questions.map((q, index) => (
               <div 
                 key={index}
-                className={`p-4 rounded-lg ${q.isCorrect ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}
+                className={`p-4 rounded-lg ${q.isCorrect ? 'bg-status-success-bg border border-status-success' : 'bg-status-error-bg border border-status-error'}`}
               >
                 <p className="font-medium mb-2">
                   {index + 1}. {q.question}
@@ -177,7 +177,7 @@ export default function QuizComponent({
                   <span className="font-medium">Your answer:</span>{' '}
                   {q.userAnswer || 'No answer'}
                 </p>
-                <p className={q.isCorrect ? 'text-green-600' : 'text-red-600'}>
+                <p className={q.isCorrect ? 'text-status-success' : 'text-status-error'}>
                   <span className="font-medium">Correct answer:</span>{' '}
                   {q.correctAnswer}
                 </p>
@@ -199,19 +199,19 @@ export default function QuizComponent({
   return (
     <div className="flex flex-col h-full">
       <div className="flex justify-between items-center mb-4">
-        <div className="text-gray-700">
+        <div className="text-foreground">
           Question {currentIndex + 1} of {questions.length}
         </div>
       </div>
       
-      <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
+      <div className="w-full bg-control-bg rounded-full h-2 mb-8">
         <div
-          className="bg-purple-600 h-2 rounded-full"
+          className="bg-purple-button h-2 rounded-full"
           style={{ width: `${progress}%` }}
         ></div>
       </div>
       
-      <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 mb-8">
+      <div className="bg-card-bg p-8 rounded-lg shadow-card border border-card-border mb-8">
         <h2 className="text-xl font-semibold mb-6">{currentQuestion.question}</h2>
         
         {currentQuestion.type === 'multiple-choice' && (
@@ -223,9 +223,9 @@ export default function QuizComponent({
                 className={`w-full text-left p-4 rounded-lg border ${
                   currentQuestion.userAnswer === option
                     ? currentQuestion.isCorrect
-                      ? 'bg-green-50 border-green-500 text-green-700'
-                      : 'bg-red-50 border-red-500 text-red-700'
-                    : 'border-gray-300 hover:bg-gray-50'
+                      ? 'bg-status-success-bg border-status-success text-status-success'
+                      : 'bg-status-error-bg border-status-error text-status-error'
+                    : 'border-control-border bg-control-bg hover:bg-control-hover'
                 }`}
                 disabled={currentQuestion.userAnswer !== undefined}
               >
@@ -249,13 +249,13 @@ export default function QuizComponent({
                 setQuestions(updatedQuestions);
               }}
               placeholder="Type your answer here..."
-              className="w-full p-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              className="w-full p-4 rounded-lg border border-input-border bg-input-bg text-input-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
               disabled={currentQuestion.isCorrect !== undefined}
             />
             <div className="mt-4 flex justify-end">
               <button
                 onClick={() => handleSelectAnswer(currentQuestion.userAnswer || '')}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                className="px-4 py-2 bg-purple-button text-button-text rounded-lg hover:bg-purple-button-hover"
                 disabled={!currentQuestion.userAnswer || currentQuestion.isCorrect !== undefined}
               >
                 Submit Answer
@@ -265,8 +265,8 @@ export default function QuizComponent({
             {currentQuestion.isCorrect !== undefined && (
               <div className={`mt-4 p-4 rounded-lg ${
                 currentQuestion.isCorrect 
-                  ? 'bg-green-50 border border-green-200 text-green-800' 
-                  : 'bg-red-50 border border-red-200 text-red-800'
+                  ? 'bg-status-success-bg border border-status-success text-status-success' 
+                  : 'bg-status-error-bg border border-status-error text-status-error'
               }`}>
                 {currentQuestion.isCorrect 
                   ? 'Correct!' 
@@ -283,9 +283,9 @@ export default function QuizComponent({
               className={`w-full text-left p-4 rounded-lg border ${
                 currentQuestion.userAnswer === 'True'
                   ? currentQuestion.isCorrect
-                    ? 'bg-green-50 border-green-500 text-green-700'
-                    : 'bg-red-50 border-red-500 text-red-700'
-                  : 'border-gray-300 hover:bg-gray-50'
+                    ? 'bg-status-success-bg border-status-success text-status-success'
+                    : 'bg-status-error-bg border-status-error text-status-error'
+                  : 'border-control-border bg-control-bg hover:bg-control-hover'
               }`}
               disabled={currentQuestion.userAnswer !== undefined}
             >
@@ -296,9 +296,9 @@ export default function QuizComponent({
               className={`w-full text-left p-4 rounded-lg border ${
                 currentQuestion.userAnswer === 'False'
                   ? currentQuestion.isCorrect
-                    ? 'bg-green-50 border-green-500 text-green-700'
-                    : 'bg-red-50 border-red-500 text-red-700'
-                  : 'border-gray-300 hover:bg-gray-50'
+                    ? 'bg-status-success-bg border-status-success text-status-success'
+                    : 'bg-status-error-bg border-status-error text-status-error'
+                  : 'border-control-border bg-control-bg hover:bg-control-hover'
               }`}
               disabled={currentQuestion.userAnswer !== undefined}
             >

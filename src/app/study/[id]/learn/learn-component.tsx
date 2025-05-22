@@ -135,24 +135,24 @@ export default function LearnComponent({
   
   if (sessionComplete) {
     return (
-      <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
+      <div className="bg-card-bg p-8 rounded-lg shadow-card border border-card-border text-center">
         <h2 className="text-2xl font-bold mb-4">Learning Session Complete!</h2>
         
         <div className="mb-8">
-          <div className="text-green-600 text-5xl font-bold mb-4">
+          <div className="text-status-success text-5xl font-bold mb-4">
             {Math.round((sessionProgress.mastered / sessionProgress.total) * 100)}%
           </div>
-          <p className="text-gray-700 mb-2">
+          <p className="text-foreground mb-2">
             You mastered {sessionProgress.mastered} out of {sessionProgress.total} terms.
           </p>
-          <p className="text-gray-600">
+          <p className="text-text-dimmed">
             Great job! Keep up the consistent practice for best results.
           </p>
         </div>
         
         <button
           onClick={handleFinish}
-          className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
+          className="px-6 py-3 bg-green-button text-button-text rounded-lg hover:bg-green-button-hover"
         >
           Back to Study
         </button>
@@ -170,27 +170,27 @@ export default function LearnComponent({
   return (
     <div className="flex flex-col h-full">
       <div className="flex justify-between items-center mb-4">
-        <div className="text-gray-700">
+        <div className="text-foreground">
           Progress: {sessionProgress.completed} of {sessionProgress.total}
         </div>
-        <div className="text-green-600 font-medium">
+        <div className="text-status-success font-medium">
           Mastered: {sessionProgress.mastered}
         </div>
       </div>
       
-      <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
+      <div className="w-full bg-control-bg rounded-full h-2 mb-8">
         <div
-          className="bg-green-600 h-2 rounded-full"
+          className="bg-green-button h-2 rounded-full"
           style={{ width: `${progress}%` }}
         ></div>
       </div>
       
       <div
-        className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-8 flex flex-col"
+        className="bg-card-bg rounded-lg shadow-card border border-card-border p-8 mb-8 flex flex-col"
         style={{ minHeight: '300px' }}
       >
         <div className="mb-4">
-          <div className="inline-flex px-3 py-1 rounded-full text-xs font-medium bg-gray-100">
+          <div className="inline-flex px-3 py-1 rounded-full text-xs font-medium bg-control-bg border border-control-border">
             {currentPair.stats.status === 'unseen' ? 'New' : 
              currentPair.stats.status === 'learning' ? 'Learning' :
              currentPair.stats.status === 'reviewing' ? 'Reviewing' : 'Mastered'}
@@ -204,13 +204,13 @@ export default function LearnComponent({
             </h2>
             
             {showAnswer ? (
-              <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-                <p className="text-xl">{currentPair.definition}</p>
+              <div className="mt-8 p-4 bg-control-bg rounded-lg border border-control-border">
+                <p className="text-xl text-foreground">{currentPair.definition}</p>
               </div>
             ) : (
               <button
                 onClick={handleShowAnswer}
-                className="mt-4 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                className="mt-4 px-6 py-3 bg-green-button text-button-text rounded-lg hover:bg-green-button-hover"
               >
                 Show Answer
               </button>
@@ -220,44 +220,44 @@ export default function LearnComponent({
       </div>
       
       {showAnswer && (
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-4">
+        <div className="bg-card-bg p-6 rounded-lg shadow-card border border-card-border mb-4">
           <h3 className="text-lg font-medium mb-3 text-center">
             How well did you know this?
           </h3>
           <div className="flex justify-between">
             <button
               onClick={() => handleRate(1)}
-              className="flex-1 py-3 mx-1 rounded-lg border border-red-300 text-red-700 hover:bg-red-50"
+              className="flex-1 py-3 mx-1 rounded-lg border border-status-error text-status-error hover:bg-status-error-bg"
             >
               1<br />Not at all
             </button>
             <button
               onClick={() => handleRate(2)}
-              className="flex-1 py-3 mx-1 rounded-lg border border-orange-300 text-orange-700 hover:bg-orange-50"
+              className="flex-1 py-3 mx-1 rounded-lg border border-warning text-warning hover:bg-status-warning-bg"
             >
               2<br />Barely
             </button>
             <button
               onClick={() => handleRate(3)}
-              className="flex-1 py-3 mx-1 rounded-lg border border-yellow-300 text-yellow-700 hover:bg-yellow-50"
+              className="flex-1 py-3 mx-1 rounded-lg border border-accent text-accent hover:bg-[rgba(251,191,36,0.1)]"
             >
               3<br />Somewhat
             </button>
             <button
               onClick={() => handleRate(4)}
-              className="flex-1 py-3 mx-1 rounded-lg border border-green-300 text-green-700 hover:bg-green-50"
+              className="flex-1 py-3 mx-1 rounded-lg border border-status-success text-status-success hover:bg-status-success-bg"
             >
               4<br />Mostly
             </button>
             <button
               onClick={() => handleRate(5)}
-              className="flex-1 py-3 mx-1 rounded-lg border border-green-500 text-green-700 hover:bg-green-50"
+              className="flex-1 py-3 mx-1 rounded-lg border border-status-success text-status-success hover:bg-status-success-bg font-bold"
             >
               5<br />Perfectly
             </button>
           </div>
-          <div className="text-center text-gray-500 text-sm mt-3">
-            Or use keys <kbd className="px-1 border border-gray-300 rounded">1</kbd> through <kbd className="px-1 border border-gray-300 rounded">5</kbd> to rate
+          <div className="text-center text-text-muted text-sm mt-3">
+            Or use keys <kbd className="px-1 border border-control-border rounded">1</kbd> through <kbd className="px-1 border border-control-border rounded">5</kbd> to rate
           </div>
         </div>
       )}

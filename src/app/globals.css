@@ -23,6 +23,30 @@
   --purple-button: #7e22ce;   /* purple-700 - darker purple for better contrast with white text */
   --purple-button-hover: #6b21a8; /* purple-800 */
   --secondary-button-text: #f1f5f9; /* slate-100 - brighter text for secondary buttons */
+  
+  /* Card styling */
+  --card-bg: #0f172a;         /* slate-900 - card background */
+  --card-border: #1e293b;     /* slate-800 - card border */
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  
+  /* Text colors for various contexts */
+  --text-muted: #94a3b8;      /* slate-400 - for less important text */
+  --text-dimmed: #cbd5e1;     /* slate-300 - slightly dimmed text */
+  
+  /* Control elements */
+  --control-bg: #1e293b;      /* slate-800 - button/control background */
+  --control-border: #334155;  /* slate-700 - button/control border */
+  --control-hover: #475569;   /* slate-600 - button/control hover */
+  
+  /* Status colors */
+  --success: #22c55e;         /* green-500 */
+  --success-bg: rgba(34, 197, 94, 0.1); /* green-500 with transparency */
+  --warning: #f59e0b;         /* amber-500 */
+  --warning-bg: rgba(245, 158, 11, 0.1); /* amber-500 with transparency */
+  --error: #ef4444;           /* red-500 */
+  --error-bg: rgba(239, 68, 68, 0.1); /* red-500 with transparency */
+  --info: #3b82f6;            /* blue-500 */
+  --info-bg: rgba(59, 130, 246, 0.1); /* blue-500 with transparency */
 }
 
 /* Theme variables - standard CSS */

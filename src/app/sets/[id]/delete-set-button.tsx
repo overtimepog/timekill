@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaTrash } from 'react-icons/fa';
+import { Button } from '../../components/ui/button';
 
 interface DeleteSetButtonProps {
   setId: string;
@@ -41,34 +42,38 @@ export default function DeleteSetButton({ setId }: DeleteSetButtonProps) {
     <>
       <button
         onClick={openModal}
-        className="p-2 text-foreground/70 hover:text-red-500 hover:bg-secondary rounded-full transition-colors"
+        className="p-2 text-foreground/70 hover:text-status-error hover:bg-secondary rounded-full transition-all duration-200 hover:shadow-sm"
         aria-label="Delete set"
       >
         <FaTrash className="w-5 h-5" />
       </button>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-background rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-secondary border border-border rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-xl font-bold mb-4">Delete Set</h3>
             <p className="mb-6">
               Are you sure you want to delete this set? This action cannot be undone.
             </p>
             <div className="flex justify-end space-x-3">
-              <button
+              <Button
+                variant="secondary"
                 onClick={closeModal}
-                className="px-4 py-2 bg-secondary text-foreground rounded-lg hover:bg-secondary/80 text-sm font-medium"
                 disabled={isDeleting}
+                size="sm"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="outline"
                 onClick={handleDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm font-medium"
+                isLoading={isDeleting}
                 disabled={isDeleting}
+                size="sm"
+                className="bg-status-error-bg border-status-error text-status-error hover:bg-status-error hover:text-white"
               >
-                {isDeleting ? 'Deleting...' : 'Delete'}
-              </button>
+                Delete
+              </Button>
             </div>
           </div>
         </div>

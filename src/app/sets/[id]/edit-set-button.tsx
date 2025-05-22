@@ -61,15 +61,15 @@ export default function EditSetButton({ setId, currentName }: EditSetButtonProps
     <>
       <button
         onClick={openModal}
-        className="p-1 text-foreground/70 hover:text-foreground hover:bg-secondary rounded-full transition-colors"
+        className="p-1 text-foreground/70 hover:text-primary hover:bg-secondary rounded-full transition-all duration-200 hover:shadow-sm"
         aria-label="Edit set name"
       >
         <FaPencilAlt className="w-4 h-4" />
       </button>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-background rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-secondary border border-border rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-xl font-bold mb-4">Rename Set</h3>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
@@ -91,14 +91,14 @@ export default function EditSetButton({ setId, currentName }: EditSetButtonProps
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-4 py-2 bg-secondary text-foreground rounded-lg hover:bg-secondary/80 text-sm font-medium"
+                  className="px-4 py-2 bg-control-bg border border-control-border text-foreground rounded-lg hover:bg-control-hover hover:border-primary/30 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
                   disabled={isSubmitting}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary text-[var(--button-text)] rounded-lg hover:bg-primary-hover text-sm font-medium"
+                  className="px-4 py-2 bg-primary text-[var(--button-text)] rounded-lg hover:bg-primary-hover hover:scale-[1.02] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Saving...' : 'Save Changes'}
