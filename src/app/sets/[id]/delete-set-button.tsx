@@ -50,7 +50,7 @@ export default function DeleteSetButton({ setId }: DeleteSetButtonProps) {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-          <div className="bg-secondary border border-border rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+          <div className="bg-gray-100 dark:bg-gray-800 border border-border rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-xl font-bold mb-4">Delete Set</h3>
             <p className="mb-6">
               Are you sure you want to delete this set? This action cannot be undone.

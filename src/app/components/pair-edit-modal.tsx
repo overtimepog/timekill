@@ -119,7 +119,7 @@ export default function PairEditModal({
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
       <div 
         ref={modalRef}
-        className="bg-secondary border border-border rounded-lg shadow-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-gray-100 dark:bg-gray-800 border border-border rounded-lg shadow-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto"
       >
         <div className="p-6 bg-secondary">
           <h2 className="text-xl font-bold mb-4">Edit Card</h2>
