@@ -59,15 +59,48 @@ export const syncUserWithClerk = async (clerkUser: any) => {
   // Get the primary email address
   const email = clerkUser.emailAddresses[0].emailAddress;
   
-  // Create or update the user in our database
-  const user = await prisma.user.upsert({
-    where: { id: clerkUser.id },
-    update: { email },
-    create: {
-      id: clerkUser.id,
-      email,
-    },
-  });
-  
-  return user;
+  try {
+    // First check if a user with this ID already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { id: clerkUser.id },
+    });
+    
+    if (existingUser) {
+      // If user exists, update their email if needed
+      if (existingUser.email !== email) {
+        return await prisma.user.update({
+          where: { id: clerkUser.id },
+          data: { email },
+        });
+      }
+      return existingUser;
+    }
+    
+    // Check if a user with this email already exists
+    const userWithEmail = await prisma.user.findUnique({
+      where: { email },
+    });
+    
+    if (userWithEmail) {
+      // If a user with this email exists but has a different ID,
+      // we need to handle this conflict
+      throw new Error(`Email ${email} is already associated with another account`);
+    }
+    
+    // Create a new user if no conflicts
+    return await prisma.user.create({
+      data: {
+        id: clerkUser.id,
+        email,
+      },
+    });
+  } catch (error: unknown) {
+    // If it's a unique constraint error, provide a more helpful message
+    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002' && 
+        'meta' in error && error.meta && typeof error.meta === 'object' && error.meta !== null && 
+        'target' in error.meta && Array.isArray(error.meta.target) && error.meta.target.includes('email')) {
+      throw new Error(`Email ${email} is already associated with another account`);
+    }
+    throw error;
+  }
 };

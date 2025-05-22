@@ -188,7 +188,7 @@ export default function NoteSubmissionForm({ userId }: NoteSubmissionFormProps) 
             <button
               type="submit"
               disabled={isLoading || notes.length === 0}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50 disabled:bg-primary/30 disabled:cursor-not-allowed"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-[var(--button-text)] bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50 disabled:bg-primary/30 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Processing...' : 'Generate Study Materials'}
             </button>
@@ -264,7 +264,7 @@ export default function NoteSubmissionForm({ userId }: NoteSubmissionFormProps) 
             <button
               onClick={handleSavePairs}
               disabled={isLoading}
-              className="flex-1 py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50 disabled:bg-primary/30 disabled:cursor-not-allowed"
+              className="flex-1 py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-[var(--button-text)] bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50 disabled:bg-primary/30 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Saving...' : 'Save & Continue to Study'}
             </button>
@@ -275,7 +275,7 @@ export default function NoteSubmissionForm({ userId }: NoteSubmissionFormProps) 
                 setSubmissionId(null);
               }}
               disabled={isLoading}
-              className="flex-1 py-3 px-4 border border-border rounded-md shadow-sm text-sm font-medium text-foreground bg-secondary hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50 disabled:bg-slate-800 disabled:cursor-not-allowed"
+              className="flex-1 py-3 px-4 border border-border rounded-md shadow-sm text-sm font-medium text-[var(--secondary-button-text)] bg-secondary hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50 disabled:bg-slate-800 disabled:cursor-not-allowed"
             >
               Start Over
             </button>

@@ -3,7 +3,7 @@
 /* Force dark mode across the site */
 :root {
   --background: #020617;      /* slate-950 - darker background */
-  --foreground: #cbd5e1;      /* slate-300 - less harsh white text */
+  --foreground: #e2e8f0;      /* slate-200 - brighter text for better readability */
   --primary: #0ea5e9;         /* sky-500 */
   --primary-rgb: 14, 165, 233; /* sky-500 in RGB format for opacity */
   --primary-hover: #0284c7;   /* sky-600 */
@@ -11,12 +11,18 @@
   --accent: #fbbf24;          /* amber-400 */
   --border: #1e293b;          /* slate-800 - darker borders */
   --input-bg: #1e293b;        /* slate-800 - darker input backgrounds */
-  --input-text: #e2e8f0;      /* slate-200 - slightly brighter text for inputs */
-  --input-placeholder: #64748b; /* slate-500 - subtle placeholder text */
+  --input-text: #f1f5f9;      /* slate-100 - brighter text for better input readability */
+  --input-placeholder: #94a3b8; /* slate-400 - slightly brighter placeholder text */
   --input-border: #334155;    /* slate-700 - slightly lighter border for inputs */
   --tips-bg: #0f172a;         /* slate-900 - darker tips background */
   --tips-border: #1e293b;     /* slate-800 - darker tips border */
-  --tips-text: #7dd3fc;       /* sky-300 - brighter blue text for tips */
+  --tips-text: #e0f2fe;       /* sky-100 - much brighter blue text for tips */
+  --button-text: #ffffff;     /* white - for button text */
+  --green-button: #22c55e;    /* green-500 - brighter green for better contrast */
+  --green-button-hover: #16a34a; /* green-600 */
+  --purple-button: #a855f7;   /* purple-500 - brighter purple for better contrast */
+  --purple-button-hover: #9333ea; /* purple-600 */
+  --secondary-button-text: #f1f5f9; /* slate-100 - brighter text for secondary buttons */
 }
 
 /* Theme variables - standard CSS */
@@ -81,15 +87,15 @@ button, input, textarea, select {
 }
 
 .btn-primary {
-  /* Uses --primary and --primary-hover. Assumes white text provides good contrast. */
+  /* Uses --primary and --primary-hover with white text for good contrast */
   padding-left: 1rem;
   padding-right: 1rem;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   background-color: var(--primary);
-  color: white;
+  color: var(--button-text); /* Using button-text variable for consistency */
   border-radius: 0.5rem;
-  font-weight: 500;
+  font-weight: 600; /* Slightly bolder for better readability */
 }
 
 .btn-primary:hover {
@@ -104,12 +110,44 @@ button, input, textarea, select {
   padding-bottom: 0.5rem;
   border: 1px solid var(--border);
   border-radius: 0.5rem;
-  color: var(--foreground);
+  color: var(--secondary-button-text); /* Brighter text for better contrast */
   font-weight: 500;
 }
 
 .btn-secondary:hover {
   background-color: #334155; /* slate-700 for hover */
+}
+
+/* Green button styles */
+.btn-green {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  background-color: var(--green-button);
+  color: var(--button-text);
+  border-radius: 0.5rem;
+  font-weight: 600;
+}
+
+.btn-green:hover {
+  background-color: var(--green-button-hover);
+}
+
+/* Purple button styles */
+.btn-purple {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  background-color: var(--purple-button);
+  color: var(--button-text);
+  border-radius: 0.5rem;
+  font-weight: 600;
+}
+
+.btn-purple:hover {
+  background-color: var(--purple-button-hover);
 }
 
 

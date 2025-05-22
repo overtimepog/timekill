@@ -18,7 +18,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
               <Link
                 href="/sign-up"
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-lg font-medium"
+                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg hover:from-blue-600 hover:to-blue-700 text-lg font-medium [color:black!important]"
               >
                 Get Started For Free
               </Link>
@@ -130,7 +130,7 @@ export default function Home() {
             <h2 className="text-2xl font-bold mb-6">Ready to Transform Your Study Experience?</h2>
             <Link
               href="/sign-up"
-              className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xl font-medium inline-block"
+              className="px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg hover:from-blue-600 hover:to-blue-700 text-xl font-medium inline-block [color:black!important]"
             >
               Get Started For Free
             </Link>

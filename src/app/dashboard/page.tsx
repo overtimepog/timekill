@@ -67,7 +67,7 @@ export default async function DashboardPage() {
               </p>
               <Link
                 href="/create"
-                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover text-sm font-medium inline-block"
+                className="px-4 py-2 bg-primary text-[var(--button-text)] rounded-lg hover:bg-primary-hover text-sm font-medium inline-block"
               >
                 Create Now
               </Link>
@@ -81,14 +81,14 @@ export default async function DashboardPage() {
               {submissions.length > 0 ? (
                 <Link
                   href={`/study/${submissions[0].id}/flashcards`}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium inline-block"
+                  className="px-4 py-2 bg-[var(--green-button)] text-[var(--button-text)] rounded-lg hover:bg-[var(--green-button-hover)] text-sm font-medium inline-block"
                 >
                   Study Now
                 </Link>
               ) : (
                 <Link
                   href="/create"
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium inline-block"
+                  className="px-4 py-2 bg-[var(--green-button)] text-[var(--button-text)] rounded-lg hover:bg-[var(--green-button-hover)] text-sm font-medium inline-block"
                 >
                   Create First
                 </Link>
@@ -103,14 +103,14 @@ export default async function DashboardPage() {
               {submissions.length > 0 ? (
                 <Link
                   href={`/study/${submissions[0].id}/quiz`}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm font-medium inline-block"
+                  className="px-4 py-2 bg-[var(--purple-button)] text-[var(--button-text)] rounded-lg hover:bg-[var(--purple-button-hover)] text-sm font-medium inline-block"
                 >
                   Quiz Yourself
                 </Link>
               ) : (
                 <Link
                   href="/create"
-                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm font-medium inline-block"
+                  className="px-4 py-2 bg-[var(--purple-button)] text-[var(--button-text)] rounded-lg hover:bg-[var(--purple-button-hover)] text-sm font-medium inline-block"
                 >
                   Create First
                 </Link>
@@ -177,7 +177,7 @@ export default async function DashboardPage() {
                           </Link>
                           <Link
                             href={`/study/${submission.id}`}
-                            className="text-green-600 hover:text-green-700"
+                            className="text-[var(--green-button)] hover:text-[var(--green-button-hover)] font-medium"
                           >
                             Study
                           </Link>
@@ -192,7 +192,7 @@ export default async function DashboardPage() {
                 <p className="text-foreground/70 mb-4">You haven&apos;t created any notes yet.</p>
                 <Link
                   href="/create"
-                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover text-sm font-medium inline-block"
+                  className="px-4 py-2 bg-primary text-[var(--button-text)] rounded-lg hover:bg-primary-hover text-sm font-medium inline-block"
                 >
                   Create Your First Note
                 </Link>
