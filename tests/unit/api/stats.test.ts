@@ -33,8 +33,14 @@ const mockRedis = mockRedisClient();
 // Simulated stats API handlers
 async function simulateGlobalStatsAPI() {
   try {
-    // Check cache first
-    const cached = await mockRedis.get('global_stats');
+    // Check cache first (ignore cache errors)
+    let cached = null;
+    try {
+      cached = await mockRedis.get('global_stats');
+    } catch (cacheError) {
+      // Cache read error is non-fatal
+    }
+    
     if (cached) {
       return { status: 200, data: JSON.parse(cached) };
     }
@@ -76,9 +82,15 @@ async function simulateUserStatsAPI() {
       return { status: 401, data: { error: 'Unauthorized' } };
     }
 
-    // Check cache first
+    // Check cache first (ignore cache errors)
     const cacheKey = `user_stats:${user.id}`;
-    const cached = await mockRedis.get(cacheKey);
+    let cached = null;
+    try {
+      cached = await mockRedis.get(cacheKey);
+    } catch (cacheError) {
+      // Cache read error is non-fatal
+    }
+    
     if (cached) {
       return { status: 200, data: JSON.parse(cached) };
     }
