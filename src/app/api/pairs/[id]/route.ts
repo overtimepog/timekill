@@ -5,7 +5,7 @@ import { prisma } from '../../../../../packages/core/lib/prisma';
 // PATCH /api/pairs/[id] - Update a pair
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the current user
@@ -15,8 +15,9 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    // Safely extract the ID from params
-    const pairId = params.id;
+    // Safely extract the ID from params (await Promise)
+    const resolvedParams = await params;
+    const pairId = resolvedParams.id;
     
     // Add a type check for pairId
     if (typeof pairId !== 'string') {
