@@ -108,7 +108,7 @@ async function simulateGetUserUsage(userId: string) {
       mockPrisma.user.findUnique({
         where: { id: userId },
         select: { humanizerCredits: true }
-      }).then(user => user?.humanizerCredits ?? 10),
+      }).then((user: { humanizerCredits?: number } | null) => user?.humanizerCredits ?? 10),
       mockPrisma.noteSubmission.count({
         where: { userId }
       })
@@ -456,7 +456,7 @@ describe('Auth Core Functions', () => {
         updatedAt: new Date(),
       });
 
-      const result = await simulateUserSync(userData);
+      await simulateUserSync(userData);
 
       expect(mockPrisma.user.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
