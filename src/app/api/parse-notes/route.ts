@@ -57,6 +57,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Create the submission record
+    console.log(`[parse-notes] About to create NoteSubmission for user ${user.id}`);
     const submission = await prisma.noteSubmission.create({
       data: {
         userId: user.id,
@@ -64,9 +65,12 @@ export async function POST(request: NextRequest) {
         language: 'auto-detect', // Auto-detect language instead of specifying
         metadata: {
           sourceLength: notes.length,
+          numPairs: 0, // Initialize numPairs to 0
+          setName: body.setName || `Set from ${new Date().toLocaleDateString()}` // Add set name, default if not provided
         },
       },
     });
+    console.log(`[parse-notes] Successfully created NoteSubmission ${submission.id} for user ${user.id}`);
     
     // Track the new set for stats
     await trackNewSet(submission.id, user.id);
@@ -81,6 +85,16 @@ export async function POST(request: NextRequest) {
       question: string;
       answer: string;
     }
+    
+    // Update the submission record with the actual number of pairs
+    await prisma.noteSubmission.update({
+      where: { id: submission.id },
+      data: {
+        metadata: {
+          numPairs: pairs.length,
+        },
+      },
+    });
     
     // Store the pairs in the database
     await prisma.pair.createMany({

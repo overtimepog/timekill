@@ -27,10 +27,13 @@ export default async function DashboardPage() {
     redirect('/sign-in');
   }
   
-  // Sync the user with our database
-  await syncUserWithClerk(user);
-  
-  // Get the user's note submissions
+  let submissions: SubmissionWithCount[] = []; // Initialize submissions
+
+  try {
+    // Sync the user with our database
+    await syncUserWithClerk(user);
+    
+    // Get the user's note submissions
   const rawSubmissions = await prisma.noteSubmission.findMany({
     where: {
       userId: user.id,
@@ -49,7 +52,12 @@ export default async function DashboardPage() {
   });
   
   // Cast the submissions to the correct type
-  const submissions = rawSubmissions as unknown as SubmissionWithCount[];
+  submissions = rawSubmissions as unknown as SubmissionWithCount[]; // Assign to the outer scope variable
+  
+  } catch (error) {
+    // The error.tsx component will handle this error
+    throw error;
+  }
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -152,7 +160,7 @@ export default async function DashboardPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-secondary divide-y divide-border">
-                    {submissions.map((submission) => (
+                    {submissions.length > 0 && submissions.map((submission: SubmissionWithCount) => (
                       <tr key={submission.id}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground/70 font-medium">
                           {(submission.metadata as any)?.setName || `Set ${new Date(submission.createdAt).toLocaleDateString()}`}
