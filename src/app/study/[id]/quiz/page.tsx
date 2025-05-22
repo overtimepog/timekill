@@ -10,7 +10,7 @@ export default async function QuizPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const user = await currentUser();
   
@@ -22,8 +22,9 @@ export default async function QuizPage({
   const { id } = resolvedParams;
 
   // Get quiz configuration from searchParams
-  const numQuestionsParam = searchParams?.numQuestions;
-  const typesParam = searchParams?.types;
+  const resolvedSearchParams = await searchParams || {};
+  const numQuestionsParam = resolvedSearchParams?.numQuestions;
+  const typesParam = resolvedSearchParams?.types;
 
   const numQuestions = numQuestionsParam ? parseInt(Array.isArray(numQuestionsParam) ? numQuestionsParam[0] : numQuestionsParam, 10) : 10; 
   const questionTypes = typesParam ? (Array.isArray(typesParam) ? typesParam[0] : typesParam).split(',') : ['multiple-choice', 'fill-in-blank', 'true-false']; 
