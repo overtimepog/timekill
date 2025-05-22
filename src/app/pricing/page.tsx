@@ -51,7 +51,13 @@ export default async function PricingPage() {
     console.log('=== STRIPE DEBUG INFO ===');
     console.log('Products found:', stripeProducts.data.length);
     stripeProducts.data.forEach((product, index) => {
-      const prod = product as any;
+      const prod = product as {
+        id: string;
+        name: string;
+        active: boolean;
+        metadata?: Record<string, string>;
+        default_price?: unknown;
+      };
       console.log(`Product ${index + 1}:`, {
         id: prod.id,
         name: prod.name,
