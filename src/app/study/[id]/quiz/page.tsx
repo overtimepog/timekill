@@ -9,7 +9,7 @@ export default async function QuizPage({
   params,
   searchParams,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
   const user = await currentUser();
@@ -18,7 +18,8 @@ export default async function QuizPage({
     redirect('/sign-in');
   }
   
-  const { id } = params;
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
 
   // Get quiz configuration from searchParams
   const numQuestionsParam = searchParams?.numQuestions;
